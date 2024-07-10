@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { ChatMessage } from "@/lib/types";
 import { getAssistantResponse } from "@/app/actions";
 import { v4 as uuid } from "uuid";
+import { Loader } from "lucide-react";
+import { AnimatedState } from "./ui/animate-state";
 
 type PromptFormProps = {
   messages: ChatMessage[];
@@ -30,31 +32,40 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
 
     setIsLoading(true);
 
-    // Immediately add user message and loading message to the state
+    // Add user message to the state
     const newUserMessage: ChatMessage = {
       id: uuid(),
       content: userInput,
       role: "user",
     };
-    const loadingMessage: ChatMessage = {
-      id: uuid(),
-      content: "",
-      role: "assistant",
-      status: "loading",
-    };
-    setMessages((prev) => [...prev, newUserMessage, loadingMessage]);
+    setMessages((prev) => [...prev, newUserMessage]);
 
     // Reset the form
     form.reset();
 
-    // Get the assistant's response
-    const assistantMessage = await getAssistantResponse(userInput);
-
-    // Update the state with the assistant's message
+    // Add a placeholder assistant message
+    const assistantMessageId = uuid();
     setMessages((prev) => [
-      ...prev.slice(0, -1), // Remove the loading message
-      assistantMessage,
+      ...prev,
+      {
+        id: assistantMessageId,
+        content: "",
+        role: "assistant",
+        status: "loading",
+      },
     ]);
+
+    // Get the assistant's response
+    const assistantResponse = await getAssistantResponse(userInput);
+
+    // Update the assistant's message with the response
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === assistantMessageId
+          ? { ...assistantResponse, id: assistantMessageId }
+          : msg,
+      ),
+    );
 
     setIsLoading(false);
   }
@@ -75,7 +86,9 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
         className="w-96"
       />
       <Button type="submit" disabled={isLoading} className="w-32">
-        {isLoading ? "Sending..." : "Send"}
+        <AnimatedState>
+          {isLoading ? <Loader className="size-4 animate-spin" /> : "Send"}
+        </AnimatedState>
       </Button>
     </form>
   );

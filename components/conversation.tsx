@@ -3,6 +3,7 @@
 import { ChatMessage } from "@/lib/types";
 import { Message } from "./message";
 import { useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 type ConversationProps = {
   messages: ChatMessage[];
@@ -23,9 +24,21 @@ export function Conversation({ messages }: ConversationProps) {
       className="my-8 flex w-full flex-grow flex-col-reverse items-center overflow-auto px-2"
     >
       <div className="w-full max-w-7xl space-y-2">
-        {messages.map((message) => (
-          <Message key={message.id} message={message} />
-        ))}
+        <AnimatePresence initial={false}>
+          {messages.map((message) => (
+            <motion.div
+              key={message.id}
+              initial={{ height: 0 }}
+              animate={{ height: "auto" }}
+              exit={{
+                height: 0,
+              }}
+              transition={{ ease: [0.32, 0.72, 0, 1], duration: 0.3 }}
+            >
+              <Message message={message} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

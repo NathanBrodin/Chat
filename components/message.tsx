@@ -9,7 +9,7 @@ const messageVariants = cva("", {
   variants: {
     variant: {
       user: "bg-primary-foreground",
-      assistant: "",
+      assistant: "border-none",
     },
   },
   defaultVariants: {
