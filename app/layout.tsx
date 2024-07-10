@@ -4,7 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Nathan's sandbox",
+  title: "Nathan's AI",
   description: "To try out stuff",
 };
 

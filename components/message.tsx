@@ -3,12 +3,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
-import { Terminal, User } from "lucide-react";
+import { Loader, Terminal, User } from "lucide-react";
 
-const messageVariants = cva("w-fit", {
+const messageVariants = cva("", {
   variants: {
     variant: {
-      user: "bg-primary-foreground place-self-end",
+      user: "bg-primary-foreground",
       assistant: "",
     },
   },
@@ -34,7 +34,16 @@ export function Message({ message }: MessageProps) {
         <User className="h-4 w-4" />
       )}
       <AlertTitle>{capitalizedRole}</AlertTitle>
-      <AlertDescription>{message.content}</AlertDescription>
+      <AlertDescription>
+        {message.status === "loading" ? (
+          <div className="flex items-center">
+            <div className="animate-pulse">Thinking...</div>
+            <Loader className="ml-2 h-4 w-4 animate-spin" />
+          </div>
+        ) : (
+          message.content
+        )}
+      </AlertDescription>
     </Alert>
   );
 }
