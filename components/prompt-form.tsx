@@ -6,6 +6,7 @@ import { getAssistantResponse } from "@/app/actions";
 import { v4 as uuid } from "uuid";
 import { Loader } from "lucide-react";
 import { AnimatedState } from "./ui/animate-state";
+import { minDelay } from "@/lib/min-delay";
 
 type PromptFormProps = {
   messages: ChatMessage[];
@@ -56,7 +57,10 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
     ]);
 
     // Get the assistant's response
-    const assistantResponse = await getAssistantResponse(userInput);
+    const assistantResponse = await minDelay(
+      getAssistantResponse(userInput),
+      500,
+    );
 
     // Update the assistant's message with the response
     setMessages((prev) =>
