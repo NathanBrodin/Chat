@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { v4 as uuid } from "uuid";
 import { PromptForm } from "@/components/prompt-form";
 import Link from "next/link";
+import { SideBar } from "@/components/side-bar";
 
 export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -18,7 +19,7 @@ export default function Home() {
   ]);
 
   return (
-    <main className="flex h-screen w-screen flex-col items-center bg-background text-foreground">
+    <main className="relative flex h-screen w-screen flex-col items-center bg-background text-foreground">
       <Conversation messages={messages} />
       <Separator />
       <div className="flex w-full justify-between p-4">
@@ -33,6 +34,9 @@ export default function Home() {
           <PromptForm messages={messages} setMessages={setMessages} />
         </div>
         <div />
+      </div>
+      <div className="absolute left-0 top-0 m-4">
+        <SideBar />
       </div>
     </main>
   );
