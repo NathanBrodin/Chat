@@ -164,7 +164,7 @@
   --border: 220 13% 91%;
   --input: 220 13% 91%;
   --primary: 137 45% 65%;
-  --primary-foreground: 137 45% 5%;
+  --primary-foreground: 137 45% 95%;
   --secondary: 137 12% 86%;
   --secondary-foreground: 137 12% 26%;
   --accent: 137 18% 76%;
@@ -209,7 +209,7 @@
   --border: 36 45% 60%;
   --input: 36 45% 60%;
   --primary: 36 45% 70%;
-  --primary-foreground: 36 45% 11%;
+  --primary-foreground: 36 45% 90%;
   --secondary: 40 35% 77%;
   --secondary-foreground: 36 45% 25%;
   --accent: 36 64% 57%;
@@ -221,10 +221,10 @@
 }
 
 .dark .theme-chocolate {
-  --background: 36 39% 88%;
-  --foreground: 36 45% 15%;
-  --primary: 36 45% 70%;
-  --primary-foreground: 36 45% 11%;
+  --background: 36 45% 11%;
+  --foreground: 36 45% 45%;
+  --primary: 36 45% 0%;
+  --primary-foreground: 36 45% 21%;
   --secondary: 40 35% 77%;
   --secondary-foreground: 36 45% 25%;
   --accent: 36 64% 57%;
