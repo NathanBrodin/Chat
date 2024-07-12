@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ChatMessage } from "@/lib/types";
 import { getAssistantResponse } from "@/app/actions";
 import { v4 as uuid } from "uuid";
 import { Loader } from "lucide-react";
 import { AnimatedState } from "./ui/animate-state";
 import { minDelay } from "@/lib/min-delay";
+import Textarea from "react-textarea-autosize";
+import { useEnterSubmit } from "@/hooks/use-enter-submit";
 
 type PromptFormProps = {
   messages: ChatMessage[];
@@ -15,34 +16,36 @@ type PromptFormProps = {
 
 export function PromptForm({ messages, setMessages }: PromptFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { formRef, onKeyDown } = useEnterSubmit();
+
+  const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     // Focus the input when the component mounts and after each message is sent
-    inputRef.current?.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, [messages]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const userInput = formData.get("input") as string;
 
-    if (!userInput.trim()) return;
+    const value = input.trim();
+    setInput("");
+    if (!value) return;
 
     setIsLoading(true);
 
     // Add user message to the state
-    const newUserMessage: ChatMessage = {
-      id: uuid(),
-      content: userInput,
-      role: "user",
-    };
-    setMessages((prev) => [...prev, newUserMessage]);
-
-    // Reset the form
-    form.reset();
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: uuid(),
+        content: value,
+        role: "user",
+      },
+    ]);
 
     // Add a placeholder assistant message
     const assistantMessageId = uuid();
@@ -57,10 +60,7 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
     ]);
 
     // Get the assistant's response
-    const assistantResponse = await minDelay(
-      getAssistantResponse(userInput),
-      500,
-    );
+    const assistantResponse = await minDelay(getAssistantResponse(value), 500);
 
     // Update the assistant's message with the response
     setMessages((prev) =>
@@ -77,17 +77,19 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
   return (
     <form
       ref={formRef}
-      className="flex w-full items-center space-x-2"
+      className="flex w-full items-end space-x-2"
       onSubmit={handleSubmit}
     >
-      <Input
+      <Textarea
         ref={inputRef}
-        type="text"
         name="input"
-        placeholder="How can the Nathan help you today?"
+        placeholder="How can Nathan's AI help you today?"
         autoComplete="off"
         disabled={isLoading}
-        className="w-96"
+        className="flex w-96 resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+        onKeyDown={onKeyDown}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
       />
       <Button type="submit" disabled={isLoading} className="w-32">
         <AnimatedState>
