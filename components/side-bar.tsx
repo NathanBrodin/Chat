@@ -1,7 +1,6 @@
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -12,7 +11,7 @@ import { ThemeCustomizer } from "./theme/theme-customizer";
 export function SideBar() {
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger aria-label="Sidebar">
         <PanelRight className="size-5 text-muted-foreground" />
       </SheetTrigger>
       <SheetContent side="left">
