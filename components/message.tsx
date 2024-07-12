@@ -4,12 +4,13 @@ import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import { Loader, Terminal, User } from "lucide-react";
+import { CopyButton } from "./copy-button";
 
-const messageVariants = cva("", {
+const messageVariants = cva("group", {
   variants: {
     variant: {
       user: "bg-primary-foreground",
-      assistant: "border-none",
+      assistant: "border-none pb-8",
     },
   },
   defaultVariants: {
@@ -33,8 +34,15 @@ export function Message({ message }: MessageProps) {
       ) : (
         <User className="h-4 w-4" />
       )}
-      <AlertTitle>{capitalizedRole}</AlertTitle>
-      <AlertDescription>
+      <AlertTitle className="relative">
+        {capitalizedRole}
+        <div className="absolute right-0 top-0">
+          {message.role === "assistant" && (
+            <CopyButton content={message.content} />
+          )}
+        </div>
+      </AlertTitle>
+      <AlertDescription className="mr-10">
         {message.status === "loading" ? (
           <div className="flex items-center">
             <div className="animate-pulse">Thinking...</div>
