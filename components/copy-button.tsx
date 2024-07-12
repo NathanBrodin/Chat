@@ -4,6 +4,7 @@ import { CheckIcon, CopyIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 interface CopyButtonProps {
   content: string;
@@ -11,17 +12,11 @@ interface CopyButtonProps {
 }
 
 export function CopyButton({ content, className }: CopyButtonProps) {
-  const [hasCopied, setHasCopied] = useState(false);
+  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 });
 
-  useEffect(() => {
-    setTimeout(() => {
-      setHasCopied(false);
-    }, 2000);
-  }, [hasCopied]);
-
-  function handleOnClick() {
-    navigator.clipboard.writeText(content);
-    setHasCopied(true);
+  function onCopy() {
+    if (isCopied) return;
+    copyToClipboard(content);
   }
 
   return (
@@ -30,15 +25,25 @@ export function CopyButton({ content, className }: CopyButtonProps) {
       variant="ghost"
       className={cn(
         className,
-        "op text-muted-foreground opacity-0 transition-all group-hover:opacity-100",
+        "text-muted-foreground opacity-0 transition-all group-hover:opacity-100",
       )}
-      onClick={handleOnClick}
+      onClick={onCopy}
     >
-      {hasCopied ? (
-        <CheckIcon className="size-4" />
-      ) : (
-        <CopyIcon className="size-4" />
-      )}
+      <CheckIcon
+        className="absolute left-0.5 top-0.5 size-4 translate-x-1/2 translate-y-1/2 transition-all"
+        style={{
+          strokeDasharray: 50,
+          strokeDashoffset: isCopied ? 0 : -50,
+        }}
+      />
+      <CopyIcon
+        className="absolute left-0.5 top-0.5 size-4 translate-x-1/2 translate-y-1/2 transition-all"
+        style={{
+          strokeDasharray: 50,
+          strokeDashoffset: isCopied ? -50 : 0,
+          opacity: isCopied ? 0 : 1,
+        }}
+      />
     </Button>
   );
 }
