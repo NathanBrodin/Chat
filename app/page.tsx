@@ -4,23 +4,22 @@ import { ChatMessage } from "@/lib/types";
 import { useState } from "react";
 import { Conversation } from "@/components/conversation";
 import { Separator } from "@/components/ui/separator";
-import { v4 as uuid } from "uuid";
 import { PromptForm } from "@/components/prompt-form";
 import Link from "next/link";
 import { SideBar } from "@/components/side-bar";
+import { EmptyConversation } from "@/components/empty-conversation";
+import { AnimatePresence } from "framer-motion";
 
 export default function Home() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: uuid(),
-      content: "Hello, what can I do for you?",
-      role: "assistant",
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   return (
     <main className="relative flex h-screen w-screen flex-col items-center bg-background text-foreground">
+      <AnimatePresence initial={false}>
+        {messages.length === 0 && <EmptyConversation />}
+      </AnimatePresence>
       <Conversation messages={messages} />
+
       <Separator />
       <div className="flex w-full justify-between p-4">
         <Link
