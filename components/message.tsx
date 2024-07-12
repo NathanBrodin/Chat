@@ -5,6 +5,8 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Loader, Terminal, User } from "lucide-react";
 import { CopyButton } from "./copy-button";
+import { MemoizedReactMarkdown } from "./markdown";
+import remarkGfm from "remark-gfm";
 
 const messageVariants = cva("group", {
   variants: {
@@ -49,7 +51,13 @@ export function Message({ message }: MessageProps) {
             <Loader className="ml-2 h-4 w-4 animate-spin" />
           </div>
         ) : (
-          message.content
+          <MemoizedReactMarkdown
+            // TODO: Implement components (cf https://github.com/vercel/ai-chatbot/blob/main/components/ui/codeblock.tsx, https://github.com/vercel/ai-chatbot/blob/main/components/chat-message.tsx)
+            className="prose prose-stone prose-sm dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 !max-w-none break-words"
+            remarkPlugins={[remarkGfm]}
+          >
+            {message.content}
+          </MemoizedReactMarkdown>
         )}
       </AlertDescription>
     </Alert>
