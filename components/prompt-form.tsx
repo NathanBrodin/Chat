@@ -1,8 +1,9 @@
+import { readStreamableValue } from "ai/rsc"
 import { Loader } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Textarea from "react-textarea-autosize"
 import { v4 as uuid } from "uuid"
-import { getAssistantResponse } from "@/app/actions"
+import { continueConversation } from "@/app/actions"
 import { Button } from "@/components/ui/button"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
 import { minDelay } from "@/lib/min-delay"
@@ -32,20 +33,14 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
     e.preventDefault()
 
     const value = input.trim()
-    setInput("")
     if (!value) return
 
-    setIsLoading(true)
-
     // Add user message to the state
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: uuid(),
-        content: value,
-        role: "user",
-      },
-    ])
+    const newMessages: ChatMessage[] = [...messages, { id: uuid(), content: value, role: "user" }]
+
+    setMessages(newMessages)
+    setInput("")
+    setIsLoading(true)
 
     // Add a placeholder assistant message
     const assistantMessageId = uuid()
@@ -59,13 +54,19 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
       },
     ])
 
-    // Get the assistant's response
-    const assistantResponse = await minDelay(getAssistantResponse(value), 500)
+    // Get the assistant's response, with a minimum delay of 500ms to prevent flickering
+    const result = await minDelay(continueConversation(newMessages), 500)
 
-    // Update the assistant's message with the response
-    setMessages((prev) =>
-      prev.map((msg) => (msg.id === assistantMessageId ? { ...assistantResponse, id: assistantMessageId } : msg))
-    )
+    for await (const content of readStreamableValue(result)) {
+      setMessages([
+        ...newMessages,
+        {
+          id: assistantMessageId,
+          role: "assistant",
+          content: content as string,
+        },
+      ])
+    }
 
     setIsLoading(false)
   }
