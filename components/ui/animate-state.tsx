@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion"
 
 const variants = {
   initial: { opacity: 0, y: -25 },
   visible: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 25 },
-};
+}
 
 export function AnimatedState({ children }: { children: React.ReactNode }) {
   return (
@@ -23,5 +23,5 @@ export function AnimatedState({ children }: { children: React.ReactNode }) {
         {children}
       </motion.div>
     </AnimatePresence>
-  );
+  )
 }

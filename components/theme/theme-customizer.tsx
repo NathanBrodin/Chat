@@ -1,34 +1,30 @@
-"use client";
+"use client"
 
-import { CheckIcon, MoonIcon, ResetIcon, SunIcon } from "@radix-ui/react-icons";
-import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
-import { useConfig } from "@/hooks/use-config";
-import { themes } from "@/registry/themes";
-import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { Skeleton } from "../ui/skeleton";
-import { Label } from "../ui/label";
+import { CheckIcon, MoonIcon, ResetIcon, SunIcon } from "@radix-ui/react-icons"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
+import { useConfig } from "@/hooks/use-config"
+import { cn } from "@/lib/utils"
+import { themes } from "@/registry/themes"
+import { Button } from "../ui/button"
+import { Label } from "../ui/label"
+import { Skeleton } from "../ui/skeleton"
 
 export function ThemeCustomizer() {
-  const [mounted, setMounted] = useState(false);
-  const { setTheme: setMode, resolvedTheme: mode } = useTheme();
-  const [config, setConfig] = useConfig();
+  const [mounted, setMounted] = useState(false)
+  const { setTheme: setMode, resolvedTheme: mode } = useTheme()
+  const [config, setConfig] = useConfig()
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   return (
     <div className="flex flex-col space-y-4 md:space-y-6">
       <div className="flex items-start pt-4 md:pt-0">
         <div className="space-y-1 pr-2">
-          <div className="font-semibold leading-none tracking-tight">
-            Customize
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Choose how you want the Interface to look.
-          </div>
+          <div className="font-semibold leading-none tracking-tight">Customize</div>
+          <div className="text-xs text-muted-foreground">Choose how you want the Interface to look.</div>
         </div>
         <Button
           variant="ghost"
@@ -39,7 +35,7 @@ export function ThemeCustomizer() {
               ...config,
               theme: "stone",
               radius: 0.5,
-            });
+            })
           }}
         >
           <ResetIcon />
@@ -51,7 +47,7 @@ export function ThemeCustomizer() {
           <Label className="text-xs">Color</Label>
           <div className="grid grid-cols-3 gap-2">
             {themes.map((theme) => {
-              const isActive = config.theme === theme.name;
+              const isActive = config.theme === theme.name
 
               return mounted ? (
                 <Button
@@ -62,23 +58,18 @@ export function ThemeCustomizer() {
                     setConfig({
                       ...config,
                       theme: theme.name,
-                    });
+                    })
                   }}
-                  className={cn(
-                    "justify-start",
-                    isActive && "border-2 border-primary",
-                  )}
+                  className={cn("justify-start", isActive && "border-2 border-primary")}
                   style={
                     {
-                      "--theme-primary": `hsl(${
-                        theme?.activeColor[mode === "dark" ? "dark" : "light"]
-                      })`,
+                      "--theme-primary": `hsl(${theme?.activeColor[mode === "dark" ? "dark" : "light"]})`,
                     } as React.CSSProperties
                   }
                 >
                   <span
                     className={cn(
-                      "mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]",
+                      "mr-1 flex h-5 w-5 shrink-0 -translate-x-1 items-center justify-center rounded-full bg-[--theme-primary]"
                     )}
                   >
                     {isActive && <CheckIcon className="h-4 w-4 text-white" />}
@@ -87,7 +78,7 @@ export function ThemeCustomizer() {
                 </Button>
               ) : (
                 <Skeleton className="h-8 w-full" key={theme.name} />
-              );
+              )
             })}
           </div>
         </div>
@@ -104,16 +95,13 @@ export function ThemeCustomizer() {
                     setConfig({
                       ...config,
                       radius: parseFloat(value),
-                    });
+                    })
                   }}
-                  className={cn(
-                    config.radius === parseFloat(value) &&
-                      "border-2 border-primary",
-                  )}
+                  className={cn(config.radius === parseFloat(value) && "border-2 border-primary")}
                 >
                   {value}
                 </Button>
-              );
+              )
             })}
           </div>
         </div>
@@ -151,5 +139,5 @@ export function ThemeCustomizer() {
         </div>
       </div>
     </div>
-  );
+  )
 }

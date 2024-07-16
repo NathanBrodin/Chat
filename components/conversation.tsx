@@ -1,28 +1,25 @@
-"use client";
+"use client"
 
-import { ChatMessage } from "@/lib/types";
-import { Message } from "./message";
-import { useEffect, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion"
+import { useEffect, useRef } from "react"
+import { ChatMessage } from "@/lib/types"
+import { Message } from "./message"
 
 type ConversationProps = {
-  messages: ChatMessage[];
-};
+  messages: ChatMessage[]
+}
 
 export function Conversation({ messages }: ConversationProps) {
-  const listRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
+      listRef.current.scrollTop = listRef.current.scrollHeight
     }
-  }, [messages]);
+  }, [messages])
 
   return (
-    <div
-      ref={listRef}
-      className="my-8 flex w-full flex-grow flex-col-reverse items-center overflow-auto px-2"
-    >
+    <div ref={listRef} className="my-8 flex w-full flex-grow flex-col-reverse items-center overflow-auto px-2">
       <div className="w-full max-w-7xl space-y-2">
         <AnimatePresence initial={false}>
           {messages.map((message) => (
@@ -41,5 +38,5 @@ export function Conversation({ messages }: ConversationProps) {
         </AnimatePresence>
       </div>
     </div>
-  );
+  )
 }

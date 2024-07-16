@@ -1,41 +1,41 @@
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ChatMessage } from "@/lib/types";
-import { getAssistantResponse } from "@/app/actions";
-import { v4 as uuid } from "uuid";
-import { Loader } from "lucide-react";
-import { AnimatedState } from "./ui/animate-state";
-import { minDelay } from "@/lib/min-delay";
-import Textarea from "react-textarea-autosize";
-import { useEnterSubmit } from "@/hooks/use-enter-submit";
+import { Loader } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import Textarea from "react-textarea-autosize"
+import { v4 as uuid } from "uuid"
+import { getAssistantResponse } from "@/app/actions"
+import { Button } from "@/components/ui/button"
+import { useEnterSubmit } from "@/hooks/use-enter-submit"
+import { minDelay } from "@/lib/min-delay"
+import { ChatMessage } from "@/lib/types"
+import { AnimatedState } from "./ui/animate-state"
 
 type PromptFormProps = {
-  messages: ChatMessage[];
-  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-};
+  messages: ChatMessage[]
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
+}
 
 export function PromptForm({ messages, setMessages }: PromptFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const { formRef, onKeyDown } = useEnterSubmit();
+  const [isLoading, setIsLoading] = useState(false)
+  const { formRef, onKeyDown } = useEnterSubmit()
 
-  const [input, setInput] = useState("");
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [input, setInput] = useState("")
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     // Focus the input when the component mounts and after each message is sent
     if (inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, [messages]);
+  }, [messages])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+    e.preventDefault()
 
-    const value = input.trim();
-    setInput("");
-    if (!value) return;
+    const value = input.trim()
+    setInput("")
+    if (!value) return
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     // Add user message to the state
     setMessages((prev) => [
@@ -45,10 +45,10 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
         content: value,
         role: "user",
       },
-    ]);
+    ])
 
     // Add a placeholder assistant message
-    const assistantMessageId = uuid();
+    const assistantMessageId = uuid()
     setMessages((prev) => [
       ...prev,
       {
@@ -57,29 +57,21 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
         role: "assistant",
         status: "loading",
       },
-    ]);
+    ])
 
     // Get the assistant's response
-    const assistantResponse = await minDelay(getAssistantResponse(value), 500);
+    const assistantResponse = await minDelay(getAssistantResponse(value), 500)
 
     // Update the assistant's message with the response
     setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === assistantMessageId
-          ? { ...assistantResponse, id: assistantMessageId }
-          : msg,
-      ),
-    );
+      prev.map((msg) => (msg.id === assistantMessageId ? { ...assistantResponse, id: assistantMessageId } : msg))
+    )
 
-    setIsLoading(false);
+    setIsLoading(false)
   }
 
   return (
-    <form
-      ref={formRef}
-      className="flex w-full items-end space-x-2"
-      onSubmit={handleSubmit}
-    >
+    <form ref={formRef} className="flex w-full items-end space-x-2" onSubmit={handleSubmit}>
       <Textarea
         ref={inputRef}
         name="input"
@@ -92,10 +84,8 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
         onChange={(e) => setInput(e.target.value)}
       />
       <Button type="submit" disabled={isLoading} className="w-32">
-        <AnimatedState>
-          {isLoading ? <Loader className="size-4 animate-spin" /> : "Send"}
-        </AnimatedState>
+        <AnimatedState>{isLoading ? <Loader className="size-4 animate-spin" /> : "Send"}</AnimatedState>
       </Button>
     </form>
-  );
+  )
 }

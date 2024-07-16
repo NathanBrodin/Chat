@@ -47,6 +47,6 @@ export const themes = [
       dark: "240 0% 90%",
     },
   },
-] as const;
+] as const
 
-export type Theme = (typeof themes)[number];
+export type Theme = (typeof themes)[number]

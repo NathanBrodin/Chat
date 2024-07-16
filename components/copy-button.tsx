@@ -1,31 +1,28 @@
-"use client";
+"use client"
 
-import { CheckIcon, CopyIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { CheckIcon, CopyIcon } from "lucide-react"
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
+import { cn } from "@/lib/utils"
+import { Button } from "./ui/button"
 
 interface CopyButtonProps {
-  content: string;
-  className?: string;
+  content: string
+  className?: string
 }
 
 export function CopyButton({ content, className }: CopyButtonProps) {
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 });
+  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
   function onCopy() {
-    if (isCopied) return;
-    copyToClipboard(content);
+    if (isCopied) return
+    copyToClipboard(content)
   }
 
   return (
     <Button
       size="icon"
       variant="ghost"
-      className={cn(
-        className,
-        "text-muted-foreground opacity-0 transition-all group-hover:opacity-100",
-      )}
+      className={cn(className, "text-muted-foreground opacity-0 transition-all group-hover:opacity-100")}
       onClick={onCopy}
     >
       <CheckIcon
@@ -44,5 +41,5 @@ export function CopyButton({ content, className }: CopyButtonProps) {
         }}
       />
     </Button>
-  );
+  )
 }

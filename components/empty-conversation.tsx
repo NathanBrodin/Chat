@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { IconNathansAI } from "./ui/icons";
+import { motion } from "framer-motion"
+import { IconNathansAI } from "./ui/icons"
 
 export function EmptyConversation() {
   return (
@@ -14,5 +14,5 @@ export function EmptyConversation() {
       <IconNathansAI className="size-12" />
       <h1 className="text-xl font-semibold">Nathan&apos;s AI</h1>
     </motion.div>
-  );
+  )
 }
