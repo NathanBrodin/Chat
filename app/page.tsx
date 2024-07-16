@@ -10,6 +10,10 @@ import { SideBar } from "@/components/side-bar"
 import { Separator } from "@/components/ui/separator"
 import { ChatMessage } from "@/lib/types"
 
+// Force the page to be dynamic and allow streaming responses up to 30 seconds
+export const dynamic = "force-dynamic"
+export const maxDuration = 30
+
 export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
 

@@ -1,8 +1,10 @@
-export type Role = "assistant" | "user"
+import { type CoreMessage } from "ai"
 
-export interface ChatMessage {
+/**
+A message that can be used in the `messages` field of a prompt.
+It can be a user message, an assistant message, or a tool message.
+ */
+export type ChatMessage = CoreMessage & {
   id: string
-  content: string
-  role: Role
   status?: "loading" | "complete"
 }
