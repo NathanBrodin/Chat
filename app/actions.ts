@@ -1,11 +1,9 @@
-"use server";
+"use server"
 
-import { ChatMessage } from "@/lib/types";
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from "uuid"
+import { ChatMessage } from "@/lib/types"
 
-export async function getAssistantResponse(
-  userInput: string,
-): Promise<ChatMessage> {
+export async function getAssistantResponse(userInput: string): Promise<ChatMessage> {
   return {
     id: uuid(),
     content: `
@@ -21,5 +19,5 @@ In conclusion, Nathan's AI is not as smart as you expected it to be.
     `,
     role: "assistant",
     status: "complete",
-  };
+  }
 }

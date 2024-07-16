@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
+import { GeistSans } from "geist/font/sans"
+import type { Metadata } from "next"
 
-import "./globals.css";
-import "../public/themes/themes.css";
-import { ThemeProvider } from "@/components/theme/theme-provider";
+import "./globals.css"
+import "../public/themes/themes.css"
+import { ThemeProvider } from "@/components/theme/theme-provider"
 
 export const metadata: Metadata = {
   title: "Nathan's AI",
@@ -22,25 +22,20 @@ export const metadata: Metadata = {
       },
     ],
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={GeistSans.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

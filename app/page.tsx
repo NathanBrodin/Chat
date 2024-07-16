@@ -1,32 +1,26 @@
-"use client";
+"use client"
 
-import { ChatMessage } from "@/lib/types";
-import { useState } from "react";
-import { Conversation } from "@/components/conversation";
-import { Separator } from "@/components/ui/separator";
-import { PromptForm } from "@/components/prompt-form";
-import Link from "next/link";
-import { SideBar } from "@/components/side-bar";
-import { EmptyConversation } from "@/components/empty-conversation";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion"
+import Link from "next/link"
+import { useState } from "react"
+import { Conversation } from "@/components/conversation"
+import { EmptyConversation } from "@/components/empty-conversation"
+import { PromptForm } from "@/components/prompt-form"
+import { SideBar } from "@/components/side-bar"
+import { Separator } from "@/components/ui/separator"
+import { ChatMessage } from "@/lib/types"
 
 export default function Home() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([])
 
   return (
     <main className="relative flex h-screen w-screen flex-col items-center bg-background text-foreground">
-      <AnimatePresence initial={false}>
-        {messages.length === 0 && <EmptyConversation />}
-      </AnimatePresence>
+      <AnimatePresence initial={false}>{messages.length === 0 && <EmptyConversation />}</AnimatePresence>
       <Conversation messages={messages} />
 
       <Separator />
       <div className="flex w-full justify-between p-4">
-        <Link
-          className="place-self-end text-xs text-muted-foreground"
-          href="https://brodin.dev"
-          target="_blank"
-        >
+        <Link className="place-self-end text-xs text-muted-foreground" href="https://brodin.dev" target="_blank">
           Nathan&apos;s AI
         </Link>
         <div className="py-4">
@@ -38,5 +32,5 @@ export default function Home() {
         <SideBar />
       </div>
     </main>
-  );
+  )
 }

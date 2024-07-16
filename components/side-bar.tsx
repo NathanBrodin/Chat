@@ -1,12 +1,6 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { PanelRight } from "lucide-react";
-import { ThemeCustomizer } from "./theme/theme-customizer";
+import { PanelRight } from "lucide-react"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { ThemeCustomizer } from "./theme/theme-customizer"
 
 export function SideBar() {
   return (
@@ -23,5 +17,5 @@ export function SideBar() {
         </SheetHeader>
       </SheetContent>
     </Sheet>
-  );
+  )
 }
