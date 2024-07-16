@@ -26,6 +26,11 @@ type MessageProps = {
 
 export function Message({ message }: MessageProps) {
   const variant = message.role
+
+  if (variant !== "user" && variant !== "assistant") {
+    throw new Error(`Invalid message role: ${variant}`)
+  }
+
   const capitalizedRole = message.role.charAt(0).toUpperCase() + message.role.slice(1)
 
   return (
@@ -34,7 +39,7 @@ export function Message({ message }: MessageProps) {
       <AlertTitle className="relative">
         {capitalizedRole}
         <div className="absolute right-0 top-0">
-          {message.role === "assistant" && <CopyButton content={message.content} />}
+          {message.role === "assistant" && <CopyButton content={message.content as string} />}
         </div>
       </AlertTitle>
       <AlertDescription className="mr-10">
@@ -49,7 +54,7 @@ export function Message({ message }: MessageProps) {
             className="prose prose-sm prose-stone !max-w-none break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
             remarkPlugins={[remarkGfm]}
           >
-            {message.content}
+            {message.content as string}
           </MemoizedReactMarkdown>
         )}
       </AlertDescription>
