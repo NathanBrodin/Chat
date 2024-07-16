@@ -13,9 +13,10 @@ import { AnimatedState } from "./ui/animate-state"
 type PromptFormProps = {
   messages: ChatMessage[]
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
+  ip?: string
 }
 
-export function PromptForm({ messages, setMessages }: PromptFormProps) {
+export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { formRef, onKeyDown } = useEnterSubmit()
 
@@ -55,7 +56,7 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
     ])
 
     // Get the assistant's response, with a minimum delay of 500ms to prevent flickering
-    const result = await minDelay(continueConversation(newMessages), 500)
+    const result = await minDelay(continueConversation(newMessages, ip), 500)
 
     for await (const content of readStreamableValue(result)) {
       setMessages([
