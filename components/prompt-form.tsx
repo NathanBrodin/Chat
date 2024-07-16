@@ -1,3 +1,5 @@
+"use client"
+
 import { readStreamableValue } from "ai/rsc"
 import { Loader } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
@@ -24,11 +26,11 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    // Focus the input when the component mounts and after each message is sent
+    // Focus the input when the component mounts
     if (inputRef.current) {
       inputRef.current.focus()
     }
-  }, [messages])
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -76,10 +78,11 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
     <form ref={formRef} className="flex w-full items-end space-x-2" onSubmit={handleSubmit}>
       <Textarea
         ref={inputRef}
+        tabIndex={0}
+        autoFocus
         name="input"
         placeholder="How can Nathan's AI help you today?"
         autoComplete="off"
-        disabled={isLoading}
         className="flex w-96 resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         onKeyDown={onKeyDown}
         value={input}
