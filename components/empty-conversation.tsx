@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { IconNathansAI } from "./ui/icons";
 
 export function EmptyConversation() {
