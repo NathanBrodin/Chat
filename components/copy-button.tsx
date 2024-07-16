@@ -22,7 +22,7 @@ export function CopyButton({ content, className }: CopyButtonProps) {
     <Button
       size="icon"
       variant="ghost"
-      className={cn(className, "text-muted-foreground opacity-0 transition-all group-hover:opacity-100")}
+      className={cn(className, "text-muted-foreground transition-all")}
       onClick={onCopy}
     >
       <CheckIcon
