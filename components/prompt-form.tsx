@@ -57,8 +57,11 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
       },
     ])
 
+    // Convert ChatMessage[] to CoreMessage[] by omitting the 'id' and 'status' property
+    const coreMessages = newMessages.map(({ id: _id, status: _status, ...rest }) => rest)
+
     // Get the assistant's response, with a minimum delay of 500ms to prevent flickering
-    const result = await minDelay(continueConversation(newMessages, ip), 100)
+    const result = await minDelay(continueConversation(coreMessages, ip), 100)
 
     for await (const content of readStreamableValue(result)) {
       setMessages([
