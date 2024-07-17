@@ -52,7 +52,7 @@
     "@types/react-dom": "^18",
     "@types/uuid": "^10.0.0",
     "eslint": "^9",
-    "eslint-config-next": "14.2.4",
+    "eslint-config-next": "14.2.5",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-import": "^2.29.1",
