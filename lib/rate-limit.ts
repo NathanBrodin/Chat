@@ -1,5 +1,5 @@
 import { Ratelimit } from "@upstash/ratelimit"
-import kv from "@vercel/kv"
+import { kv } from "@vercel/kv"
 
 // Create a new ratelimiter, that allows 10 requests per 2 minutes
 const ratelimit = new Ratelimit({
