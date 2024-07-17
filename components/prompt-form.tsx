@@ -58,7 +58,7 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
     ])
 
     // Get the assistant's response, with a minimum delay of 500ms to prevent flickering
-    const result = await minDelay(continueConversation(newMessages, ip), 500)
+    const result = await minDelay(continueConversation(newMessages, ip), 100)
 
     for await (const content of readStreamableValue(result)) {
       setMessages([
@@ -79,6 +79,7 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
       <Textarea
         ref={inputRef}
         tabIndex={0}
+        rows={1}
         autoFocus
         name="input"
         placeholder="How can Nathan's AI help you today?"
