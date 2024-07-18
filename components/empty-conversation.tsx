@@ -4,7 +4,7 @@ import { IconNathansAI } from "./ui/icons"
 export function EmptyConversation() {
   return (
     <motion.div
-      className="absolute inset-0 flex h-full w-full flex-col items-center justify-center gap-2"
+      className="pointer-events-none absolute inset-0 flex h-full w-full flex-col items-center justify-center gap-2"
       initial={{ opacity: 1 }}
       exit={{
         opacity: 0,
