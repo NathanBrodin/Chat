@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
 import { minDelay } from "@/lib/min-delay"
 import { ChatMessage } from "@/lib/types"
-import { cn } from "@/lib/utils"
 import { AnimatedState } from "./ui/animate-state"
 
 type PromptFormProps = {
@@ -99,12 +98,7 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
-      <Button
-        type="submit"
-        disabled={isLoading}
-        className={cn(width >= 640 && "w-32")}
-        size={width < 640 ? "icon" : "default"}
-      >
+      <Button type="submit" disabled={isLoading} size={width < 640 ? "icon" : "default"} className="sm:w-32">
         <AnimatedState>
           {isLoading ? (
             <Loader className="size-4 animate-spin" />
