@@ -1,15 +1,17 @@
 "use client"
 
 import { readStreamableValue } from "ai/rsc"
-import { Loader } from "lucide-react"
+import { CornerDownRight, Loader } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Textarea from "react-textarea-autosize"
+import { useWindowSize } from "usehooks-ts"
 import { v4 as uuid } from "uuid"
 import { continueConversation } from "@/app/actions"
 import { Button } from "@/components/ui/button"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
 import { minDelay } from "@/lib/min-delay"
 import { ChatMessage } from "@/lib/types"
+import { cn } from "@/lib/utils"
 import { AnimatedState } from "./ui/animate-state"
 
 type PromptFormProps = {
@@ -19,6 +21,7 @@ type PromptFormProps = {
 }
 
 export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
+  const { width = 0 } = useWindowSize()
   const [isLoading, setIsLoading] = useState(false)
   const { formRef, onKeyDown } = useEnterSubmit()
 
@@ -78,7 +81,11 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
   }
 
   return (
-    <form ref={formRef} className="flex w-full items-end space-x-2" onSubmit={handleSubmit}>
+    <form
+      ref={formRef}
+      className="flex w-full items-end justify-center space-x-2 py-1 sm:max-w-lg sm:py-4 md:max-w-xl"
+      onSubmit={handleSubmit}
+    >
       <Textarea
         ref={inputRef}
         tabIndex={0}
@@ -87,13 +94,27 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
         name="input"
         placeholder="How can Nathan's AI help you today?"
         autoComplete="off"
-        className="flex w-96 resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex w-full resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         onKeyDown={onKeyDown}
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
-      <Button type="submit" disabled={isLoading} className="w-32">
-        <AnimatedState>{isLoading ? <Loader className="size-4 animate-spin" /> : "Send"}</AnimatedState>
+      <Button
+        type="submit"
+        disabled={isLoading}
+        className={cn(width >= 640 && "w-32")}
+        size={width < 640 ? "icon" : "default"}
+      >
+        <AnimatedState>
+          {isLoading ? (
+            <Loader className="size-4 animate-spin" />
+          ) : (
+            <>
+              <p className="hidden sm:block">Send</p>
+              <CornerDownRight className="block size-4 sm:hidden" />
+            </>
+          )}
+        </AnimatedState>
       </Button>
     </form>
   )
