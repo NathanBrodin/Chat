@@ -19,7 +19,10 @@ export function Conversation({ messages }: ConversationProps) {
   }, [messages])
 
   return (
-    <div ref={listRef} className="my-8 flex w-full flex-grow flex-col-reverse items-center overflow-auto px-2">
+    <div
+      ref={listRef}
+      className="flex w-full flex-grow flex-col-reverse items-center overflow-auto px-2 py-2 pt-10 sm:my-4"
+    >
       <div className="w-full max-w-7xl space-y-2">
         <AnimatePresence initial={false}>
           {messages.map((message) => (

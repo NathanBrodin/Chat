@@ -11,7 +11,7 @@ export default function Home() {
 
   return (
     <main className="flex h-screen w-screen bg-background text-foreground">
-      <Chat />
+      <Chat ip={ip} />
     </main>
   )
 }

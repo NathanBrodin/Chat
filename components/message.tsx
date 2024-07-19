@@ -12,7 +12,7 @@ const messageVariants = cva("group/message", {
   variants: {
     variant: {
       user: "bg-primary-foreground",
-      assistant: "border-none pb-8",
+      assistant: "border-none pb-2 sm:pb-8",
     },
   },
   defaultVariants: {

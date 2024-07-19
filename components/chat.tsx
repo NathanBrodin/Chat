@@ -23,13 +23,15 @@ export default function Chat({ ip }: ChatProps) {
       <Conversation messages={messages} />
 
       <Separator />
-      <div className="flex w-full justify-between p-4">
-        <Link className="place-self-end text-xs text-muted-foreground" href="https://brodin.dev" target="_blank">
+      <div className="flex w-full justify-between p-1 sm:p-4">
+        <Link
+          className="hidden place-self-end text-xs text-muted-foreground sm:block"
+          href="https://brodin.dev"
+          target="_blank"
+        >
           Nathan&apos;s AI
         </Link>
-        <div className="py-4">
-          <PromptForm messages={messages} setMessages={setMessages} ip={ip} />
-        </div>
+        <PromptForm messages={messages} setMessages={setMessages} ip={ip} />
         <div />
       </div>
       <div className="absolute left-0 top-0 m-4">
