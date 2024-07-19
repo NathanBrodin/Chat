@@ -1,6 +1,5 @@
-"use client"
-
 import { AnimatePresence, motion } from "framer-motion"
+import React from "react"
 
 const variants = {
   initial: { opacity: 0, y: -25 },
@@ -9,6 +8,13 @@ const variants = {
 }
 
 export function AnimatedState({ children }: { children: React.ReactNode }) {
+  const getKey = (): string => {
+    if (React.isValidElement(children)) {
+      return children.type.toString()
+    }
+    return children?.toString() ?? ""
+  }
+
   return (
     <AnimatePresence mode="popLayout" initial={false}>
       <motion.div
@@ -17,7 +23,7 @@ export function AnimatedState({ children }: { children: React.ReactNode }) {
         exit="exit"
         variants={variants}
         transition={{ type: "spring", duration: 0.3, bounce: 0 }}
-        key={children?.toLocaleString()}
+        key={getKey()}
         className="flex w-full items-center justify-center"
       >
         {children}
