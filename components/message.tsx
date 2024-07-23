@@ -3,7 +3,7 @@ import { Loader, Terminal, User } from "lucide-react"
 import remarkGfm from "remark-gfm"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CodeBlock, Pre } from "@/components/ui/code"
-import { ChatMessage } from "@/lib/types"
+import { ChatMessage } from "@/lib/chat/types"
 import { cn } from "@/lib/utils"
 import { CopyButton } from "./copy-button"
 import { MemoizedReactMarkdown } from "./markdown"
@@ -40,7 +40,7 @@ export function Message({ message }: MessageProps) {
         {capitalizedRole}
         <div className="absolute right-0 top-0">
           {message.role === "assistant" && (
-            <CopyButton content={message.content as string} className="opacity-0 group-hover/message:opacity-100" />
+            <CopyButton content={message.display as string} className="opacity-0 group-hover/message:opacity-100" />
           )}
         </div>
       </AlertTitle>
@@ -56,7 +56,7 @@ export function Message({ message }: MessageProps) {
             remarkPlugins={[remarkGfm]}
             components={{ code: CodeBlock, pre: Pre }}
           >
-            {message.content as string}
+            {message.display as string}
           </MemoizedReactMarkdown>
         )}
       </AlertDescription>

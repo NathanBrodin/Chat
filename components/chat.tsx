@@ -1,21 +1,21 @@
 "use client"
 
+import { useUIState } from "ai/rsc"
 import { AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { useState } from "react"
 import { Conversation } from "@/components/conversation"
 import { EmptyConversation } from "@/components/empty-conversation"
 import { PromptForm } from "@/components/prompt-form"
 import { SideBar } from "@/components/side-bar"
 import { Separator } from "@/components/ui/separator"
-import { ChatMessage } from "@/lib/types"
+import { AI } from "@/lib/chat/actions"
 
 type ChatProps = {
   ip?: string
 }
 
 export default function Chat({ ip }: ChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [messages, setMessages] = useUIState<typeof AI>()
 
   return (
     <div className="relative flex h-full w-full flex-col items-center">
