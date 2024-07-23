@@ -1,5 +1,6 @@
 import { headers } from "next/headers"
 import Chat from "@/components/chat"
+import { AI } from "@/lib/chat/actions"
 
 // Force the page to be dynamic and allow streaming responses up to 30 seconds
 export const dynamic = "force-dynamic"
@@ -11,7 +12,9 @@ export default function Home() {
 
   return (
     <main className="flex h-screen w-screen bg-background text-foreground">
-      <Chat ip={ip} />
+      <AI>
+        <Chat ip={ip} />
+      </AI>
     </main>
   )
 }

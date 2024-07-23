@@ -2,11 +2,11 @@
 
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useRef } from "react"
-import { ChatMessage } from "@/lib/types"
+import { UIState } from "@/lib/chat/types"
 import { Message } from "./message"
 
 type ConversationProps = {
-  messages: ChatMessage[]
+  messages: UIState
 }
 
 export function Conversation({ messages }: ConversationProps) {

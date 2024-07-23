@@ -41,8 +41,7 @@
     "remark-gfm": "^4.0.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "usehooks-ts": "^3.1.0",
-    "uuid": "^10.0.0"
+    "usehooks-ts": "^3.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
@@ -51,7 +50,6 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@types/uuid": "^10.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "eslint-config-prettier": "^9.1.0",

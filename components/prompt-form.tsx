@@ -1,21 +1,20 @@
 "use client"
 
-import { readStreamableValue } from "ai/rsc"
+import { generateId } from "ai"
+import { readStreamableValue, StreamableValue, useActions } from "ai/rsc"
 import { CornerDownRight, Loader } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Textarea from "react-textarea-autosize"
 import { useWindowSize } from "usehooks-ts"
-import { v4 as uuid } from "uuid"
-import { continueConversation } from "@/app/actions"
 import { Button } from "@/components/ui/button"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
+import { UIState } from "@/lib/chat/types"
 import { minDelay } from "@/lib/min-delay"
-import { ChatMessage } from "@/lib/types"
 import { AnimatedState } from "./ui/animate-state"
 
 type PromptFormProps = {
-  messages: ChatMessage[]
-  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
+  messages: UIState
+  setMessages: (v: UIState | ((v_: UIState) => UIState)) => void
   ip?: string
 }
 
@@ -26,6 +25,9 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
 
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  // TODO: Implement type safety
+  const { continueConversation } = useActions()
 
   useEffect(() => {
     // Focus the input when the component mounts
@@ -41,29 +43,26 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
     if (!value) return
 
     // Add user message to the state
-    const newMessages: ChatMessage[] = [...messages, { id: uuid(), content: value, role: "user" }]
+    const newMessages: UIState = [...messages, { id: generateId(), display: value, role: "user" }]
 
     setMessages(newMessages)
     setInput("")
     setIsLoading(true)
 
     // Add a placeholder assistant message
-    const assistantMessageId = uuid()
+    const assistantMessageId = generateId()
     setMessages((prev) => [
       ...prev,
       {
         id: assistantMessageId,
-        content: "",
+        display: "",
         role: "assistant",
         status: "loading",
       },
     ])
 
-    // Convert ChatMessage[] to CoreMessage[] by omitting the 'id' and 'status' property
-    const coreMessages = newMessages.map(({ id: _id, status: _status, ...rest }) => rest)
-
     // Get the assistant's response, with a minimum delay of 500ms to prevent flickering
-    const result = await minDelay(continueConversation(coreMessages, ip), 100)
+    const result = (await minDelay(continueConversation(value, ip), 100)) as StreamableValue<string, any>
 
     for await (const content of readStreamableValue(result)) {
       setMessages([
@@ -71,7 +70,7 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
         {
           id: assistantMessageId,
           role: "assistant",
-          content: content as string,
+          display: content as string,
         },
       ])
     }
