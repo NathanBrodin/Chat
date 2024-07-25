@@ -9,16 +9,14 @@ import { useWindowSize } from "usehooks-ts"
 import { Button } from "@/components/ui/button"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
 import { UIState } from "@/lib/chat/types"
-import { minDelay } from "@/lib/min-delay"
 import { AnimatedState } from "./ui/animate-state"
 
 type PromptFormProps = {
   messages: UIState
   setMessages: (v: UIState | ((v_: UIState) => UIState)) => void
-  ip?: string
 }
 
-export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
+export function PromptForm({ messages, setMessages }: PromptFormProps) {
   const { width = 0 } = useWindowSize()
   const [isLoading, setIsLoading] = useState(false)
   const { formRef, onKeyDown } = useEnterSubmit()
@@ -61,8 +59,8 @@ export function PromptForm({ messages, setMessages, ip }: PromptFormProps) {
       },
     ])
 
-    // Get the assistant's response, with a minimum delay of 500ms to prevent flickering
-    const result = (await minDelay(continueConversation(value, ip), 100)) as StreamableValue<string, any>
+    // Get the assistant's response
+    const result = (await continueConversation(value)) as StreamableValue<string, any>
 
     for await (const content of readStreamableValue(result)) {
       setMessages([

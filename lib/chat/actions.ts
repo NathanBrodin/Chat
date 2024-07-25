@@ -1,13 +1,20 @@
-"use server"
+import "server-only"
 
 import { anthropic } from "@ai-sdk/anthropic"
 import { streamText } from "ai"
 import { createAI, createStreamableValue, getMutableAIState } from "ai/rsc"
+import { headers } from "next/headers"
 import { AIState, UIState } from "./types"
 import { rateLimit } from "../rate-limit"
 
-export async function continueConversation(input: string, ip?: string) {
-  const { success } = await rateLimit(ip || "unknown")
+export async function continueConversation(input: string) {
+  "use server"
+
+  // Implement rate limit based on the request's IP
+  const header = headers()
+  const ip = (header.get("x-forwarded-for") ?? "127.0.0.2").split(",")[0]
+
+  const { success } = await rateLimit(ip)
   if (!success) {
     throw new Error("Rate limit exceeded")
   }
