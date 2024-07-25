@@ -1,6 +1,7 @@
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { GeistSans } from "geist/font/sans"
 import type { Metadata } from "next"
-
 import "./globals.css"
 import "../public/themes/themes.css"
 import { ThemeProvider } from "@/components/theme/theme-provider"
@@ -35,6 +36,8 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
