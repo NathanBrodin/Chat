@@ -20,6 +20,10 @@ export async function continueConversation(input: string, ip?: string) {
   const result = await streamText({
     model: anthropic("claude-3-haiku-20240307"),
     messages: history.get(),
+    onFinish({ text }) {
+      // Update the AI state with the new assistant message.
+      history.done([...history.get(), { role: "assistant", content: text }])
+    },
   })
 
   const stream = createStreamableValue(result.textStream)
