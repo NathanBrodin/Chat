@@ -1,12 +1,13 @@
 "use client"
 
 import { generateId } from "ai"
-import { readStreamableValue, StreamableValue, useActions } from "ai/rsc"
+import { readStreamableValue } from "ai/rsc"
 import { CornerDownRight, Loader } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Textarea from "react-textarea-autosize"
 import { useWindowSize } from "usehooks-ts"
 import { Button } from "@/components/ui/button"
+import { useActions } from "@/hooks/use-ai"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
 import { UIState } from "@/lib/chat/types"
 import { AnimatedState } from "./ui/animate-state"
@@ -60,7 +61,7 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
     ])
 
     // Get the assistant's response
-    const result = (await continueConversation(value)) as StreamableValue<string, any>
+    const result = await continueConversation(value)
 
     for await (const content of readStreamableValue(result)) {
       setMessages([
