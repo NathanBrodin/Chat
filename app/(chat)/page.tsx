@@ -11,7 +11,7 @@ export default function Home() {
   const ip = (header.get("x-forwarded-for") ?? "127.0.0.1").split(",")[0]
 
   return (
-    <main className="flex h-screen w-screen bg-background text-foreground">
+    <main className="flex h-[100dvh] w-screen bg-background text-foreground">
       <AI>
         <Chat ip={ip} />
       </AI>
