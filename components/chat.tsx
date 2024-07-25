@@ -1,6 +1,5 @@
 "use client"
 
-import { useUIState } from "ai/rsc"
 import { AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { Conversation } from "@/components/conversation"
@@ -8,10 +7,10 @@ import { EmptyConversation } from "@/components/empty-conversation"
 import { PromptForm } from "@/components/prompt-form"
 import { SideBar } from "@/components/side-bar"
 import { Separator } from "@/components/ui/separator"
-import { AI } from "@/lib/chat/actions"
+import { useUIState } from "@/hooks/use-ai"
 
 export default function Chat() {
-  const [messages, setMessages] = useUIState<typeof AI>()
+  const [messages, setMessages] = useUIState()
 
   return (
     <div className="relative flex h-full w-full flex-col items-center">
