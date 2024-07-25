@@ -11,10 +11,10 @@ export function SideBar() {
       <SheetContent side="left">
         <SheetHeader>
           <SheetTitle>Nathan&apos;s AI</SheetTitle>
-          <div className="text-sm text-muted-foreground">
-            <ThemeCustomizer />
-          </div>
         </SheetHeader>
+        <div className="text-sm text-muted-foreground">
+          <ThemeCustomizer />
+        </div>
       </SheetContent>
     </Sheet>
   )
