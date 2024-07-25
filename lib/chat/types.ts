@@ -10,9 +10,6 @@ export type ChatMessage = {
   id: string
   role: "user" | "assistant"
   display: ReactNode
-  /**
-   * @deprecated Status is deprecated and I will removed in future versions, where UI streaming will be enabled
-   */
   status?: "loading" | "complete"
 }
 

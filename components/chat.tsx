@@ -10,11 +10,7 @@ import { SideBar } from "@/components/side-bar"
 import { Separator } from "@/components/ui/separator"
 import { AI } from "@/lib/chat/actions"
 
-type ChatProps = {
-  ip?: string
-}
-
-export default function Chat({ ip }: ChatProps) {
+export default function Chat() {
   const [messages, setMessages] = useUIState<typeof AI>()
 
   return (
@@ -31,7 +27,7 @@ export default function Chat({ ip }: ChatProps) {
         >
           Nathan&apos;s AI
         </Link>
-        <PromptForm messages={messages} setMessages={setMessages} ip={ip} />
+        <PromptForm messages={messages} setMessages={setMessages} />
         <div />
       </div>
       <div className="absolute left-0 top-0 m-4">
