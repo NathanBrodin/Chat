@@ -11,7 +11,6 @@ export type ChatMessage = {
   id: string
   role: "user" | "assistant"
   display: ReactNode
-  status?: "loading" | "complete"
 }
 
 export type AIState = ServerMessage[]

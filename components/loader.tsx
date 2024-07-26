@@ -4,7 +4,7 @@ type LoaderProps = {
   content?: string
 }
 
-export default function Loader({ content = "Thinking..." }: LoaderProps) {
+export function Loader({ content = "Thinking..." }: LoaderProps) {
   return (
     <div className="flex items-center">
       <div className="animate-pulse">{content}</div>
