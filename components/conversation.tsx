@@ -21,8 +21,9 @@ export function Conversation({ messages }: ConversationProps) {
   return (
     <div
       ref={listRef}
-      className="flex w-full flex-grow flex-col-reverse items-center overflow-auto px-2 py-2 pt-10 sm:my-4"
+      className="relative flex w-full flex-grow flex-col-reverse items-center overflow-auto px-2 py-2 pt-10 sm:my-4"
     >
+      <div className="fixed inset-0 z-10 h-[120px] w-full bg-gradient-to-b from-background to-transparent" />
       <div className="w-full max-w-7xl space-y-2">
         <AnimatePresence initial={false}>
           {messages.map((message) => (
