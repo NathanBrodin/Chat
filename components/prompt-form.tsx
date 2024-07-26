@@ -2,7 +2,7 @@
 
 import { generateId } from "ai"
 import { readStreamableValue } from "ai/rsc"
-import { CornerDownRight, Loader } from "lucide-react"
+import { CornerDownRight, LoaderIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Textarea from "react-textarea-autosize"
 import { useWindowSize } from "usehooks-ts"
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button"
 import { useActions } from "@/hooks/use-ai"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
 import { UIState } from "@/lib/chat/types"
+import { Content } from "./content"
+import { Loader } from "./loader"
 import { AnimatedState } from "./ui/animate-state"
 
 type PromptFormProps = {
@@ -54,9 +56,8 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
       ...prev,
       {
         id: assistantMessageId,
-        display: "",
+        display: <Loader />,
         role: "assistant",
-        status: "loading",
       },
     ])
 
@@ -69,7 +70,7 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
         {
           id: assistantMessageId,
           role: "assistant",
-          display: content as string,
+          display: <Content content={content as string} />,
         },
       ])
     }
@@ -99,7 +100,7 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
       <Button type="submit" disabled={isLoading} size={width < 640 ? "icon" : "default"} className="sm:w-32">
         <AnimatedState>
           {isLoading ? (
-            <Loader className="size-4 animate-spin" />
+            <LoaderIcon className="size-4 animate-spin" />
           ) : (
             <>
               <p className="hidden sm:block">Send</p>
