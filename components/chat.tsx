@@ -29,7 +29,7 @@ export default function Chat() {
         <PromptForm messages={messages} setMessages={setMessages} />
         <div />
       </div>
-      <div className="absolute left-0 top-0 m-4">
+      <div className="absolute left-0 top-0 z-20 m-4">
         <SideBar />
       </div>
     </div>
