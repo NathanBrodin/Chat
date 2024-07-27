@@ -4,7 +4,13 @@ import { GeistSans } from "geist/font/sans"
 import type { Metadata } from "next"
 import "./globals.css"
 import "../public/themes/themes.css"
+import localFont from "next/font/local"
 import { ThemeProvider } from "@/components/theme/theme-provider"
+
+const CalSans = localFont({
+  src: "../public/fonts/CalSans-SemiBold.woff2",
+  variable: "--font-calsans",
+})
 
 export const metadata: Metadata = {
   title: "Nathan's AI",
@@ -32,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={GeistSans.className}>
+      <body className={[GeistSans.variable, CalSans.variable].join(" ")}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>
