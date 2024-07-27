@@ -1,34 +1,24 @@
 "use client"
 
-import { generateId } from "ai"
-import { readStreamableValue } from "ai/rsc"
 import { CornerDownRight, LoaderIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Textarea from "react-textarea-autosize"
 import { useWindowSize } from "usehooks-ts"
 import { Button } from "@/components/ui/button"
-import { useActions } from "@/hooks/use-ai"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
-import { UIState } from "@/lib/chat/types"
-import { Content } from "./content"
-import { Loader } from "./loader"
 import { AnimatedState } from "./ui/animate-state"
 
 type PromptFormProps = {
-  messages: UIState
-  setMessages: (v: UIState | ((v_: UIState) => UIState)) => void
+  addMessage: (input: string) => Promise<void>
+  isLoading: boolean
 }
 
-export function PromptForm({ messages, setMessages }: PromptFormProps) {
+export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
   const { width = 0 } = useWindowSize()
-  const [isLoading, setIsLoading] = useState(false)
   const { formRef, onKeyDown } = useEnterSubmit()
 
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
-
-  // TODO: Implement type safety
-  const { continueConversation } = useActions()
 
   useEffect(() => {
     // Focus the input when the component mounts
@@ -40,42 +30,8 @@ export function PromptForm({ messages, setMessages }: PromptFormProps) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const value = input.trim()
-    if (!value) return
-
-    // Add user message to the state
-    const newMessages: UIState = [...messages, { id: generateId(), display: value, role: "user" }]
-
-    setMessages(newMessages)
     setInput("")
-    setIsLoading(true)
-
-    // Add a placeholder assistant message
-    const assistantMessageId = generateId()
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: assistantMessageId,
-        display: <Loader />,
-        role: "assistant",
-      },
-    ])
-
-    // Get the assistant's response
-    const result = await continueConversation(value)
-
-    for await (const content of readStreamableValue(result)) {
-      setMessages([
-        ...newMessages,
-        {
-          id: assistantMessageId,
-          role: "assistant",
-          display: <Content content={content as string} />,
-        },
-      ])
-    }
-
-    setIsLoading(false)
+    await addMessage(input)
   }
 
   return (
