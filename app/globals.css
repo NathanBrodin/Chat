@@ -74,3 +74,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+.text-shadow-primary {
+  color: hsl(var(--primary));
+  text-shadow: 0 2px 0 #c6c6c6;
+}
+
+.dark .text-shadow-primary {
+  text-shadow: 0 2px 0 #494949;
+}
+
+.text-shadow-accent {
+  --text-border-width: 2px;
+  -webkit-text-fill-color: hsl(var(--background));
+  -webkit-text-stroke-width: var(--text-border-width);
+  -webkit-text-stroke-color: hsl(var(--foreground));
+  text-shadow: 0 2px 0 #141414;
+}
+
+.dark .text-shadow-accent {
+  text-shadow: 0 2px 0 #f7f7f7;
+}

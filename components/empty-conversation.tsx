@@ -12,7 +12,11 @@ export function EmptyConversation() {
       transition={{ ease: [0.32, 0.72, 0, 1], duration: 0.3 }}
     >
       <IconNathansAI className="size-12" />
-      <h1 className="text-xl font-semibold">Nathan&apos;s AI</h1>
+      <h1 className="font-display text-5xl font-semibold">
+        <span className="text-shadow-primary">Nathan&apos;s</span>
+        {` `}
+        <span className="text-shadow-accent text-gray-50">AI.</span>
+      </h1>
     </motion.div>
   )
 }
