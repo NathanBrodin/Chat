@@ -59,10 +59,10 @@ export default function Chat() {
 
   return (
     <div className="relative flex h-full w-full flex-col items-center">
-      <AnimatePresence initial={false}>
+      <AnimatePresence initial={false} mode="wait">
         {messages.length === 0 && <EmptyConversation addMessage={addMessage} />}
+        <Conversation messages={messages} />
       </AnimatePresence>
-      <Conversation messages={messages} />
       <Separator />
       <div className="flex w-full justify-between p-1 sm:p-4">
         <Link
