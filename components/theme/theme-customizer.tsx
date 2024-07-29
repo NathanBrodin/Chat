@@ -33,7 +33,7 @@ export function ThemeCustomizer() {
           onClick={() => {
             setConfig({
               ...config,
-              theme: "stone",
+              theme: "midnight",
               radius: 0.5,
             })
           }}
