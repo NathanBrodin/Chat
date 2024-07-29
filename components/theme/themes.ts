@@ -1,18 +1,18 @@
 export const themes = [
   {
-    name: "stone",
-    label: "Stone",
-    activeColor: {
-      light: "25 5.3% 44.7%",
-      dark: "33.3 5.5% 32.4%",
-    },
-  },
-  {
     name: "midnight",
     label: "Midnight",
     activeColor: {
       light: "220.47 98.26% 36.08%",
-      dark: "0 0% 82.75%",
+      dark: "225.45 71.22% 72.75%",
+    },
+  },
+  {
+    name: "stone",
+    label: "Stone",
+    activeColor: {
+      light: "24 9.8% 10%",
+      dark: "60 9.1% 97.8%",
     },
   },
   {
@@ -32,19 +32,19 @@ export const themes = [
     },
   },
   {
-    name: "chocolate",
-    label: "Chocolate",
+    name: "coffee",
+    label: "Coffee",
     activeColor: {
-      light: "36 45% 70%",
-      dark: "36 45% 70%",
+      light: "16.27 21.6% 32.26%",
+      dark: "29.51 100% 88.04%",
     },
   },
   {
-    name: "rain",
-    label: "Rain",
+    name: "club",
+    label: "Club",
     activeColor: {
-      light: "240 0% 90%",
-      dark: "240 0% 90%",
+      light: "0 51.85% 57.65%",
+      dark: "243 46% 19%",
     },
   },
 ] as const

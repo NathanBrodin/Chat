@@ -9,7 +9,7 @@ type Config = {
 }
 
 const configAtom = atomWithStorage<Config>("config", {
-  theme: "stone",
+  theme: "midnight",
   radius: 0.5,
 })
 
