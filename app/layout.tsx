@@ -6,6 +6,7 @@ import "./globals.css"
 import "../public/themes/themes.css"
 import localFont from "next/font/local"
 import { ThemeProvider } from "@/components/theme/theme-provider"
+import { siteConfig } from "@/config/site-config"
 
 const CalSans = localFont({
   src: "../public/fonts/CalSans-SemiBold.woff2",
@@ -13,8 +14,32 @@ const CalSans = localFont({
 })
 
 export const metadata: Metadata = {
-  title: "Nathan's AI",
-  description: "Nathan is here to help you with anything!",
+  title: siteConfig.title,
+  description: siteConfig.description,
+  creator: siteConfig.name,
+  authors: [
+    {
+      name: siteConfig.name,
+      url: new URL(siteConfig.authorUrl),
+    },
+  ],
+  applicationName: siteConfig.title,
+  metadataBase: new URL(siteConfig.url),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: new URL(siteConfig.url),
+    title: siteConfig.title,
+    description: siteConfig.description,
+    siteName: siteConfig.title,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    creator: siteConfig.twitterHandle,
+  },
+  keywords: siteConfig.keywords,
   icons: {
     icon: [
       {
