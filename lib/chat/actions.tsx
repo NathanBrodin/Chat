@@ -2,12 +2,14 @@ import "server-only"
 
 import { anthropic } from "@ai-sdk/anthropic"
 import { streamText } from "ai"
-import { createAI, createStreamableValue, getMutableAIState, StreamableValue } from "ai/rsc"
+import { createAI, createStreamableValue, getMutableAIState } from "ai/rsc"
 import { headers } from "next/headers"
+import { ReactNode } from "react"
+import { Content } from "@/components/content"
 import { AIActions, AIState, UIState } from "./types"
 import { rateLimit } from "../rate-limit"
 
-export async function continueConversation(input: string): Promise<StreamableValue<string, any>> {
+export async function continueConversation(input: string): Promise<ReactNode> {
   "use server"
 
   // Implement rate limit based on the request's IP
@@ -34,7 +36,7 @@ export async function continueConversation(input: string): Promise<StreamableVal
   })
 
   const stream = createStreamableValue(result.textStream)
-  return stream.value
+  return <Content content={stream.value} />
 }
 
 // Create the AI provider with the initial states and allowed actions
