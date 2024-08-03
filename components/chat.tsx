@@ -1,7 +1,6 @@
 "use client"
 
 import { generateId } from "ai"
-import { readStreamableValue } from "ai/rsc"
 import { AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { useState } from "react"
@@ -11,7 +10,6 @@ import { PromptForm } from "@/components/prompt-form"
 import { Separator } from "@/components/ui/separator"
 import { useActions, useUIState } from "@/hooks/use-ai"
 import { UIState } from "@/lib/chat/types"
-import { Content } from "./content"
 import { Loader } from "./loader"
 
 export default function Chat() {
@@ -43,16 +41,14 @@ export default function Chat() {
     // Get the assistant's response
     const result = await continueConversation(value)
 
-    for await (const content of readStreamableValue(result)) {
-      setMessages([
-        ...newMessages,
-        {
-          id: assistantMessageId,
-          role: "assistant",
-          display: <Content content={content as string} />,
-        },
-      ])
-    }
+    setMessages([
+      ...newMessages,
+      {
+        id: assistantMessageId,
+        role: "assistant",
+        display: result,
+      },
+    ])
 
     setIsLoading(false)
   }
