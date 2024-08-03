@@ -1,8 +1,7 @@
 import "server-only"
 
 import { anthropic } from "@ai-sdk/anthropic"
-import { streamText } from "ai"
-import { createAI, createStreamableValue, getMutableAIState } from "ai/rsc"
+import { createAI, createStreamableValue, getMutableAIState, streamUI } from "ai/rsc"
 import { headers } from "next/headers"
 import { ReactNode } from "react"
 import { Content } from "@/components/content"
@@ -26,17 +25,25 @@ export async function continueConversation(input: string): Promise<ReactNode> {
   // Update the AI state with the new user message.
   history.update([...history.get(), { role: "user", content: input }])
 
-  const result = await streamText({
+  let stream = createStreamableValue("")
+  let node = <Content content={stream.value} />
+
+  const result = await streamUI({
     model: anthropic("claude-3-haiku-20240307"),
     messages: history.get(),
-    onFinish({ text }) {
-      // Update the AI state with the new assistant message.
-      history.done([...history.get(), { role: "assistant", content: text }])
+    text: ({ content, done }) => {
+      if (done) {
+        stream.done()
+        history.done([...history.get(), { role: "assistant", content }])
+      } else {
+        stream.update(content)
+      }
+
+      return node
     },
   })
 
-  const stream = createStreamableValue(result.textStream)
-  return <Content content={stream.value} />
+  return result.value
 }
 
 // Create the AI provider with the initial states and allowed actions
