@@ -13,7 +13,6 @@ type PageProps = {
 
 export default function Home({ searchParams }: PageProps) {
   const location = searchParamsToGeo(searchParams)
-
   console.log(location)
 
   return (
