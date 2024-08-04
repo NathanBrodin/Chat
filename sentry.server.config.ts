@@ -2,7 +2,7 @@
 // The config you add here will be used whenever the server handles a request.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from "@sentry/nextjs"
 
 Sentry.init({
   dsn: "https://b4c70f946ca8cef7248a87d56f783034@o4506682739523584.ingest.us.sentry.io/4507717956796416",
@@ -15,5 +15,4 @@ Sentry.init({
 
   // Uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: process.env.NODE_ENV === 'development',
-  
-});
+})
