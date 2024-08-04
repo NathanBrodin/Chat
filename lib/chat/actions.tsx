@@ -6,6 +6,7 @@ import { createAI, createStreamableValue, getMutableAIState, streamUI } from "ai
 import { headers } from "next/headers"
 import { ReactNode } from "react"
 import { Content } from "@/components/content"
+import { systemPrompt } from "./prompt"
 import { AIActions, AIState, UIState } from "./types"
 import { rateLimit } from "../rate-limit"
 
@@ -31,15 +32,7 @@ export async function continueConversation(input: string, location: Geo): Promis
 
   const result = await streamUI({
     model: anthropic("claude-3-haiku-20240307"),
-    system: `You are Nathan's AI.
-
-Use the following information to tailor your responses appropriately.
-<user_city>${location.city}</user_city>
-<user_country>${location.country}</user_country>
-<user_country_region>${location.countryRegion}</user_country_region>
-<user_flag>${location.flag}</user_flag>
-<current_date>${new Date().toISOString()}</current_date>
-`,
+    system: systemPrompt(location),
     messages: history.get(),
     text: ({ content, done }) => {
       if (done) {
