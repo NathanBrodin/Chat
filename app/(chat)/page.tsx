@@ -13,12 +13,11 @@ type PageProps = {
 
 export default function Home({ searchParams }: PageProps) {
   const location = searchParamsToGeo(searchParams)
-  console.log(location)
 
   return (
     <main className="relative flex h-[100dvh] w-screen bg-background text-foreground">
       <AI>
-        <Chat />
+        <Chat location={location} />
       </AI>
       <div className="absolute left-0 top-0 z-20 m-4">
         <SideBar />

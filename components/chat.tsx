@@ -1,5 +1,6 @@
 "use client"
 
+import { Geo } from "@vercel/edge"
 import { generateId } from "ai"
 import { AnimatePresence } from "framer-motion"
 import Link from "next/link"
@@ -12,7 +13,11 @@ import { useActions, useUIState } from "@/hooks/use-ai"
 import { UIState } from "@/lib/chat/types"
 import { Loader } from "./loader"
 
-export default function Chat() {
+type ChatProps = {
+  location: Geo
+}
+
+export default function Chat({ location }: ChatProps) {
   const [messages, setMessages] = useUIState()
   const { continueConversation } = useActions()
   const [isLoading, setIsLoading] = useState(false)
@@ -39,7 +44,7 @@ export default function Chat() {
     ])
 
     // Get the assistant's response
-    const result = await continueConversation(value)
+    const result = await continueConversation(value, location)
 
     setMessages([
       ...newMessages,

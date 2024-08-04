@@ -1,3 +1,4 @@
+import { Geo } from "@vercel/edge"
 import { ReactNode } from "react"
 
 // Define the AI state and UI state types
@@ -17,5 +18,5 @@ export type UIState = ChatMessage[]
 
 // Define the actions type
 export type AIActions = {
-  continueConversation: (input: string) => Promise<ReactNode>
+  continueConversation: (input: string, location: Geo) => Promise<ReactNode>
 }
