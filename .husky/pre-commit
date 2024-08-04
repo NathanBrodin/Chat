@@ -1,2 +1,2 @@
 bun lint
-bun prettier
+bun prettier:fix
