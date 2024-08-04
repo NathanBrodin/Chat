@@ -4,8 +4,8 @@ const about = defineCollection({
   name: "About",
   pattern: "about/**/*.mdx",
   schema: s.object({
-    title: s.string().max(99),
     slug: s.slug("about"),
+    title: s.string().max(99),
     description: s.string(),
     content: s.mdx(),
     metadata: s.metadata(),
@@ -17,8 +17,8 @@ const awards = defineCollection({
   name: "Award",
   pattern: "awards/**/*.mdx",
   schema: s.object({
-    title: s.string().max(99),
     slug: s.slug("awards"),
+    title: s.string().max(99),
     description: s.string(),
     date: s.string(),
     content: s.mdx(),
@@ -31,8 +31,9 @@ const certifications = defineCollection({
   name: "Certification",
   pattern: "certifications/**/*.mdx",
   schema: s.object({
-    title: s.string().max(99),
     slug: s.slug("certifications"),
+    title: s.string().max(99),
+    description: s.string(),
     date: s.string(),
     institution: s.string(),
     website: s.string().url().optional(),
@@ -47,8 +48,8 @@ const educations = defineCollection({
   name: "Education",
   pattern: "educations/**/*.mdx",
   schema: s.object({
-    title: s.string().max(99),
     slug: s.slug("educations"),
+    title: s.string().max(99),
     description: s.string(),
     location: s.string(),
     date: s.string(),
@@ -66,8 +67,8 @@ const experiences = defineCollection({
   name: "Experience",
   pattern: "experiences/**/*.mdx",
   schema: s.object({
-    title: s.string().max(99),
     slug: s.slug("experiences"),
+    title: s.string().max(99),
     description: s.string(),
     date: s.string(),
     company: s.string(),
@@ -85,8 +86,8 @@ const languages = defineCollection({
   name: "Language",
   pattern: "languages/**/*.mdx",
   schema: s.object({
-    title: s.string().max(99),
     slug: s.slug("languages"),
+    title: s.string().max(99),
     description: s.string(),
     content: s.mdx(),
     metadata: s.metadata(),
@@ -98,8 +99,8 @@ const projects = defineCollection({
   name: "Project",
   pattern: "projects/**/*.mdx",
   schema: s.object({
-    title: s.string().max(99),
     slug: s.slug("projects"),
+    title: s.string().max(99),
     description: s.string(),
     date: s.string(),
     repository: s.string().url().optional(),
@@ -115,6 +116,8 @@ const recommendations = defineCollection({
   pattern: "recommendations/**/*.mdx",
   schema: s.object({
     slug: s.slug("recommendations"),
+    title: s.string().max(99),
+    description: s.string(),
     author: s.string(),
     role: s.string(),
     relation: s.string(),
@@ -130,8 +133,9 @@ const volunteerings = defineCollection({
   name: "Volunteering",
   pattern: "volunteerings/**/*.mdx",
   schema: s.object({
-    title: s.string().max(99),
     slug: s.slug("volunteerings"),
+    title: s.string().max(99),
+    description: s.string(),
     date: s.string(),
     organization: s.string(),
     content: s.mdx(),
