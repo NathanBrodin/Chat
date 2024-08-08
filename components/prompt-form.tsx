@@ -53,7 +53,13 @@ export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
-      <Button type="submit" disabled={isLoading} size={width < 640 ? "icon" : "default"} className="sm:w-32">
+      <Button
+        type="submit"
+        disabled={isLoading}
+        size={width < 640 ? "icon" : "default"}
+        className="sm:w-32"
+        aria-label="Send"
+      >
         <AnimatedState>
           {isLoading ? (
             <LoaderIcon className="size-4 animate-spin" />
