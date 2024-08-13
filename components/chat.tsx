@@ -61,7 +61,7 @@ export default function Chat({ location }: ChatProps) {
   return (
     <div className="relative flex h-full w-full flex-col items-center">
       <AnimatePresence initial={false} mode="wait">
-        {messages.length === 0 && <EmptyConversation addMessage={addMessage} />}
+        {messages.length === 0 && <EmptyConversation addMessage={addMessage} location={location} />}
         <Conversation messages={messages} />
       </AnimatePresence>
       <Separator />

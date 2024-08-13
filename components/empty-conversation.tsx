@@ -1,34 +1,14 @@
+import { Geo } from "@vercel/edge"
 import { motion } from "framer-motion"
-import { Questions } from "@/lib/chat/types"
 import { ExampleQuestions } from "./example-questions"
 import { IconNathansAI } from "./ui/icons"
 
 type EmptyConversationProps = {
+  location: Geo
   addMessage: (input: string) => Promise<void>
 }
 
-const questions: Questions = {
-  questions: [
-    {
-      display: "Do I have expertise in React",
-      question: "Do Nathan have expertise in React",
-    },
-    {
-      display: "What's my tech stack?",
-      question: "What's Nathan's tech stack?",
-    },
-    {
-      display: "Where do I study?",
-      question: "Where does Nathan study?",
-    },
-    {
-      display: "Do I speak Norwegian?",
-      question: "Does Nathan speak Norwegian?",
-    },
-  ],
-}
-
-export function EmptyConversation({ addMessage }: EmptyConversationProps) {
+export function EmptyConversation({ location, addMessage }: EmptyConversationProps) {
   return (
     <motion.div
       className="flex h-full flex-col items-center justify-center gap-2"
@@ -44,7 +24,7 @@ export function EmptyConversation({ addMessage }: EmptyConversationProps) {
         {` `}
         <span className="text-shadow-accent text-gray-50">AI.</span>
       </h1>
-      <ExampleQuestions exampleQuestions={questions} addMessage={addMessage} />
+      <ExampleQuestions location={location} addMessage={addMessage} />
     </motion.div>
   )
 }
