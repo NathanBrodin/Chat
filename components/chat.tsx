@@ -43,18 +43,28 @@ export default function Chat({ location }: ChatProps) {
       },
     ])
 
-    // Get the assistant's response
-    const result = await continueConversation(value, location)
+    try {
+      // Get the assistant's response
+      const result = await continueConversation(value, location)
 
-    setMessages([
-      ...newMessages,
-      {
-        id: assistantMessageId,
-        role: "assistant",
-        display: result,
-      },
-    ])
-
+      setMessages([
+        ...newMessages,
+        {
+          id: assistantMessageId,
+          role: "assistant",
+          display: result,
+        },
+      ])
+    } catch (error) {
+      setMessages([
+        ...newMessages,
+        {
+          id: assistantMessageId,
+          role: "error",
+          display: "Oops, something went wrong!",
+        },
+      ])
+    }
     setIsLoading(false)
   }
 

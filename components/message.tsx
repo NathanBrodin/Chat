@@ -1,5 +1,5 @@
 import { cva } from "class-variance-authority"
-import { Terminal, User } from "lucide-react"
+import { Accessibility, Frown, Terminal, User } from "lucide-react"
 import React from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { ChatMessage } from "@/lib/chat/types"
@@ -22,6 +22,7 @@ const messageVariants = cva("group/message", {
     variant: {
       user: "bg-primary-foreground",
       assistant: "border-none pb-2 sm:pb-8",
+      error: "border-none pb-2 sm:pb-8",
     },
   },
   defaultVariants: {
@@ -35,17 +36,14 @@ type MessageProps = {
 
 export function Message({ message }: MessageProps) {
   const variant = message.role
-
-  if (variant !== "user" && variant !== "assistant") {
-    throw new Error(`Invalid message role: ${variant}`)
-  }
-
   const capitalizedRole = message.role.charAt(0).toUpperCase() + message.role.slice(1)
   const displayText = extractText(message.display)
 
   return (
-    <Alert className={cn(messageVariants({ variant }))}>
-      {message.role === "assistant" ? <Terminal className="h-4 w-4" /> : <User className="h-4 w-4" />}
+    <Alert className={cn(messageVariants({ variant }))} variant={variant === "error" ? "destructive" : "default"}>
+      {message.role === "assistant" && <Terminal className="h-4 w-4" />}
+      {message.role === "user" && <User className="h-4 w-4" />}
+      {message.role === "error" && <Accessibility className="h-4 w-4" />}
       <AlertTitle className="relative">
         {capitalizedRole}
         <div className="absolute right-0 top-0">
