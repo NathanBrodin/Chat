@@ -9,7 +9,7 @@ export type ServerMessage = {
 
 export type ChatMessage = {
   id: string
-  role: "user" | "assistant"
+  role: "user" | "assistant" | "error"
   display: ReactNode
 }
 

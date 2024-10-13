@@ -1,6 +1,7 @@
 import "server-only"
 
 import { anthropic } from "@ai-sdk/anthropic"
+import { captureException } from "@sentry/nextjs"
 import { Geo } from "@vercel/edge"
 import { createAI, createStreamableValue, getMutableAIState, streamUI } from "ai/rsc"
 import { headers } from "next/headers"
@@ -30,23 +31,28 @@ export async function continueConversation(input: string, location: Geo): Promis
   let stream = createStreamableValue("")
   let node = <Content content={stream.value} />
 
-  const result = await streamUI({
-    model: anthropic("claude-3-haiku-20240307"),
-    system: systemPrompt(location),
-    messages: history.get(),
-    text: ({ content, done }) => {
-      if (done) {
-        stream.done()
-        history.done([...history.get(), { role: "assistant", content }])
-      } else {
-        stream.update(content)
-      }
+  try {
+    const result = await streamUI({
+      model: anthropic("claude-3-haiku-20240307"),
+      system: systemPrompt(location),
+      messages: history.get(),
+      text: ({ content, done }) => {
+        if (done) {
+          stream.done()
+          history.done([...history.get(), { role: "assistant", content }])
+        } else {
+          stream.update(content)
+        }
 
-      return node
-    },
-  })
-
-  return result.value
+        return node
+      },
+    })
+    return result.value
+  } catch (error) {
+    stream.done()
+    captureException(error)
+    throw new Error("Failed to send message")
+  }
 }
 
 // Create the AI provider with the initial states and allowed actions
