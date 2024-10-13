@@ -1,9 +1,21 @@
 import { cva } from "class-variance-authority"
 import { Terminal, User } from "lucide-react"
+import React from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { ChatMessage } from "@/lib/chat/types"
 import { cn } from "@/lib/utils"
 import { CopyButton } from "./copy-button"
+
+// Helper function to extract the text content from a ReactNode
+const extractText = (node: React.ReactNode): string | null => {
+  if (typeof node === "string") {
+    return node
+  }
+  if (React.isValidElement(node) && node.props.children) {
+    return extractText(node.props.children)
+  }
+  return null
+}
 
 const messageVariants = cva("group/message", {
   variants: {
@@ -29,6 +41,7 @@ export function Message({ message }: MessageProps) {
   }
 
   const capitalizedRole = message.role.charAt(0).toUpperCase() + message.role.slice(1)
+  const displayText = extractText(message.display)
 
   return (
     <Alert className={cn(messageVariants({ variant }))}>
@@ -36,12 +49,12 @@ export function Message({ message }: MessageProps) {
       <AlertTitle className="relative">
         {capitalizedRole}
         <div className="absolute right-0 top-0">
-          {message.role === "assistant" && (
-            <CopyButton content={message.display as string} className="opacity-0 group-hover/message:opacity-100" />
+          {displayText && message.role === "assistant" && (
+            <CopyButton content={displayText as string} className="opacity-0 group-hover/message:opacity-100" />
           )}
         </div>
       </AlertTitle>
-      <AlertDescription className="mr-10 min-h-[22.75px]">{message.display}</AlertDescription>
+      <AlertDescription className="mr-2 min-h-[22.75px] sm:mr-10">{message.display}</AlertDescription>
     </Alert>
   )
 }
