@@ -61,7 +61,10 @@ export default function Chat({ location }: ChatProps) {
         {
           id: assistantMessageId,
           role: "error",
-          display: "Oops, something went wrong!",
+          display:
+            (error as Error).message === "Rate limit exceeded"
+              ? "Whoa, easy there big talker! You've hit the rate limit. Give it a moment before asking more."
+              : "Oops, something went wrong!",
         },
       ])
     }
