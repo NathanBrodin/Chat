@@ -1,6 +1,10 @@
 # Nathan's AI
 
-AI Chatbot that knows everything about me.
+Nathan's AI is a unique twist on the traditional portfolio. Instead of scrolling through pages of information, visitors can simply ask questions to learn about my career, skills, projects, and experiences. Built with Next.js, Tailwind CSS, and Vercel’s AI SDK, this chatbot acts as an interactive resume, letting you explore my journey in a conversational way.
+
+The chatbot is designed to be simple and user-friendly. You can ask about my tech stack, past projects, where I studied, or anything else you'd find on a typical portfolio – and Nathan's AI will respond based on what it knows about me. It even has a friendly message for when you hit the rate limit, to keep things light-hearted.
+
+This project showcases my skills in frontend development and my passion for creating engaging user experiences. It’s my portfolio, reimagined as a conversation.
 
 ## Tech Stack
 
