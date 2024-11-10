@@ -33,14 +33,14 @@ export default function Dazzle({ text, accent }: { text: string; accent?: string
           fill="#000"
         />
       </svg>
-      <span className="fluid">
+      <p className="fluid">
         {text}
-        {accent}
-      </span>
-      <span className="fluid" aria-hidden="true">
+        <span className="accent">{accent}</span>
+      </p>
+      <p className="fluid" aria-hidden="true">
         {text}
-        {accent}
-      </span>
+        <span className="accent text-shadow-accent">{accent}</span>
+      </p>
     </div>
   )
 }
