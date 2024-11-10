@@ -4,7 +4,7 @@ import { kv } from "@vercel/kv"
 // Create a new ratelimiter, that allows 10 requests per 2 minutes
 const ratelimit = new Ratelimit({
   redis: kv,
-  limiter: Ratelimit.slidingWindow(10, "2 m"),
+  limiter: Ratelimit.slidingWindow(1, "1 m"),
 })
 
 export async function rateLimit(identifier: string) {

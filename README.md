@@ -17,6 +17,7 @@ AI Chatbot that knows everything about me.
 
 - Empty Screen: [Cal.com](https://cal.com/)
 - Messages animation: [Build UI](https://buildui.com/recipes/animated-list)
+- Title animation: [@jh3yy](https://x.com/jh3yy/status/1849062440773820747)
 - Themes: [ui/jln](https://ui.jln.dev/)
 - Themes picker: [shadcn/ui](https://ui.shadcn.com/themes)
 
@@ -72,7 +73,3 @@ That's it, you are all set!
 This project is deployed on Vercel. Click the button below to deploy the chat in seconds!
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnathanbrodin%2Fchat&env=ANTHROPIC_API_KEY,KV_URL,KV_REST_API_URL,KV_REST_API_TOKEN,KV_REST_API_READ_ONLY_TOKEN&demo-title=Nathan's%20AI&demo-description=Curious%20about%20Nathan%20Brodin%3F%20Ask%20his%20AI%20anything!&demo-url=https%3A%2F%2Fchat.brodin.dev)
-
-## Roadmap
-
-- [] Stream UI, blockers: text streaming is bad so I prefer sticking to streamText until it gets fixed.
