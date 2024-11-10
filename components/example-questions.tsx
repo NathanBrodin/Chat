@@ -8,13 +8,16 @@ type ExampleQuestionsProps = {
 }
 
 export function ExampleQuestions({ location, addMessage }: ExampleQuestionsProps) {
-  const exampleQuestions = getQuestions(location)
+  const allQuestions = getQuestions(location)
+
+  // Get 4 random questions from the array
+  const randomQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 4)
 
   return (
     <div className="mt-4 flex flex-col gap-4 sm:grid sm:flex-none sm:grid-cols-2">
-      {exampleQuestions.map((q) => (
-        <FancyButton key={q.display} onClick={() => addMessage(q.question)}>
-          {q.display}
+      {randomQuestions.map((q) => (
+        <FancyButton key={q.content} onClick={() => addMessage(q.content)}>
+          {q.content}
         </FancyButton>
       ))}
     </div>
