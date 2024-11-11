@@ -1,15 +1,15 @@
-import { Geo } from "@vercel/edge"
 import { motion } from "framer-motion"
+import { Question } from "@/lib/questions/types"
 import { ExampleQuestions } from "./example-questions"
 import Dazzle from "./ui/dazzle"
 import { IconNathansAI } from "./ui/icons"
 
 type EmptyConversationProps = {
-  location: Geo
+  questions: Question[]
   addMessage: (input: string) => Promise<void>
 }
 
-export function EmptyConversation({ location, addMessage }: EmptyConversationProps) {
+export function EmptyConversation({ questions, addMessage }: EmptyConversationProps) {
   return (
     <motion.div
       className="flex h-full flex-col items-center justify-center gap-1"
@@ -21,7 +21,7 @@ export function EmptyConversation({ location, addMessage }: EmptyConversationPro
     >
       <IconNathansAI className="size-12" />
       <Dazzle text="Nathan's " accent="AI." />
-      <ExampleQuestions location={location} addMessage={addMessage} />
+      <ExampleQuestions questions={questions} addMessage={addMessage} />
     </motion.div>
   )
 }

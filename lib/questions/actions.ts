@@ -1,7 +1,11 @@
+import "server-only"
+
 import { Geo } from "@vercel/edge"
 import { Question } from "./types"
 
-export function getQuestions(location: Geo): Question[] {
+export async function getQuestions(location: Geo): Promise<Question[]> {
+  "use server"
+
   const contents: Question[] = [
     {
       content: "Tell me about your studies",
@@ -53,5 +57,5 @@ export function getQuestions(location: Geo): Question[] {
     },
   ]
 
-  return contents
+  return contents.sort(() => Math.random() - 0.5).slice(0, 4)
 }
