@@ -10,6 +10,7 @@ import { ReactNode } from "react"
 import { Content } from "@/components/content"
 import { systemPrompt } from "./prompt"
 import { AIActions, AIState, ServerMessage, UIState } from "./types"
+import { saveChat } from "../db/actions"
 import { rateLimit } from "../rate-limit"
 
 export async function continueConversation(input: string, location: Geo): Promise<ReactNode> {
@@ -58,7 +59,7 @@ export async function continueConversation(input: string, location: Geo): Promis
 
 // Create the AI provider with the initial states and allowed actions
 export const AI = createAI<AIState, UIState, AIActions>({
-  initialAIState: { messages: [], id: generateId() },
+  initialAIState: { messages: [], id: generateId(), location: {} },
   initialUIState: [],
   actions: {
     continueConversation,
@@ -67,8 +68,7 @@ export const AI = createAI<AIState, UIState, AIActions>({
     "use server"
 
     if (done) {
-      console.log("From conversation: ", state.id)
-      console.log(state.messages.slice(-2))
+      await saveChat(state)
     }
   },
 })
