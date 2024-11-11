@@ -1,3 +1,4 @@
+import { generateId } from "ai"
 import Chat from "@/components/chat"
 import { SideBar } from "@/components/side-bar"
 import { AI } from "@/lib/chat/actions"
@@ -18,7 +19,7 @@ export default async function Home({ searchParams }: PageProps) {
 
   return (
     <main className="relative flex h-[100dvh] w-screen bg-background text-foreground">
-      <AI>
+      <AI initialAIState={{ messages: [], id: generateId() }}>
         <Chat location={location} questions={questions} />
       </AI>
       <div className="absolute left-0 top-0 z-20 m-4">
