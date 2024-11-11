@@ -19,7 +19,7 @@ export default async function Home({ searchParams }: PageProps) {
 
   return (
     <main className="relative flex h-[100dvh] w-screen bg-background text-foreground">
-      <AI initialAIState={{ messages: [], id: generateId() }}>
+      <AI initialAIState={{ messages: [], id: generateId(), location }}>
         <Chat location={location} questions={questions} />
       </AI>
       <div className="absolute left-0 top-0 z-20 m-4">

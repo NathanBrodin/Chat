@@ -13,7 +13,7 @@ export type ChatMessage = {
   display: ReactNode
 }
 
-export type AIState = { id: string; messages: ServerMessage[] }
+export type AIState = { id: string; messages: ServerMessage[]; location: Geo }
 export type UIState = ChatMessage[]
 
 // Define the actions type
