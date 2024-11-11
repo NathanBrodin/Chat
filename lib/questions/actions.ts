@@ -4,51 +4,51 @@ import { Question } from "./types"
 export function getQuestions(location: Geo): Question[] {
   const contents: Question[] = [
     {
-      content: "Tell me about my studies",
+      content: "Tell me about your studies",
       locations: [],
     },
     {
-      content: "What tech do I work with?",
+      content: "What tech do you work with?",
       locations: [],
     },
     {
-      content: "What awards have I won?",
+      content: "What awards have you won?",
       locations: [],
     },
     {
-      content: "What certifications do I have?",
+      content: "What certifications do you have?",
       locations: [],
     },
     {
-      content: "Where have I interned?",
+      content: "Where have you interned?",
       locations: [],
     },
     {
-      content: "What projects have I done?",
+      content: "What projects have you done?",
       locations: [],
     },
     {
-      content: "What's my tech stack like?",
+      content: "What's your tech stack like?",
       locations: [],
     },
     {
-      content: "What languages do I speak?",
+      content: "What languages do you speak?",
       locations: [],
     },
     {
-      content: "How have I volunteered?",
+      content: "How have you volunteered?",
       locations: [],
     },
     {
-      content: "Who's recommended me?",
+      content: "Who's recommended you?",
       locations: [],
     },
     {
-      content: "Where am I from originally?",
+      content: "Where are you from originally?",
       locations: [],
     },
     {
-      content: "What degree am I going for?",
+      content: "What degree are you going for?",
       locations: [],
     },
   ]
