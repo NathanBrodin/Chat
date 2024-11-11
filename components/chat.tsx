@@ -8,10 +8,12 @@ import { useState } from "react"
 import { Conversation } from "@/components/conversation"
 import { EmptyConversation } from "@/components/empty-conversation"
 import { PromptForm } from "@/components/prompt-form"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Separator } from "@/components/ui/separator"
 import { useActions, useUIState } from "@/hooks/use-ai"
 import { UIState } from "@/lib/chat/types"
 import { Loader } from "./loader"
+import { Button } from "./ui/button"
 
 type ChatProps = {
   location: Geo
@@ -79,13 +81,18 @@ export default function Chat({ location }: ChatProps) {
       </AnimatePresence>
       <Separator />
       <div className="flex w-full justify-between p-1 sm:p-4">
-        <Link
-          className="hidden place-self-end text-xs text-muted-foreground sm:block"
-          href="https://brodin.dev"
-          target="_blank"
-        >
-          Nathan&apos;s AI
-        </Link>
+        <HoverCard openDelay={0}>
+          <HoverCardTrigger asChild>
+            <Button variant="link" className="hidden place-self-end text-xs text-muted-foreground sm:block">
+              Nathan&apos;s AI
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="flex flex-col gap-1">
+            <Link href="https://github.com/NathanBrodin/Chat">Project&apos;s repo</Link>
+            <Separator />
+            <Link href="htpps://brodin.dev">My portfolio</Link>
+          </HoverCardContent>
+        </HoverCard>
         <PromptForm addMessage={addMessage} isLoading={isLoading} />
         <div />
       </div>
