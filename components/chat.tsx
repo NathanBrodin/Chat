@@ -12,14 +12,16 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Separator } from "@/components/ui/separator"
 import { useActions, useUIState } from "@/hooks/use-ai"
 import { UIState } from "@/lib/chat/types"
+import { Question } from "@/lib/questions/types"
 import { Loader } from "./loader"
 import { Button } from "./ui/button"
 
 type ChatProps = {
   location: Geo
+  questions: Question[]
 }
 
-export default function Chat({ location }: ChatProps) {
+export default function Chat({ questions, location }: ChatProps) {
   const [messages, setMessages] = useUIState()
   const { continueConversation } = useActions()
   const [isLoading, setIsLoading] = useState(false)
@@ -76,8 +78,8 @@ export default function Chat({ location }: ChatProps) {
   return (
     <div className="relative flex h-full w-full flex-col items-center">
       <AnimatePresence initial={false} mode="wait">
-        {messages.length === 0 && <EmptyConversation addMessage={addMessage} location={location} />}
-        <Conversation messages={messages} />
+        {messages.length === 0 && <EmptyConversation addMessage={addMessage} questions={questions} key="empty" />}
+        <Conversation messages={messages} key="conversation" />
       </AnimatePresence>
       <Separator />
       <div className="flex w-full justify-between p-1 sm:p-4">
