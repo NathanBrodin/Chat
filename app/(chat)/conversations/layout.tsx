@@ -19,7 +19,12 @@ export default async function ConversationsLayout({ children }: { children: Reac
         <header className="sticky top-0 z-10 flex shrink-0 items-center gap-2 border-b bg-background p-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          <span role="link" aria-disabled="true" aria-current="page" className="font-light italic text-foreground">
+          <span
+            role="link"
+            aria-disabled="true"
+            aria-current="page"
+            className="text-sm font-light italic text-foreground md:text-base"
+          >
             You curious one, stop peeking at other peoples conversations
           </span>
         </header>
