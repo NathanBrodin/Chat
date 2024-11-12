@@ -5,8 +5,11 @@ import { generateId } from "ai"
 import { conversations, messages as messagesTable } from "./schema"
 import { AIState } from "../chat/types"
 import { db } from "."
+import { desc, eq } from "drizzle-orm"
 
 export async function saveChat(state: AIState) {
+  "use server"
+
   const { id, messages: chatMessages, location } = state
 
   const conversation: typeof conversations.$inferInsert = {
@@ -33,4 +36,29 @@ export async function saveChat(state: AIState) {
   } catch (error) {
     captureException(error)
   }
+}
+
+export async function getConversations() {
+  "use server"
+
+  return await db
+    .select({
+      id: conversations.id,
+      createdAt: conversations.createdAt,
+      city: conversations.city,
+      region: conversations.region,
+      country: conversations.country,
+    })
+    .from(conversations)
+    .orderBy(desc(conversations.createdAt))
+    .limit(10)
+}
+
+export async function getMessages(conversationId: string) {
+  "use server"
+
+  return await db
+    .select({ id: messagesTable.id, role: messagesTable.role, display: messagesTable.content })
+    .from(messagesTable)
+    .where(eq(messagesTable.conversationId, conversationId))
 }
