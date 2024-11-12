@@ -4,6 +4,7 @@ import { decimal, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core"
 export const conversations = pgTable("chat_conversations", {
   id: varchar("id").primaryKey(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  preview: varchar("preview", { length: 100 }),
 
   // Geographic information
   city: varchar("city", { length: 100 }),
