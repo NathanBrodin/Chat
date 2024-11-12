@@ -2,18 +2,23 @@ import "server-only"
 
 import { captureException } from "@sentry/nextjs"
 import { generateId } from "ai"
+import { desc, eq } from "drizzle-orm"
 import { conversations, messages as messagesTable } from "./schema"
 import { AIState } from "../chat/types"
 import { db } from "."
-import { desc, eq } from "drizzle-orm"
 
 export async function saveChat(state: AIState) {
   "use server"
 
   const { id, messages: chatMessages, location } = state
 
+  // Get the preview from the second-to-last message
+  const previewMessage = chatMessages.at(-2)?.content || ""
+  const preview = previewMessage.slice(0, 100)
+
   const conversation: typeof conversations.$inferInsert = {
     id: id,
+    preview,
     city: location?.city,
     region: location?.region,
     country: location?.country,
@@ -44,6 +49,7 @@ export async function getConversations() {
   return await db
     .select({
       id: conversations.id,
+      preview: conversations.preview,
       createdAt: conversations.createdAt,
       city: conversations.city,
       region: conversations.region,
