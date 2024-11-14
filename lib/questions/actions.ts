@@ -3,7 +3,7 @@ import "server-only"
 import { Geo } from "@vercel/edge"
 import { Question } from "./types"
 
-export async function getQuestions(location: Geo): Promise<Question[]> {
+export async function getQuestions(_location: Geo): Promise<Question[]> {
   "use server"
 
   const contents: Question[] = [

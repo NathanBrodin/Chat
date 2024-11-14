@@ -1,5 +1,5 @@
 import { cva } from "class-variance-authority"
-import { Accessibility, Frown, Terminal, User } from "lucide-react"
+import { Accessibility, Terminal, User } from "lucide-react"
 import React from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { ChatMessage } from "@/lib/chat/types"
