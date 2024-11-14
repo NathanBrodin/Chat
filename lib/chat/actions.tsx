@@ -17,7 +17,7 @@ export async function continueConversation(input: string, location: Geo): Promis
   "use server"
 
   // Implement rate limit based on the request's IP
-  const header = headers()
+  const header = await headers()
   const ip = (header.get("x-forwarded-for") ?? "127.0.0.2").split(",")[0]
 
   const { success } = await rateLimit(ip)
@@ -30,8 +30,8 @@ export async function continueConversation(input: string, location: Geo): Promis
   // Update the AI state with the new user message.
   history.update([...(history.get() as ServerMessage[]), { role: "user", content: input }])
 
-  let stream = createStreamableValue("")
-  let node = <Content content={stream.value} />
+  const stream = createStreamableValue("")
+  const node = <Content content={stream.value} />
 
   try {
     const result = await streamUI({

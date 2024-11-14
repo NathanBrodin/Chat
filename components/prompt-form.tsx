@@ -1,9 +1,8 @@
 "use client"
 
-import { CornerDownRight, LoaderIcon } from "lucide-react"
+import { LoaderIcon, SendIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Textarea from "react-textarea-autosize"
-import { useWindowSize } from "usehooks-ts"
 import { Button } from "@/components/ui/button"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
 import { AnimatedState } from "./ui/animate-state"
@@ -14,9 +13,7 @@ type PromptFormProps = {
 }
 
 export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
-  const { width = 0 } = useWindowSize()
   const { formRef, onKeyDown } = useEnterSubmit()
-
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -29,7 +26,6 @@ export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-
     setInput("")
     await addMessage(input)
   }
@@ -53,23 +49,13 @@ export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
-      <Button
-        type="submit"
-        disabled={isLoading}
-        size={width < 640 ? "icon" : "default"}
-        className="sm:w-32"
-        aria-label="Send"
-      >
+      <Button type="submit" disabled={isLoading} size="icon" className="block sm:hidden" aria-label="Send">
         <AnimatedState>
-          {isLoading ? (
-            <LoaderIcon className="size-4 animate-spin" />
-          ) : (
-            <>
-              <p className="hidden sm:block">Send</p>
-              <CornerDownRight className="block size-4 sm:hidden" />
-            </>
-          )}
+          {isLoading ? <LoaderIcon className="size-4 animate-spin" /> : <SendIcon className="size-4" />}
         </AnimatedState>
+      </Button>
+      <Button type="submit" disabled={isLoading} className="hidden sm:block sm:w-32" aria-label="Send">
+        <AnimatedState>{isLoading ? <LoaderIcon className="size-4 animate-spin" /> : <p>Send</p>}</AnimatedState>
       </Button>
     </form>
   )
