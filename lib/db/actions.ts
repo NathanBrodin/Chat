@@ -2,7 +2,7 @@ import "server-only"
 
 import { captureException } from "@sentry/nextjs"
 import { generateId } from "ai"
-import { desc, eq } from "drizzle-orm"
+import { desc, eq, not } from "drizzle-orm"
 import { conversations, messages as messagesTable } from "./schema"
 import { AIState } from "../chat/types"
 import { db } from "."
@@ -56,6 +56,7 @@ export async function getConversations() {
       country: conversations.country,
     })
     .from(conversations)
+    .where(not(eq(conversations.city, "Unknown")))
     .orderBy(desc(conversations.createdAt))
     .limit(10)
 }

@@ -32,7 +32,7 @@ export function ConversationsSidebar({ conversations }: ConversationsSidebarProp
             {conversations.map((conversation) => (
               <Link
                 href={`/conversations/${conversation.id}`}
-                key={conversation.city}
+                key={conversation.id}
                 className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               >
                 <div className="flex w-full items-end gap-2">
