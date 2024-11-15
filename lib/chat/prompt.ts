@@ -11,13 +11,6 @@ import {
   volunteerings,
 } from "#content"
 
-interface DataItem {
-  content?: string
-  metadata?: Record<string, unknown>
-  slug?: string
-  [key: string]: unknown // For other dynamic properties
-}
-
 function formatContent() {
   const excludeKeys = new Set(["content", "metadata", "slug"])
 
@@ -33,7 +26,7 @@ function formatContent() {
     { data: volunteerings, tag: "volunteering" },
   ]
 
-  function formatItem(item: DataItem, tag: string, indentLevel: number): string {
+  function formatItem(item: any, tag: string, indentLevel: number): string {
     const indent = "  ".repeat(indentLevel)
     const childIndent = "  ".repeat(indentLevel + 1)
 
