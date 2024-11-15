@@ -17,6 +17,14 @@ This project showcases my skills in frontend development and my passion for crea
 - [framer-motion](https://www.framer.com/motion/)
 - [Bun](https://bun.sh)
 
+This project uses the following services:
+
+- [Anthropic Claude](https://www.anthropic.com/): AI API
+- [Sentry](https://sentry.io/welcome/): Error tracking
+- [Vercel](https://vercel.com/home): Hosting platform
+- [Vercel kv](https://vercel.com/docs/storage/vercel-kv): Redis database (for rate limiting)
+- [Vercel postgres](https://vercel.com/docs/storage/vercel-postgres): Postgres database (for saving conversations)
+
 ## Sources of Inspiration
 
 - Empty Screen: [Cal.com](https://cal.com/)
@@ -63,6 +71,8 @@ Copy-Item .env.example .env.local
 - Get your Anthropic api key and paste it in `.env.local`.
 
 - Create a kv database on [Vercel](https://vercel.com/storage/kv) and paste environment variables it in `.env.local`.
+
+- Create a postgres database on [Vercel](https://vercel.com/storage/postgres) so you can save the conversations.
 
 - Run the dev server:
 
