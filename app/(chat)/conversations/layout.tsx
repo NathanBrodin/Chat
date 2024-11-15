@@ -3,6 +3,8 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { getConversations } from "@/lib/db/actions"
 
+export const dynamic = "force-dynamic"
+
 export default async function ConversationsLayout({ children }: { children: React.ReactNode }) {
   const conversations = await getConversations()
 
