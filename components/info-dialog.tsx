@@ -16,7 +16,7 @@ export default function InfoDialog({ className }: { className?: string }) {
   return (
     <Dialog>
       <DialogTrigger className={cn("flex items-center gap-1 place-self-end text-xs text-muted-foreground", className)}>
-        <InfoIcon className="size-3" />
+        <InfoIcon className="size-4 sm:size-3" />
         <span className="hidden sm:flex">Nathan&apos;s AI</span>
       </DialogTrigger>
       <DialogContent className="max-w-md">
