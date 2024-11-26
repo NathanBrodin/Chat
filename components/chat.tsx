@@ -81,7 +81,7 @@ export default function Chat({ questions, location }: ChatProps) {
       </AnimatePresence>
       <Separator />
       <div className="flex w-full justify-between p-1 sm:p-4">
-        <InfoDialog />
+        <InfoDialog className="hidden sm:flex" />
         <PromptForm addMessage={addMessage} isLoading={isLoading} />
         <div />
       </div>
