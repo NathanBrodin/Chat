@@ -1,4 +1,4 @@
-import { AlertTriangle, Github, Globe, InfoIcon, User } from "lucide-react"
+import { AlertTriangle, Github, Globe, InfoIcon, TwitterIcon, User } from "lucide-react"
 import Link from "next/link"
 import {
   Dialog,
@@ -8,14 +8,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
+import { ThemeCustomizer } from "./theme/theme-customizer"
 import { Button } from "./ui/button"
 
-export default function InfoDialog() {
+export default function InfoDialog({ className }: { className?: string }) {
   return (
     <Dialog>
-      <DialogTrigger className="hidden items-center gap-1 place-self-end text-xs text-muted-foreground sm:flex">
+      <DialogTrigger className={cn("flex items-center gap-1 place-self-end text-xs text-muted-foreground", className)}>
         <InfoIcon className="size-3" />
-        Nathan&apos;s AI
+        <span className="hidden sm:flex">Nathan&apos;s AI</span>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -30,7 +32,6 @@ export default function InfoDialog() {
                 href="https://github.com/nathanbrodin/chat"
                 className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 target="_blank"
-                rel="noopener noreferrer"
               >
                 <Github className="size-4" />
                 Project Repo
@@ -39,7 +40,6 @@ export default function InfoDialog() {
                 href="https://brodin.dev"
                 className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 target="_blank"
-                rel="noopener noreferrer"
               >
                 <Globe className="size-4" />
                 Portfolio
@@ -48,10 +48,17 @@ export default function InfoDialog() {
                 href="https://github.com/nathanbrodin"
                 className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 target="_blank"
-                rel="noopener noreferrer"
               >
                 <User className="size-4" />
                 GitHub Profile
+              </Link>
+              <Link
+                href="https://twitter.com/nathan_brodin"
+                className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                target="_blank"
+              >
+                <TwitterIcon className="size-4" />
+                Twitter
               </Link>
             </div>
           </div>
@@ -69,6 +76,7 @@ export default function InfoDialog() {
               noticed some hallucinations from the AI so don&apos;t trust everything it says.
             </p>
           </div>
+          <ThemeCustomizer />
           <div className="pt-2">
             <Link href="/conversations" passHref>
               <Button variant="outline" className="w-full">

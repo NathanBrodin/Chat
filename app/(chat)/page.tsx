@@ -4,6 +4,7 @@ import { SideBar } from "@/components/side-bar"
 import { AI } from "@/lib/chat/actions"
 import { getQuestions } from "@/lib/questions/actions"
 import { searchParamsToGeo } from "@/lib/utils"
+import InfoDialog from "@/components/info-dialog"
 
 // Force the page to be dynamic and allow streaming responses up to 30 seconds
 export const dynamic = "force-dynamic"
@@ -23,8 +24,8 @@ export default async function Home(props: PageProps) {
       <AI initialAIState={{ messages: [], id: generateId(), location }}>
         <Chat location={location} questions={questions} />
       </AI>
-      <div className="absolute left-0 top-0 z-20 m-4">
-        <SideBar />
+      <div className="absolute left-0 top-0 z-20 m-4 flex sm:hidden">
+        <InfoDialog />
       </div>
     </main>
   )
