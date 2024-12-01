@@ -1,17 +1,17 @@
 "use client"
 
-import { StreamableValue } from "ai/rsc"
 import remarkGfm from "remark-gfm"
 import { CodeBlock, Pre } from "@/components/ui/code"
-import { useStreamableText } from "@/hooks/use-streamable-text"
+import { useAnimatedText } from "@/hooks/use-animated-text"
 import { MemoizedReactMarkdown } from "./markdown"
 
 type ContentProps = {
-  content: string | StreamableValue<string>
+  content: string
+  duration?: number
 }
 
-export function Content({ content }: ContentProps) {
-  const text = useStreamableText(content)
+export function Content({ content, duration }: ContentProps) {
+  const text = useAnimatedText(content, duration)
 
   return (
     <MemoizedReactMarkdown

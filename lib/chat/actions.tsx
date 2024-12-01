@@ -3,21 +3,19 @@ import "server-only"
 import { anthropic } from "@ai-sdk/anthropic"
 import { captureException } from "@sentry/nextjs"
 import { Geo } from "@vercel/edge"
-import { generateId } from "ai"
-import { createAI, createStreamableValue, getMutableAIState, streamUI } from "ai/rsc"
+import { generateId, streamText } from "ai"
+import { createAI, createStreamableValue, getMutableAIState, StreamableValue } from "ai/rsc"
 import { headers } from "next/headers"
-import { ReactNode } from "react"
-import { Content } from "@/components/content"
 import { systemPrompt } from "./prompt"
 import { AIActions, AIState, ServerMessage, UIState } from "./types"
 import { saveChat } from "../db/actions"
 import { rateLimit } from "../rate-limit"
 
-export async function continueConversation(input: string, location: Geo): Promise<ReactNode> {
+export async function continueConversation(input: string, location: Geo): Promise<StreamableValue<any, any>> {
   "use server"
 
   // Implement rate limit based on the request's IP
-  const header = await headers()
+  const header = headers()
   const ip = (header.get("x-forwarded-for") ?? "127.0.0.2").split(",")[0]
 
   const { success } = await rateLimit(ip)
@@ -30,26 +28,27 @@ export async function continueConversation(input: string, location: Geo): Promis
   // Update the AI state with the new user message.
   history.update([...(history.get() as ServerMessage[]), { role: "user", content: input }])
 
-  const stream = createStreamableValue("")
-  const node = <Content content={stream.value} />
+  const stream = createStreamableValue()
 
   try {
-    const result = await streamUI({
-      model: anthropic("claude-3-5-haiku-latest"),
-      system: systemPrompt(location),
-      messages: history.get() as ServerMessage[],
-      text: ({ content, done }) => {
-        if (done) {
-          stream.done()
-          history.done([...(history.get() as ServerMessage[]), { role: "assistant", content }])
-        } else {
-          stream.update(content)
-        }
+    ;(async () => {
+      const { textStream } = streamText({
+        model: anthropic("claude-3-5-haiku-latest"),
+        system: systemPrompt(location),
+        messages: history.get() as ServerMessage[],
+        onFinish(event) {
+          history.done([...(history.get() as ServerMessage[]), { role: "assistant", content: event.text }])
+        },
+      })
 
-        return node
-      },
-    })
-    return result.value
+      for await (const text of textStream) {
+        stream.update(text)
+      }
+
+      stream.done()
+    })()
+
+    return stream.value
   } catch (error) {
     stream.done()
     captureException(error)
