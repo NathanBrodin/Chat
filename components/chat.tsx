@@ -2,6 +2,7 @@
 
 import { Geo } from "@vercel/edge"
 import { generateId } from "ai"
+import { readStreamableValue } from "ai/rsc"
 import { AnimatePresence } from "framer-motion"
 import { useState } from "react"
 import { Conversation } from "@/components/conversation"
@@ -11,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { useActions, useUIState } from "@/hooks/use-ai"
 import { UIState } from "@/lib/chat/types"
 import { Question } from "@/lib/questions/types"
+import { Content } from "./content"
 import InfoDialog from "./info-dialog"
 import { Loader } from "./loader"
 
@@ -49,14 +51,16 @@ export default function Chat({ questions, location }: ChatProps) {
       // Get the assistant's response
       const result = await continueConversation(value, location)
 
-      setMessages([
-        ...newMessages,
-        {
-          id: assistantMessageId,
-          role: "assistant",
-          display: result,
-        },
-      ])
+      let textContent = ""
+
+      for await (const delta of readStreamableValue(result)) {
+        textContent = `${textContent}${delta}`
+
+        setMessages([
+          ...newMessages,
+          { id: assistantMessageId, role: "assistant", display: <Content content={textContent} /> },
+        ])
+      }
     } catch (error) {
       setMessages([
         ...newMessages,

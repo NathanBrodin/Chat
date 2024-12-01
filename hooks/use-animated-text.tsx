@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 const delimiter = "" // or " " to split by word
 
-export function useAnimatedText(text: string) {
+export function useAnimatedText(text: string, duration = 2) {
   const [cursor, setCursor] = useState(0)
   const [startingCursor, setStartingCursor] = useState(0)
   const [prevText, setPrevText] = useState(text)
@@ -18,7 +18,7 @@ export function useAnimatedText(text: string) {
   useEffect(() => {
     const controls = animate(startingCursor, text.split(delimiter).length, {
       // Tweak the animation here
-      duration: 4,
+      duration: duration,
       ease: "easeOut",
       onUpdate(latest) {
         setCursor(Math.floor(latest))
@@ -26,7 +26,7 @@ export function useAnimatedText(text: string) {
     })
 
     return () => controls.stop()
-  }, [startingCursor, text])
+  }, [startingCursor, text, duration])
 
   return text.split(delimiter).slice(0, cursor).join(delimiter)
 }
