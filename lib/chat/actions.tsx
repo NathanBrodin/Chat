@@ -35,7 +35,7 @@ export async function continueConversation(input: string, location: Geo): Promis
 
   try {
     const result = await streamUI({
-      model: anthropic("claude-3-haiku-20240307"),
+      model: anthropic("claude-3-5-haiku-latest"),
       system: systemPrompt(location),
       messages: history.get() as ServerMessage[],
       text: ({ content, done }) => {
