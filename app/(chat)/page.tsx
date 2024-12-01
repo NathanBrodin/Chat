@@ -1,10 +1,9 @@
 import { generateId } from "ai"
 import Chat from "@/components/chat"
-import { SideBar } from "@/components/side-bar"
+import InfoDialog from "@/components/info-dialog"
 import { AI } from "@/lib/chat/actions"
 import { getQuestions } from "@/lib/questions/actions"
 import { searchParamsToGeo } from "@/lib/utils"
-import InfoDialog from "@/components/info-dialog"
 
 // Force the page to be dynamic and allow streaming responses up to 30 seconds
 export const dynamic = "force-dynamic"
