@@ -1,6 +1,6 @@
 "use client"
 
-import { animate } from "framer-motion"
+import { animate } from "motion/react"
 import { useEffect, useState } from "react"
 
 const delimiter = "" // or " " to split by word
