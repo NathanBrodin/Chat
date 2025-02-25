@@ -1,4 +1,4 @@
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { Question } from "@/lib/questions/types"
 import { ExampleQuestions } from "./example-questions"
 import Dazzle from "./ui/dazzle"

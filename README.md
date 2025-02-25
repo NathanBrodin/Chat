@@ -16,7 +16,7 @@ This project showcases my skills in frontend development and my passion for crea
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Vercel AI SDK](https://sdk.vercel.ai/docs/introduction)
 - [@upstash/ratelimit](https://upstash.com/docs/oss/sdks/ts/ratelimit/overview)
-- [framer-motion](https://www.framer.com/motion/)
+- [motion](https://motion.dev)
 - [Bun](https://bun.sh)
 
 This project uses the following services:
