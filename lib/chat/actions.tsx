@@ -15,7 +15,7 @@ export async function continueConversation(input: string, location: Geo): Promis
   "use server"
 
   // Implement rate limit based on the request's IP
-  const header = headers()
+  const header = await headers()
   const ip = (header.get("x-forwarded-for") ?? "127.0.0.2").split(",")[0]
 
   const { success } = await rateLimit(ip)

@@ -34,7 +34,7 @@ export function ConversationsSidebar({ conversations }: ConversationsSidebarProp
     try {
       const regionNames = new Intl.DisplayNames(["en"], { type: "region" })
       return regionNames.of(countryCode)
-    } catch (error) {
+    } catch {
       return countryCode // fallback to code if translation fails
     }
   }
