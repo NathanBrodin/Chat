@@ -11,8 +11,12 @@ const extractText = (node: React.ReactNode): string | null => {
   if (typeof node === "string") {
     return node
   }
-  if (React.isValidElement(node) && node.props.children) {
-    return extractText(node.props.children)
+  if (React.isValidElement(node)) {
+    // Type assertion to tell TypeScript that props has a children property
+    const props = node.props as { children?: React.ReactNode }
+    if (props.children) {
+      return extractText(props.children)
+    }
   }
   return null
 }
