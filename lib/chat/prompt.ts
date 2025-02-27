@@ -1,47 +1,38 @@
 import { Geo } from "@vercel/edge"
-import {
-  about,
-  awards,
-  certifications,
-  educations,
-  experiences,
-  languages,
-  projects,
-  recommendations,
-  volunteerings,
-} from "#content"
+import { documentCollections, DocumentType } from "./types"
+import * as contentLayerCollections from "contentlayer/generated"
 
 function formatContent() {
-  const excludeKeys = new Set(["content", "metadata", "slug"])
+  const excludeKeys = new Set(["_id", "_raw", "type", "slug", "body"])
 
-  const sections = [
-    { data: about, tag: "about" },
-    { data: awards, tag: "award" },
-    { data: certifications, tag: "certification" },
-    { data: educations, tag: "education" },
-    { data: experiences, tag: "experience" },
-    { data: languages, tag: "language" },
-    { data: projects, tag: "project" },
-    { data: recommendations, tag: "recommendation" },
-    { data: volunteerings, tag: "volunteering" },
-  ]
+  // Create sections dynamically from documentCollections
+  const sections = Object.entries(documentCollections).map(([tag, collectionName]) => ({
+    data: contentLayerCollections[collectionName],
+    tag,
+  }))
 
-  function formatItem(item: any, tag: string, indentLevel: number): string {
+  function formatItem(item: DocumentType, tag: string, indentLevel: number): string {
     const indent = "  ".repeat(indentLevel)
     const childIndent = "  ".repeat(indentLevel + 1)
 
-    return (
-      `${indent}<${tag}>\n` +
-      Object.keys(item)
-        .filter((key) => !excludeKeys.has(key))
-        .map((key) => `${childIndent}<${key}>${item[key] as string}</${key}>`)
-        .join("\n") +
-      `\n${indent}</${tag}>`
-    )
+    // Get all regular fields
+    const regularFields = Object.keys(item)
+      .filter((key) => !excludeKeys.has(key))
+      .map((key) => {
+        // @ts-expect-error: We know these keys exist on the item
+        return `${childIndent}<${key}>${item[key]}</${key}>`
+      })
+      .join("\n")
+
+    // Get the content field from body.code
+    const contentField = item.body ? `${childIndent}<content>${item.body.raw}</content>` : ""
+
+    // Combine regular fields and content field
+    return `${indent}<${tag}>\n` + regularFields + (contentField ? `\n${contentField}` : "") + `\n${indent}</${tag}>`
   }
 
   return sections
-    .map(({ data, tag }) => data.map((item) => formatItem(item, tag, 1)).join("\n"))
+    .map(({ data, tag }) => data.map((item) => formatItem(item, tag as string, 1)).join("\n"))
     .join("\n")
     .trim()
 }
