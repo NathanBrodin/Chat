@@ -14,6 +14,7 @@ const config = {
     },
     extend: {
       fontFamily: {
+        sans: ["var(--font-geist-sans)"],
         display: ["var(--font-calsans)"],
       },
       colors: {
