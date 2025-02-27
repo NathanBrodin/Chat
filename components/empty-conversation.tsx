@@ -12,7 +12,7 @@ type EmptyConversationProps = {
 export function EmptyConversation({ questions, addMessage }: EmptyConversationProps) {
   return (
     <motion.div
-      className="flex h-full flex-col items-center justify-center gap-1"
+      className="flex h-full flex-col items-center justify-center gap-1 px-2"
       initial={{ opacity: 1 }}
       exit={{
         opacity: 0,
