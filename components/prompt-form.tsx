@@ -49,11 +49,43 @@ export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
-      <Button type="submit" disabled={isLoading} size="icon" className="block sm:hidden" aria-label="Send">
+      <Button
+        type="submit"
+        variant="primary"
+        disabled={isLoading}
+        size="icon"
+        className="block sm:hidden"
+        aria-label="Send"
+      >
         <AnimatedState>{isLoading ? <LoaderIcon className="animate-spin" /> : <SendIcon className="" />}</AnimatedState>
       </Button>
-      <Button type="submit" disabled={isLoading} className="hidden h-[38px] sm:block sm:w-32" aria-label="Send">
-        <AnimatedState>{isLoading ? <LoaderIcon className="size-4 animate-spin" /> : <p>Send</p>}</AnimatedState>
+      <Button
+        type="submit"
+        variant="primary"
+        disabled={isLoading}
+        className="group hidden h-[38px] sm:block sm:w-32"
+        aria-label="Send"
+      >
+        <AnimatedState>
+          {isLoading ? (
+            <LoaderIcon className="size-4 animate-spin" />
+          ) : (
+            <p className="flex items-center justify-center">
+              Send
+              <svg
+                className="translate-x-2 scale-50 stroke-primary-foreground stroke-2"
+                fill="none"
+                width="7"
+                height="7"
+                viewBox="0 0 10 10"
+                aria-hidden="true"
+              >
+                <path className="opacity-0 transition duration-200 group-hover:opacity-100" d="M0 5h7"></path>
+                <path className="transition duration-200 group-hover:translate-x-[3px]" d="M1 1l4 4-4 4"></path>
+              </svg>
+            </p>
+          )}
+        </AnimatedState>
       </Button>
     </form>
   )
