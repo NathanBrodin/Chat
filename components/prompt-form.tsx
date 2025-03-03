@@ -44,7 +44,7 @@ export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
         name="input"
         placeholder="Curious? Nathan's AI is here to answer!"
         autoComplete="off"
-        className="text-md flex max-h-32 w-full resize-none rounded-md border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
+        className="text-md flex max-h-32 w-full resize-none rounded-xl border border-input bg-transparent px-3 py-2 shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
         onKeyDown={onKeyDown}
         value={input}
         onChange={(e) => setInput(e.target.value)}
