@@ -1,15 +1,13 @@
-import "server-only"
+"use server"
 
 import { captureException } from "@sentry/nextjs"
 import { generateId } from "ai"
-import { desc, eq, not } from "drizzle-orm"
+import { desc, eq, not, sql } from "drizzle-orm"
 import { conversations, messages as messagesTable } from "./schema"
 import { AIState } from "../chat/types"
 import { db } from "."
 
 export async function saveChat(state: AIState) {
-  "use server"
-
   const { id, messages: chatMessages, location } = state
 
   // Get the preview from the second-to-last message
@@ -43,10 +41,10 @@ export async function saveChat(state: AIState) {
   }
 }
 
-export async function getConversations() {
-  "use server"
+export async function getConversations(page = 1, limit = 10) {
+  const offset = (page - 1) * limit
 
-  return await db
+  const data = await db
     .select({
       id: conversations.id,
       preview: conversations.preview,
@@ -58,12 +56,23 @@ export async function getConversations() {
     .from(conversations)
     .where(not(eq(conversations.city, "Unknown")))
     .orderBy(desc(conversations.createdAt))
-    .limit(10)
+    .limit(limit)
+    .offset(offset)
+
+  const totalCount = await db
+    .select({
+      count: sql<number>`count(*)`,
+    })
+    .from(conversations)
+
+  return {
+    conversations: data,
+    totalCount: totalCount[0].count,
+    hasMore: offset + data.length < totalCount[0].count,
+  }
 }
 
 export async function getMessages(conversationId: string) {
-  "use server"
-
   return await db
     .select({ id: messagesTable.id, role: messagesTable.role, display: messagesTable.content })
     .from(messagesTable)

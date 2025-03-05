@@ -13,20 +13,82 @@ import {
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 import { Button } from "./ui/button"
+import { useEffect, useRef, useState } from "react"
+import { getConversations } from "@/lib/db/actions"
+import { Skeleton } from "./ui/skeleton"
+import { Loader } from "./loader"
 
-interface ConversationsSidebarProps {
-  conversations: {
-    id: string
-    city: string | null
-    country: string | null
-    createdAt: Date | null
-    preview: string | null
-  }[]
+type Conversation = {
+  id: string
+  city: string | null
+  country: string | null
+  createdAt: Date | null
+  preview: string | null
 }
 
-export function ConversationsSidebar({ conversations }: ConversationsSidebarProps) {
+export function ConversationsSidebar() {
   const params = useParams()
   const conversationId = params.conversationId
+
+  // Infinite scroll
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [initialLoad, setInitialLoad] = useState(true)
+  const observerTarget = useRef(null)
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      if (!hasMore || loading) return
+
+      setLoading(true)
+      try {
+        const result = await getConversations(page)
+
+        // For page 1, replace the posts array; for subsequent pages, append
+        if (page === 1) {
+          setConversations(result.conversations)
+        } else {
+          setConversations((prev) => [...prev, ...result.conversations])
+        }
+
+        setHasMore(result.hasMore)
+        setInitialLoad(false)
+      } catch (error) {
+        console.error("Error fetching posts:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchConversations()
+  }, [page])
+
+  useEffect(() => {
+    // Don't set up observer during initial load
+    if (initialLoad) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          setPage((prevPage) => prevPage + 1)
+        }
+      },
+      { threshold: 1.0 }
+    )
+
+    const currentTarget = observerTarget.current
+    if (currentTarget) {
+      observer.observe(currentTarget)
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget)
+      }
+    }
+  }, [hasMore, loading, initialLoad])
 
   function getCountryName(countryCode: string | null) {
     if (!countryCode) return ""
@@ -61,9 +123,20 @@ export function ConversationsSidebar({ conversations }: ConversationsSidebarProp
                   </span>
                   <span className="ml-auto text-xs">{format(conversation.createdAt!, "dd MMM yyyy, HH:mm")}</span>
                 </div>
-                <span className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">{conversation.preview}</span>
+                <span className="break-spaces line-clamp-2 w-[260px] text-xs">{conversation.preview}</span>
               </Link>
             ))}
+
+            {loading && (
+              <div className="flex w-full justify-center py-4">
+                <Loader content="Loading more" />
+              </div>
+            )}
+
+            {hasMore && <div ref={observerTarget} className="h-10" />}
+            {!hasMore && conversations.length > 0 && (
+              <p className="py-4 text-center text-muted-foreground">That&apos;s all!</p>
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
