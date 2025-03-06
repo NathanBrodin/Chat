@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "./ui/button"
 import { useEffect, useRef, useState } from "react"
 import { getConversations } from "@/lib/db/actions"
-import { Skeleton } from "./ui/skeleton"
 import { Loader } from "./loader"
 
 type Conversation = {
