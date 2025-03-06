@@ -1,7 +1,6 @@
 import "server-only"
 
 import { anthropic } from "@ai-sdk/anthropic"
-import { captureException } from "@sentry/nextjs"
 import { Geo } from "@vercel/edge"
 import { generateId, streamText } from "ai"
 import { createAI, createStreamableValue, getMutableAIState, StreamableValue } from "ai/rsc"
@@ -49,9 +48,8 @@ export async function continueConversation(input: string, location: Geo): Promis
     })()
 
     return stream.value
-  } catch (error) {
+  } catch {
     stream.done()
-    captureException(error)
     throw new Error("Failed to send message")
   }
 }

@@ -74,7 +74,3 @@ the following categories:
 If you are interested in the detailed specification you can visit
 https://www.conventionalcommits.org/ or check out the
 [Angular Commit Message Guidelines](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines).
-
-## Testing
-
-Please ensure that the tests are passing when submitting a pull request. If you're adding new features, please include tests.

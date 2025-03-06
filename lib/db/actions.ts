@@ -1,6 +1,5 @@
 "use server"
 
-import { captureException } from "@sentry/nextjs"
 import { generateId } from "ai"
 import { desc, eq, not, sql } from "drizzle-orm"
 import { conversations, messages as messagesTable } from "./schema"
@@ -36,9 +35,7 @@ export async function saveChat(state: AIState) {
   try {
     await db.insert(conversations).values(conversation).onConflictDoNothing()
     await db.insert(messagesTable).values(messages)
-  } catch (error) {
-    captureException(error)
-  }
+  } catch {}
 }
 
 export async function getConversations(page = 1, limit = 10) {
