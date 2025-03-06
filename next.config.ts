@@ -1,14 +1,12 @@
-import { withSentryConfig } from "@sentry/nextjs"
 import { withContentlayer } from "next-contentlayer"
+
+import { fileURLToPath } from "node:url"
+import createJiti from "jiti"
+const jiti = createJiti(fileURLToPath(import.meta.url))
+
+// Import env here to validate during build. Using jiti@^1 we can import .ts files :)
+jiti("./app/env")
 
 const nextConfig: import("next").NextConfig = {}
 
-module.exports = withSentryConfig(withContentlayer(nextConfig), {
-  org: "brodindev",
-  project: "chat",
-  silent: !process.env.CI,
-  widenClientFileUpload: true,
-  tunnelRoute: "/monitoring",
-  disableLogger: true,
-  automaticVercelMonitors: true,
-})
+module.exports = withContentlayer(nextConfig)
