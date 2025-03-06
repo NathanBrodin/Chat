@@ -1,4 +1,5 @@
 import { Analytics } from "@vercel/analytics/react"
+import { OpenPanelComponent } from "@openpanel/nextjs"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { GeistSans } from "geist/font/sans"
 import type { Metadata } from "next"
@@ -67,6 +68,12 @@ export default function RootLayout({
           {children}
         </ThemeProvider>
         <Analytics />
+        <OpenPanelComponent
+          clientId={process.env.OPENPANEL_CLIENT_SECRET!}
+          trackScreenViews={true}
+          trackAttributes={true}
+          trackOutgoingLinks={true}
+        />
         <SpeedInsights />
       </body>
     </html>
