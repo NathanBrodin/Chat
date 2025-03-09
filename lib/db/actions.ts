@@ -1,7 +1,7 @@
 "use server"
 
 import { generateId } from "ai"
-import { desc, eq, not, sql } from "drizzle-orm"
+import { and, desc, eq, inArray, not, sql } from "drizzle-orm"
 import { conversations, messages as messagesTable } from "./schema"
 import { AIState } from "../chat/types"
 import { db } from "."
@@ -38,8 +38,24 @@ export async function saveChat(state: AIState) {
   } catch {}
 }
 
-export async function getConversations(page = 1, limit = 10) {
+export async function getConversations({
+  page = 1,
+  limit = 10,
+  countries = [],
+}: {
+  page?: number
+  limit?: number
+  countries?: string[]
+}) {
   const offset = (page - 1) * limit
+
+  // Build the condition dynamically
+  let baseCondition = not(eq(conversations.city, "Unknown"))
+
+  // Add country filter if provided
+  if (countries && countries.length > 0) {
+    baseCondition = and(baseCondition, inArray(conversations.country, countries))!
+  }
 
   const data = await db
     .select({
@@ -51,16 +67,18 @@ export async function getConversations(page = 1, limit = 10) {
       country: conversations.country,
     })
     .from(conversations)
-    .where(not(eq(conversations.city, "Unknown")))
+    .where(baseCondition)
     .orderBy(desc(conversations.createdAt))
     .limit(limit)
     .offset(offset)
 
+  // Apply the same filtering to the count query
   const totalCount = await db
     .select({
       count: sql<number>`count(*)`,
     })
     .from(conversations)
+    .where(baseCondition)
 
   return {
     conversations: data,
