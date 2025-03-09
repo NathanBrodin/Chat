@@ -10,6 +10,7 @@ export default async function ConversationsLayout({ children }: { children: Reac
           "--sidebar-width": "350px",
         } as React.CSSProperties
       }
+      defaultMobileOpen
     >
       <ConversationsSidebar />
       <SidebarInset>
