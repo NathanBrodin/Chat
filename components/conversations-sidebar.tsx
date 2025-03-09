@@ -131,18 +131,27 @@ export function ConversationsSidebar() {
                 href={`/conversations/${conversation.id}`}
                 key={conversation.id}
                 className={cn(
-                  "flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  "flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 visited:text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   conversationId === conversation.id && "bg-background text-primary"
                 )}
               >
-                <div className="flex w-full items-end gap-2">
+                <div
+                  className={cn("flex w-full items-end gap-2", conversationId === conversation.id && "text-primary")}
+                >
                   <span className="font-medium">
                     {conversation.city ? decodeURIComponent(conversation.city) : ""}
                     {conversation.country ? `, ${getCountryName(conversation.country)}` : ""}
                   </span>
                   <span className="ml-auto text-xs">{format(conversation.createdAt!, "dd MMM yyyy, HH:mm")}</span>
                 </div>
-                <span className="break-spaces line-clamp-2 w-[260px] text-xs">{conversation.preview}</span>
+                <span
+                  className={cn(
+                    "break-spaces line-clamp-2 w-[260px] text-xs",
+                    conversationId === conversation.id && "text-primary"
+                  )}
+                >
+                  {conversation.preview}
+                </span>
               </Link>
             ))}
 
