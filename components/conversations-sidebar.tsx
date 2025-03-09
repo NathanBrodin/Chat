@@ -11,11 +11,12 @@ import {
   SidebarGroupContent,
   SidebarHeader,
 } from "@/components/ui/sidebar"
-import { cn } from "@/lib/utils"
+import { cn, getCountryName } from "@/lib/utils"
 import { Button } from "./ui/button"
 import { useEffect, useRef, useState } from "react"
 import { getConversations } from "@/lib/db/actions"
 import { Loader } from "./loader"
+import { Filters, FiltersPopover } from "./filters-popover"
 
 type Conversation = {
   id: string
@@ -33,9 +34,24 @@ export function ConversationsSidebar() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [totalCount, setTotalCount] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [initialLoad, setInitialLoad] = useState(true)
   const observerTarget = useRef(null)
+
+  const [filters, setFilters] = useState<Filters>({
+    countries: [],
+    dateRange: null,
+  })
+
+  // Function to apply filters and reset pagination
+  function handleApplyFilters(newFilters: Filters) {
+    setFilters(newFilters)
+    // Reset to page 1 when applying new filters
+    setPage(1)
+    setConversations([])
+    setHasMore(true)
+  }
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -43,7 +59,15 @@ export function ConversationsSidebar() {
 
       setLoading(true)
       try {
-        const result = await getConversations(page)
+        const countryValues = filters.countries.map((item) => item.value)
+        const dateRange = filters.dateRange?.value
+
+        // Pass these values to your getConversations function
+        const result = await getConversations({
+          page,
+          countries: countryValues.length > 0 ? countryValues : undefined,
+          // dateRange: dateRange || undefined,
+        })
 
         // For page 1, replace the posts array; for subsequent pages, append
         if (page === 1) {
@@ -52,6 +76,7 @@ export function ConversationsSidebar() {
           setConversations((prev) => [...prev, ...result.conversations])
         }
 
+        setTotalCount(result.totalCount)
         setHasMore(result.hasMore)
         setInitialLoad(false)
       } catch (error) {
@@ -89,23 +114,16 @@ export function ConversationsSidebar() {
     }
   }, [hasMore, loading, initialLoad])
 
-  function getCountryName(countryCode: string | null) {
-    if (!countryCode) return ""
-
-    try {
-      const regionNames = new Intl.DisplayNames(["en"], { type: "region" })
-      return regionNames.of(countryCode)
-    } catch {
-      return countryCode // fallback to code if translation fails
-    }
-  }
-
   return (
     <Sidebar collapsible="offcanvas" className="overflow-hidden">
       <SidebarHeader className="gap-3.5 border-b p-4 font-display text-xl font-semibold">Conversations</SidebarHeader>
       <SidebarContent>
         <SidebarGroup className="px-0">
           <SidebarGroupContent>
+            <div className="flex items-center justify-between border-b p-2 pt-0">
+              <FiltersPopover filters={filters} onApplyFilters={handleApplyFilters} />
+              <div className="">{totalCount} results</div>
+            </div>
             {conversations.map((conversation) => (
               <Link
                 href={`/conversations/${conversation.id}`}
