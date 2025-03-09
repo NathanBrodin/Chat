@@ -113,3 +113,9 @@
 .dark .text-shadow-accent {
   text-shadow: 0 2px 0 #f7f7f7;
 }
+
+.sidebar a.selected-conversation,
+.sidebar a.selected-conversation:visited {
+  background-color: var(--background);
+  color: var(--primary);
+}
