@@ -1,10 +1,12 @@
-import { SlidersHorizontalIcon, XIcon } from "lucide-react"
+import { Check, SlidersHorizontalIcon, XIcon } from "lucide-react"
 import { Button } from "./ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { useEffect, useState } from "react"
 import { Item, MultiSelectCombobox } from "./ui/multi-select-combobox"
 import { Badge } from "./ui/badge"
 import { AnimatePresence, motion } from "motion/react"
+import { Command, CommandGroup, CommandItem, CommandList } from "./ui/command"
+import { cn } from "@/lib/utils"
 
 // Country data
 const countries = [
@@ -177,12 +179,12 @@ export function FiltersPopover({ filters, onApplyFilters }: FiltersPopoverProps)
       </PopoverTrigger>
       <PopoverContent align="start" className="flex w-fit max-w-xl flex-col gap-4">
         <div className="flex min-h-[22px] flex-wrap gap-1">
-          {!tempFilters.dateRange && !tempFilters.countries.length && (
-            <Badge variant="secondary" className="flex items-center gap-1 text-xs">
-              No filters selected
-            </Badge>
-          )}
           <AnimatePresence>
+            {!tempFilters.dateRange && !tempFilters.countries.length && (
+              <Badge variant="secondary" className="flex items-center gap-1 text-xs">
+                No filters selected
+              </Badge>
+            )}
             {tempFilters.countries.map((country) => (
               <motion.div
                 layout
@@ -226,17 +228,18 @@ export function FiltersPopover({ filters, onApplyFilters }: FiltersPopoverProps)
             />
           </div>
           <div className="flex flex-col justify-between">
-            Soon: Date range
-            {/* Uncomment when implementing date range
-            <div className="rounded border">
+            <div className="rounded border pb-1">
               <h4 className="border-b px-4 py-2 text-sm font-medium">Date Range</h4>
-              <Command>
+              <Command className="relative h-fit rounded-none border-none">
                 <CommandList>
                   <CommandGroup>
                     {dateRanges.map((item) => (
                       <CommandItem key={item.value} value={item.value} onSelect={handleRangeSelect}>
                         <Check
-                          className={cn("mr-2 h-4 w-4", tempFilters.dateRange?.value === item.value ? "opacity-100" : "opacity-0")}
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            tempFilters.dateRange?.value === item.value ? "opacity-100" : "opacity-0"
+                          )}
                         />
                         {item.label}
                       </CommandItem>
@@ -245,7 +248,7 @@ export function FiltersPopover({ filters, onApplyFilters }: FiltersPopoverProps)
                 </CommandList>
               </Command>
             </div>
-            */}
+
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={clearAll}>
                 Clear All
