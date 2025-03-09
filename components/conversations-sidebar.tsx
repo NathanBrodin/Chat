@@ -116,7 +116,9 @@ export function ConversationsSidebar() {
 
   return (
     <Sidebar collapsible="offcanvas" className="overflow-hidden">
-      <SidebarHeader className="gap-3.5 border-b p-4 font-display text-xl font-semibold">Conversations</SidebarHeader>
+      <SidebarHeader className="gap-3.5 border-b p-4 font-display text-xl font-semibold">
+        <Link href="/conversations">Conversations</Link>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup className="px-0">
           <SidebarGroupContent>
