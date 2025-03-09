@@ -20,7 +20,7 @@ const countries = [
   { value: "CM", label: "Cameroon" },
   { value: "CA", label: "Canada" },
   { value: "CL", label: "Chile" },
-  { value: "CN", label: "People's Republic of China" },
+  { value: "CN", label: "China" },
   { value: "CZ", label: "Czech Republic" },
   { value: "DK", label: "Denmark" },
   { value: "EG", label: "Egypt" },
@@ -41,7 +41,7 @@ const countries = [
   { value: "MG", label: "Madagascar" },
   { value: "MY", label: "Malaysia" },
   { value: "MX", label: "Mexico" },
-  { value: "MD", label: "Moldova, Republic of" },
+  { value: "MD", label: "Moldova" },
   { value: "NL", label: "Netherlands" },
   { value: "NP", label: "Nepal" },
   { value: "NZ", label: "New Zealand" },
@@ -55,7 +55,7 @@ const countries = [
   { value: "PL", label: "Poland" },
   { value: "PT", label: "Portugal" },
   { value: "RO", label: "Romania" },
-  { value: "RU", label: "Russian Federation" },
+  { value: "RU", label: "Russia" },
   { value: "SA", label: "Saudi Arabia" },
   { value: "RS", label: "Serbia" },
   { value: "SG", label: "Singapore" },
@@ -177,8 +177,8 @@ export function FiltersPopover({ filters, onApplyFilters }: FiltersPopoverProps)
           <span className="px-2">Filters</span> <SlidersHorizontalIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="flex w-fit max-w-xl flex-col gap-4">
-        <div className="flex min-h-[22px] flex-wrap gap-1">
+      <PopoverContent align="start" className="flex w-[348px] flex-col gap-4 sm:w-[548px]">
+        <div className="flex min-h-[22px] w-full flex-wrap gap-1">
           <AnimatePresence>
             {!tempFilters.dateRange && !tempFilters.countries.length && (
               <Badge variant="secondary" className="flex items-center gap-1 text-xs">
@@ -217,7 +217,7 @@ export function FiltersPopover({ filters, onApplyFilters }: FiltersPopoverProps)
           </AnimatePresence>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <div className="flex flex-col rounded border">
             <h4 className="border-b px-4 py-2 text-sm font-medium">Countries</h4>
             <MultiSelectCombobox
@@ -227,7 +227,7 @@ export function FiltersPopover({ filters, onApplyFilters }: FiltersPopoverProps)
               onChange={handleCountriesSelect}
             />
           </div>
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col justify-between gap-2">
             <div className="rounded border pb-1">
               <h4 className="border-b px-4 py-2 text-sm font-medium">Date Range</h4>
               <Command className="relative h-fit rounded-none border-none">
