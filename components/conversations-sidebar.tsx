@@ -66,7 +66,7 @@ export function ConversationsSidebar() {
         const result = await getConversations({
           page,
           countries: countryValues.length > 0 ? countryValues : undefined,
-          // dateRange: dateRange || undefined,
+          dateRange: dateRange || undefined,
         })
 
         // For page 1, replace the posts array; for subsequent pages, append

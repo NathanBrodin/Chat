@@ -1,10 +1,11 @@
 "use server"
 
 import { generateId } from "ai"
-import { and, desc, eq, inArray, not, sql } from "drizzle-orm"
+import { and, desc, eq, gte, inArray, lte, not, sql } from "drizzle-orm"
 import { conversations, messages as messagesTable } from "./schema"
 import { AIState } from "../chat/types"
 import { db } from "."
+import { getDateRange } from "../utils"
 
 export async function saveChat(state: AIState) {
   const { id, messages: chatMessages, location } = state
@@ -42,10 +43,12 @@ export async function getConversations({
   page = 1,
   limit = 10,
   countries = [],
+  dateRange,
 }: {
   page?: number
   limit?: number
   countries?: string[]
+  dateRange?: string
 }) {
   const offset = (page - 1) * limit
 
@@ -55,6 +58,18 @@ export async function getConversations({
   // Add country filter if provided
   if (countries && countries.length > 0) {
     baseCondition = and(baseCondition, inArray(conversations.country, countries))!
+  }
+
+  // Add date range filter if provided
+  if (dateRange) {
+    const dateRangeObj = getDateRange(dateRange)
+    if (dateRangeObj) {
+      baseCondition = and(
+        baseCondition,
+        gte(conversations.createdAt, dateRangeObj.start),
+        lte(conversations.createdAt, dateRangeObj.end)
+      )!
+    }
   }
 
   const data = await db
