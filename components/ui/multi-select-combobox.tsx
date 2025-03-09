@@ -46,7 +46,7 @@ export function MultiSelectCombobox({
   }
 
   return (
-    <Command className="w-72">
+    <Command className="sm:w-72">
       <CommandInput placeholder={searchPlaceholder} />
       <CommandList>
         <CommandEmpty>{emptyMessage}</CommandEmpty>
