@@ -15,6 +15,7 @@ import { Question } from "@/lib/questions/types"
 import { Content } from "./content"
 import InfoDialog from "./info-dialog"
 import { Loader } from "./loader"
+import { vibrate } from "@/lib/vibrate"
 
 type ChatProps = {
   location: Geo
@@ -47,6 +48,12 @@ export default function Chat({ questions, location }: ChatProps) {
       },
     ])
 
+    // Add a delay before the second vibration
+    setTimeout(() => {
+      // Add vibration when streaming begins
+      vibrate()
+    }, 200) // 200ms delay to make it distinct from the first vibration
+
     try {
       // Get the assistant's response
       const result = await continueConversation(value, location)
@@ -74,6 +81,10 @@ export default function Chat({ questions, location }: ChatProps) {
         },
       ])
     }
+
+    // Add vibration when streaming ends
+    vibrate()
+
     setIsLoading(false)
   }
 
