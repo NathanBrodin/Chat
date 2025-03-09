@@ -146,7 +146,7 @@ export function ConversationsSidebar() {
 
             {loading && (
               <div className="flex w-full justify-center py-4">
-                <Loader content="Loading more" />
+                <Loader content={initialLoad ? "Loading conversations" : "Loading more"} />
               </div>
             )}
 
