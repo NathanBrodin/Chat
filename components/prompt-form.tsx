@@ -6,7 +6,7 @@ import Textarea from "react-textarea-autosize"
 import { Button } from "@/components/ui/button"
 import { useEnterSubmit } from "@/hooks/use-enter-submit"
 import { AnimatedState } from "./ui/animate-state"
-import { vibrate } from "@/lib/vibrate"
+import { useVibration } from "@/hooks/use-vibrate"
 
 type PromptFormProps = {
   addMessage: (input: string) => Promise<void>
@@ -14,6 +14,7 @@ type PromptFormProps = {
 }
 
 export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
+  const vibrate = useVibration()
   const { formRef, onKeyDown } = useEnterSubmit()
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)

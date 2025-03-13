@@ -15,7 +15,7 @@ import { Question } from "@/lib/questions/types"
 import { Content } from "./content"
 import InfoDialog from "./info-dialog"
 import { Loader } from "./loader"
-import { vibrate } from "@/lib/vibrate"
+import { useVibration } from "@/hooks/use-vibrate"
 
 type ChatProps = {
   location: Geo
@@ -23,6 +23,7 @@ type ChatProps = {
 }
 
 export default function Chat({ questions, location }: ChatProps) {
+  const vibrate = useVibration()
   const [messages, setMessages] = useUIState()
   const { continueConversation } = useActions()
   const [isLoading, setIsLoading] = useState(false)
