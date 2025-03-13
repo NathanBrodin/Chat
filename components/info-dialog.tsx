@@ -15,7 +15,10 @@ import { Button } from "./ui/button"
 export default function InfoDialog({ className }: { className?: string }) {
   return (
     <Dialog>
-      <DialogTrigger className={cn("flex items-center gap-1 place-self-end text-xs text-muted-foreground", className)}>
+      <DialogTrigger
+        aria-label="Open dialog"
+        className={cn("flex items-center gap-1 place-self-end text-xs text-muted-foreground", className)}
+      >
         <InfoIcon className="size-4 sm:size-3" />
         <span className="hidden sm:flex">Nathan&apos;s AI</span>
       </DialogTrigger>
