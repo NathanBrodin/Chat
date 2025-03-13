@@ -7,6 +7,14 @@ const jiti = createJiti(fileURLToPath(import.meta.url))
 // Import env here to validate during build. Using jiti@^1 we can import .ts files :)
 jiti("./app/env")
 
-const nextConfig: import("next").NextConfig = {}
+const nextConfig: import("next").NextConfig = {
+  experimental: {
+    optimizePackageImports: ["shiki", "react-markdown", "marked"],
+  },
+}
 
-module.exports = withContentlayer(nextConfig)
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+})
+
+module.exports = withBundleAnalyzer(withContentlayer(nextConfig))
