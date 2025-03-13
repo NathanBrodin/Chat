@@ -31,9 +31,7 @@ export function Message({ message }: MessageProps) {
       {message.role === "assistant" && <Terminal className="h-4 w-4" />}
       {message.role === "user" && <User className="h-4 w-4" />}
       {message.role === "error" && <Accessibility className="h-4 w-4" />}
-      <AlertTitle className="relative">
-        {capitalizedRole}
-      </AlertTitle>
+      <AlertTitle className="relative">{capitalizedRole}</AlertTitle>
       <AlertDescription className="mr-2 min-h-[22.75px] sm:mr-10">{message.display}</AlertDescription>
     </Alert>
   )

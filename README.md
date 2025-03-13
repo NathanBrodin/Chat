@@ -103,9 +103,10 @@ OPENPANEL_CLIENT_SECRET="your-client-secret"
 
 ### Updating the AI Content
 
-Customize the AI’s responses by replacing all content inside the [./content/**](./content/) directory with your own experiences, education, or whatever makes your AI unique.
+Customize the AI’s responses by replacing all content inside the [./content/\*\*](./content/) directory with your own experiences, education, or whatever makes your AI unique.
 
 The content structure is defined in:
+
 - [contentlayer.config.ts](./contentlayer.config.ts)
 - [lib/chat/types.ts](lib/chat/types.ts)
 
@@ -118,13 +119,17 @@ If your name happens to be Nathan, congratulations! The chatbot is already perso
 For everyone else, you'll need to update all occurrences of its current name.
 
 #### VIM Users:
+
 Run a simple:
+
 ```
 g/Nathan's AI/
 ```
+
 This will show all occurrences so you can update them efficiently.
 
 #### Non-VIM Users:
+
 That's not my problem sorry, find your way's to replace it.
 
 ## Running locally
