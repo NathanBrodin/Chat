@@ -20,6 +20,8 @@
   position: relative;
   transition: background 0.2s 0.1s;
   font-weight: 600;
+
+  will-change: transform;
 }
 
 .dark .dazzle {
