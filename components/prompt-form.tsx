@@ -11,9 +11,10 @@ import { useVibration } from "@/hooks/use-vibrate"
 type PromptFormProps = {
   addMessage: (input: string) => Promise<void>
   isLoading: boolean
+  isError?: boolean
 }
 
-export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
+export function PromptForm({ addMessage, isLoading, isError }: PromptFormProps) {
   const vibrate = useVibration()
   const { formRef, onKeyDown } = useEnterSubmit()
   const [input, setInput] = useState("")
@@ -28,6 +29,9 @@ export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    if (isError) return
+
     setInput("")
     vibrate()
     await addMessage(input)
@@ -54,8 +58,8 @@ export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
       />
       <Button
         type="submit"
-        variant="primary"
-        disabled={isLoading}
+        variant={isError ? "destructive" : "primary"}
+        disabled={isLoading || isError}
         size="icon"
         className="block sm:hidden"
         aria-label="Send"
@@ -64,8 +68,8 @@ export function PromptForm({ addMessage, isLoading }: PromptFormProps) {
       </Button>
       <Button
         type="submit"
-        variant="primary"
-        disabled={isLoading}
+        variant={isError ? "destructive" : "primary"}
+        disabled={isLoading || isError}
         className="group hidden h-[38px] sm:block sm:w-32"
         aria-label="Send"
       >

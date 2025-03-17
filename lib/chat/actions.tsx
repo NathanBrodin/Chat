@@ -12,45 +12,56 @@ import { rateLimit } from "../rate-limit"
 
 export async function continueConversation(input: string, location: Geo): Promise<StreamableValue<any, any>> {
   "use server"
-
   // Implement rate limit based on the request's IP
   const header = await headers()
   const ip = (header.get("x-forwarded-for") ?? "127.0.0.2").split(",")[0]
-
   const { success } = await rateLimit(ip)
   if (!success) {
     throw new Error("Rate limit exceeded")
   }
-
   const history = getMutableAIState<typeof AI>("messages")
-
   // Update the AI state with the new user message.
   history.update([...(history.get() as ServerMessage[]), { role: "user", content: input }])
-
   const stream = createStreamableValue()
+
+  // Create a promise that can be rejected from the onError callback
+  let rejectStreamPromise: (reason?: any) => void = () => {}
+  const streamPromise = new Promise<void>((resolve, reject) => {
+    rejectStreamPromise = reject
+  })
 
   try {
     ;(async () => {
-      const { textStream } = streamText({
-        model: anthropic("claude-3-5-haiku-latest"),
-        system: systemPrompt(location),
-        messages: history.get() as ServerMessage[],
-        onFinish(event) {
-          history.done([...(history.get() as ServerMessage[]), { role: "assistant", content: event.text }])
-        },
-      })
+      try {
+        const { textStream } = streamText({
+          model: anthropic("claude-3-5-haiku-latest"),
+          system: systemPrompt(location),
+          messages: history.get() as ServerMessage[],
+          onFinish(event) {
+            history.done([...(history.get() as ServerMessage[]), { role: "assistant", content: event.text }])
+          },
+          onError(error) {
+            rejectStreamPromise(error)
+          },
+        })
 
-      for await (const text of textStream) {
-        stream.update(text)
+        for await (const text of textStream) {
+          stream.update(text)
+        }
+        stream.done()
+        // Resolve the promise when everything completes successfully
+        Promise.resolve()
+      } catch (innerError) {
+        rejectStreamPromise(innerError)
       }
-
-      stream.done()
     })()
 
+    // Wait for either the stream to complete or an error to be thrown
+    await streamPromise
     return stream.value
-  } catch {
+  } catch (error) {
     stream.done()
-    throw new Error("Failed to send message")
+    throw error
   }
 }
 

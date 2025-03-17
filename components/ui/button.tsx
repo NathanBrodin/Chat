@@ -10,7 +10,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        destructive:
+          "relative flex w-full items-center justify-center gap-2 rounded-xl border border-[transparent] bg-neutral-900 bg-gradient-to-b from-destructive to-destructive  px-4 py-2 text-sm font-medium text-white shadow-inner transition-all duration-150 ease-in-out before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:shadow-[0px_2px_0.4px_0px_rgba(255,_255,_255,_0.16)_inset] hover:bg-[#1f1f1f] hover:opacity-90 hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-1 dark:bg-white dark:text-black",
         outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         primary:
           "relative flex w-full items-center justify-center gap-2 rounded-xl border border-[transparent] bg-neutral-900 bg-gradient-to-b from-primary to-primary px-4 py-2 text-sm font-medium text-white shadow-inner transition-all duration-150 ease-in-out before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:shadow-[0px_2px_0.4px_0px_rgba(255,_255,_255,_0.16)_inset] hover:bg-[#1f1f1f] hover:opacity-90 hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-1 dark:bg-white dark:text-black",

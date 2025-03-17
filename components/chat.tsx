@@ -16,6 +16,7 @@ import { Content } from "./content"
 import InfoDialog from "./info-dialog"
 import { Loader } from "./loader"
 import { useVibration } from "@/hooks/use-vibrate"
+import { Button } from "./ui/button"
 
 type ChatProps = {
   location: Geo
@@ -27,6 +28,7 @@ export default function Chat({ questions, location }: ChatProps) {
   const [messages, setMessages] = useUIState()
   const { continueConversation } = useActions()
   const [isLoading, setIsLoading] = useState(false)
+  const [isError, setIsError] = useState(false)
 
   async function addMessage(input: string) {
     const value = input.trim()
@@ -70,6 +72,7 @@ export default function Chat({ questions, location }: ChatProps) {
         ])
       }
     } catch (error) {
+      setIsError(true)
       setMessages([
         ...newMessages,
         {
@@ -78,7 +81,7 @@ export default function Chat({ questions, location }: ChatProps) {
           display:
             (error as Error).message === "Rate limit exceeded"
               ? "Whoa, easy there big talker! You've hit the rate limit. Give it a moment before asking more."
-              : "Oops, something went wrong!",
+              : "Oops, something went wrong! Maybe it's a server error (unlikely, I never make mistakes), an issue with my AI provider, or... I might be out of AI credits. Sad times :( Try refreshing the page, it always works.",
         },
       ])
     }
@@ -98,7 +101,7 @@ export default function Chat({ questions, location }: ChatProps) {
       <Separator />
       <div className="flex w-full justify-between p-1 sm:p-4">
         <InfoDialog className="hidden sm:flex" />
-        <PromptForm addMessage={addMessage} isLoading={isLoading} />
+        <PromptForm addMessage={addMessage} isLoading={isLoading} isError={isError} />
         <div />
       </div>
     </div>
