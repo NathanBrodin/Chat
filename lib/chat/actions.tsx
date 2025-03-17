@@ -64,7 +64,7 @@ export const AI = createAI<AIState, UIState, AIActions>({
   onSetAIState: async ({ state, done }) => {
     "use server"
 
-    if (done) {
+    if (done && process.env.NODE_ENV === "production") {
       await saveChat(state)
     }
   },

@@ -1,7 +1,7 @@
 "use server"
 
 import { generateId } from "ai"
-import { and, desc, eq, gte, inArray, lte, not, sql } from "drizzle-orm"
+import { and, desc, eq, gte, inArray, lte, sql } from "drizzle-orm"
 import { conversations, messages as messagesTable } from "./schema"
 import { AIState } from "../chat/types"
 import { db } from "."
@@ -10,19 +10,26 @@ import { getDateRange } from "../utils"
 export async function saveChat(state: AIState) {
   const { id, messages: chatMessages, location } = state
 
-  // Get the preview from the second-to-last message
-  const previewMessage = chatMessages.at(-2)?.content || ""
-  const preview = previewMessage.slice(0, 100)
+  // If we only have two messages, then it's the initial conversation
+  if (chatMessages.length === 2) {
+    // Get the preview from the second-to-last message
+    const previewMessage = chatMessages.at(-2)?.content || ""
+    const preview = previewMessage.slice(0, 100)
 
-  const conversation: typeof conversations.$inferInsert = {
-    id: id,
-    preview,
-    city: location?.city,
-    region: location?.region,
-    country: location?.country,
-    latitude: location?.latitude,
-    longitude: location?.longitude,
-    countryRegion: location?.region,
+    const conversation: typeof conversations.$inferInsert = {
+      id: id,
+      preview,
+      city: location?.city,
+      region: location?.region,
+      country: location?.country,
+      latitude: location?.latitude,
+      longitude: location?.longitude,
+      countryRegion: location?.region,
+    }
+
+    try {
+      await db.insert(conversations).values(conversation)
+    } catch {}
   }
 
   // Format the last two new messages of the conversation
@@ -34,7 +41,6 @@ export async function saveChat(state: AIState) {
   }))
 
   try {
-    await db.insert(conversations).values(conversation).onConflictDoNothing()
     await db.insert(messagesTable).values(messages)
   } catch {}
 }
@@ -53,22 +59,23 @@ export async function getConversations({
   const offset = (page - 1) * limit
 
   // Build the condition dynamically
-  let baseCondition = not(eq(conversations.city, "Unknown"))
+  let baseCondition = undefined
 
   // Add country filter if provided
   if (countries && countries.length > 0) {
-    baseCondition = and(baseCondition, inArray(conversations.country, countries))!
+    baseCondition = inArray(conversations.country, countries)
   }
 
   // Add date range filter if provided
   if (dateRange) {
     const dateRangeObj = getDateRange(dateRange)
     if (dateRangeObj) {
-      baseCondition = and(
-        baseCondition,
+      const dateRangeCondition = and(
         gte(conversations.createdAt, dateRangeObj.start),
         lte(conversations.createdAt, dateRangeObj.end)
-      )!
+      )
+
+      baseCondition = baseCondition ? and(baseCondition, dateRangeCondition) : dateRangeCondition
     }
   }
 
