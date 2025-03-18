@@ -6,6 +6,7 @@ import { conversations, messages as messagesTable } from "./schema"
 import { AIState } from "../chat/types"
 import { db } from "."
 import { getDateRange } from "../utils"
+import { unstable_cache } from "next/cache"
 
 export async function saveChat(state: AIState) {
   const { id, messages: chatMessages, location } = state
@@ -109,9 +110,9 @@ export async function getConversations({
   }
 }
 
-export async function getMessages(conversationId: string) {
+export const getMessages = unstable_cache(async (conversationId: string) => {
   return await db
     .select({ id: messagesTable.id, role: messagesTable.role, display: messagesTable.content })
     .from(messagesTable)
     .where(eq(messagesTable.conversationId, conversationId))
-}
+})

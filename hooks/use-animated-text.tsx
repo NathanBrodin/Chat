@@ -28,5 +28,9 @@ export function useAnimatedText(text: string, duration = 2) {
     return () => controls.stop()
   }, [startingCursor, text, duration])
 
+  if (duration === 0) {
+    return text
+  }
+
   return text.split(delimiter).slice(0, cursor).join(delimiter)
 }
