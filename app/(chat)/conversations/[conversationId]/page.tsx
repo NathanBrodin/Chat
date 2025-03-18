@@ -8,7 +8,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ c
   const messages = await getMessages(conversationId)
 
   return (
-    <div className="p-4">
+    <div className="h-full p-4">
       {messages.map((message) => (
         <Message
           message={{ ...message, display: <Content content={message.display} duration={0} /> }}
