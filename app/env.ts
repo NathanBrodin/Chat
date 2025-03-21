@@ -9,7 +9,6 @@ export const env = createEnv({
     KV_REST_API_URL: z.string().min(1),
     KV_REST_API_TOKEN: z.string().min(1),
     KV_REST_API_READ_ONLY_TOKEN: z.string().min(1),
-    OPENPANEL_CLIENT_SECRET: z.string().optional(), // Optional analytics
   },
 
   /**

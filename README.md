@@ -90,16 +90,6 @@ If you want to save chat logs for fine-tuning responses (definitely not because 
 POSTGRES_URL="your-database-url"
 ```
 
-#### 4. (Optional) Analytics (Openpanel)
-
-Want to see if anyone is actually using your AI? Openpanel helps track visits and user interactions.
-
-1. Get your client secret key from [Openpanel](https://openpanel.dev/).
-2. Add it to your `.env.local` file:
-
-```
-OPENPANEL_CLIENT_SECRET="your-client-secret"
-```
 
 ### Updating the AI Content
 

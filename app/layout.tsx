@@ -1,5 +1,4 @@
 import { Analytics } from "@vercel/analytics/react"
-import { OpenPanelComponent } from "@openpanel/nextjs"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { GeistSans } from "geist/font/sans"
 import type { Metadata } from "next"
@@ -7,7 +6,6 @@ import "./globals.css"
 import localFont from "next/font/local"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { siteConfig } from "@/config/site-config"
-import { env } from "./env"
 
 const CalSans = localFont({
   src: "../public/fonts/CalSans-SemiBold.woff2",
@@ -70,14 +68,6 @@ export default function RootLayout({
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />
-        {env.OPENPANEL_CLIENT_SECRET && (
-          <OpenPanelComponent
-            clientId={env.OPENPANEL_CLIENT_SECRET}
-            trackScreenViews={true}
-            trackAttributes={true}
-            trackOutgoingLinks={true}
-          />
-        )}
       </body>
     </html>
   )
