@@ -36,7 +36,7 @@ export async function continueConversation(input: string, location: Geo): Promis
   try {
     ;(async () => {
       const { textStream } = streamText({
-        model: openrouter.chat("mistralai/mistral-small-24b-instruct-2501"),
+        model: openrouter.chat("qwen/qwen3-235b-a22b-2507"),
         system: systemPrompt(location),
         messages: history.get() as ServerMessage[],
         onFinish(event) {
