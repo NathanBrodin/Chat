@@ -1,14 +1,18 @@
 import "server-only"
 
-import { anthropic } from "@ai-sdk/anthropic"
 import { Geo } from "@vercel/edge"
 import { generateId, streamText } from "ai"
-import { createAI, createStreamableValue, getMutableAIState, StreamableValue } from "ai/rsc"
+import { createAI, createStreamableValue, getMutableAIState, StreamableValue } from "@ai-sdk/rsc"
 import { headers } from "next/headers"
 import { systemPrompt } from "./prompt"
 import { AIActions, AIState, ServerMessage, UIState } from "./types"
 import { saveChat } from "../db/actions"
 import { rateLimit } from "../rate-limit"
+import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+
+const openrouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY,
+})
 
 export async function continueConversation(input: string, location: Geo): Promise<StreamableValue<any, any>> {
   "use server"
@@ -32,7 +36,7 @@ export async function continueConversation(input: string, location: Geo): Promis
   try {
     ;(async () => {
       const { textStream } = streamText({
-        model: anthropic("claude-3-5-haiku-latest"),
+        model: openrouter.chat("mistralai/mistral-small-24b-instruct-2501"),
         system: systemPrompt(location),
         messages: history.get() as ServerMessage[],
         onFinish(event) {

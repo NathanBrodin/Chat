@@ -1,4 +1,4 @@
-import { useActions as untypedUseActions, useUIState as untypedUseUIState } from "ai/rsc"
+import { useActions as untypedUseActions, useUIState as untypedUseUIState } from "@ai-sdk/rsc"
 import { AI } from "@/lib/chat/actions"
 
 export function useUIState() {
