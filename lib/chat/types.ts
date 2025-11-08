@@ -1,5 +1,5 @@
 import { Geo } from "@vercel/edge"
-import { StreamableValue } from "ai/rsc"
+import { StreamableValue } from "@ai-sdk/rsc"
 import { ReactNode } from "react"
 import { allDocuments } from "contentlayer/generated"
 

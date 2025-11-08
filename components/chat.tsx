@@ -2,7 +2,7 @@
 
 import { Geo } from "@vercel/edge"
 import { generateId } from "ai"
-import { readStreamableValue } from "ai/rsc"
+import { readStreamableValue } from "@ai-sdk/rsc"
 import { AnimatePresence } from "motion/react"
 import { useState } from "react"
 import { Conversation } from "@/components/conversation"
@@ -16,7 +16,6 @@ import { Content } from "./content"
 import InfoDialog from "./info-dialog"
 import { Loader } from "./loader"
 import { useVibration } from "@/hooks/use-vibrate"
-import { Button } from "./ui/button"
 
 type ChatProps = {
   location: Geo
