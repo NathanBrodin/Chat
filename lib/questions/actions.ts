@@ -31,7 +31,6 @@ export async function getQuestions(location: Geo): Promise<Question[]> {
     { content: "Why did you choose DNB again for your internship?", locations: [{ city: "Oslo" }] },
     { content: "What's your favorite part about working at DNB?", locations: [{ city: "Oslo" }] },
     { content: "What's your favorite area in Oslo?", locations: [{ city: "Oslo" }] },
-    { content: "Are you planning to stay in Oslo after your internship?", locations: [{ city: "Oslo" }] },
     { content: "How do you find the work-life balance in Oslo?", locations: [{ city: "Oslo" }] },
     { content: "Is Tromsø your dream city?", locations: [{ city: "Tromsø" }] },
 
@@ -70,7 +69,6 @@ export async function getQuestions(location: Geo): Promise<Question[]> {
     { content: "What projects have you done?", locations: [] },
     { content: "What's your tech stack like?", locations: [] },
     { content: "What languages do you speak?", locations: [] },
-    { content: "How have you volunteered?", locations: [] },
     { content: "Who's recommended you?", locations: [] },
     { content: "Where are you from originally?", locations: [] },
     { content: "What degree are you going for?", locations: [] },
@@ -81,21 +79,13 @@ export async function getQuestions(location: Geo): Promise<Question[]> {
     { content: "What motivated you to study abroad?", locations: [] },
 
     // Technical Skills & Projects
-    { content: "Why did you choose Next.js as your main framework?", locations: [] },
     { content: "What made you interested in TypeScript?", locations: [] },
     { content: "How did you learn frontend development?", locations: [] },
-    { content: "Tell me about your chatbot projects at DNB", locations: [] },
     { content: "What's your favorite project you've built?", locations: [] },
     { content: "How did you get into mobile development?", locations: [] },
 
-    // Awards & Achievements
-    { content: "How did you win the PST competition twice?", locations: [] },
-    { content: "Tell me about coaching RoboRave teams", locations: [] },
-    { content: "What was your winning RoboRave strategy?", locations: [] },
-
     // Personal Development
     { content: "How do you learn new technologies?", locations: [] },
-    { content: "What's your approach to problem-solving?", locations: [] },
     { content: "How do you stay updated with tech trends?", locations: [] },
     { content: "What's your typical coding workflow?", locations: [] },
 
@@ -108,25 +98,11 @@ export async function getQuestions(location: Geo): Promise<Question[]> {
     // Languages & Communication
     { content: "How do you handle the language barriers?", locations: [] },
     { content: "Which language do you code in most?", locations: [] },
-    { content: "How do you collaborate in international teams?", locations: [] },
 
     // Background & Motivation
     { content: "What inspired you to work internationally?", locations: [] },
     { content: "How has your background influenced your career?", locations: [] },
     { content: "What drives you in software development?", locations: [] },
-    { content: "What's been your biggest challenge so far?", locations: [] },
-    { content: "What's your proudest achievement?", locations: [] },
-
-    // Teaching & Volunteering
-    { content: "What did you learn from teaching others?", locations: [] },
-    { content: "How has volunteering shaped your career?", locations: [] },
-
-    // Technical Interests
-    { content: "Why do you prefer Vercel's ecosystem?", locations: [] },
-    { content: "What's your take on AI in development?", locations: [] },
-    { content: "How do you approach testing?", locations: [] },
-    { content: "What's your favorite dev tool?", locations: [] },
-    { content: "How do you structure your projects?", locations: [] },
   ]
 
   const result: Question[] = []
