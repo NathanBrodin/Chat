@@ -1,17 +1,19 @@
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { api } from "../../convex/_generated/api";
-import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
-import { authClient } from "@/lib/auth-client";
+import { convexQuery, useConvexMutation } from '@convex-dev/react-query'
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+import { Authenticated, Unauthenticated, AuthLoading } from 'convex/react'
 
-export const Route = createFileRoute("/")({
+import { authClient } from '@/lib/auth-client'
+
+import { api } from '../../convex/_generated/api'
+
+export const Route = createFileRoute('/')({
   component: App,
-});
+})
 
 function App() {
-  const { data } = useSuspenseQuery(convexQuery(api.todos.list, {}));
-  const { mutate, isPending } = useMutation({ mutationFn: useConvexMutation(api.todos.add) });
+  const { data } = useSuspenseQuery(convexQuery(api.todos.list, {}))
+  const { mutate, isPending } = useMutation({ mutationFn: useConvexMutation(api.todos.add) })
 
   return (
     <div className="flex flex-col gap-2">
@@ -22,11 +24,11 @@ function App() {
         ))}
       </ul>
       <button
-        className="w-fit bg-slate-700 rounded-xl px-3 py-2 cursor-pointer"
-        onClick={() => mutate({ text: "Hello" })}
+        className="w-fit cursor-pointer rounded-xl bg-slate-700 px-3 py-2"
+        onClick={() => mutate({ text: 'Hello' })}
         disabled={isPending}
       >
-        {isPending ? "Loading..." : "Create new"}
+        {isPending ? 'Loading...' : 'Create new'}
       </button>
       <Unauthenticated>Logged out</Unauthenticated>
       <Authenticated>Logged in</Authenticated>
@@ -34,14 +36,14 @@ function App() {
       <button
         onClick={async () => {
           await authClient.signUp.email({
-            name: "nathan",
-            email: "nathan@brodin.dev",
-            password: "something",
-          });
+            name: 'nathan',
+            email: 'nathan@brodin.dev',
+            password: 'something',
+          })
         }}
       >
         Sign in with Email
       </button>
     </div>
-  );
+  )
 }

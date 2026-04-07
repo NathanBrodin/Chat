@@ -1,8 +1,9 @@
-import { httpRouter } from "convex/server";
-import { authComponent, createAuth } from "./auth";
+import { httpRouter } from 'convex/server'
 
-const http = httpRouter();
+import { authComponent, createAuth } from './auth'
 
-authComponent.registerRoutes(http, createAuth);
+const http = httpRouter()
 
-export default http;
+authComponent.registerRoutes(http, createAuth)
+
+export default http
