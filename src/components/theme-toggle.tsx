@@ -1,4 +1,5 @@
 import { useTheme } from '@lonik/themer'
+import { useHotkey } from '@tanstack/react-hotkeys'
 import { useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,8 @@ export function ThemeToggle() {
   const switchTheme = useCallback(() => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
   }, [resolvedTheme, setTheme])
+
+  useHotkey('T', switchTheme)
 
   return (
     <Tooltip>

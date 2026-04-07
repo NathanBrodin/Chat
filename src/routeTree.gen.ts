@@ -10,12 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as appChatRouteRouteImport } from './routes/(app)/chat/route'
+import { Route as appChatIndexRouteImport } from './routes/(app)/chat/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const appChatRouteRoute = appChatRouteRouteImport.update({
+  id: '/(app)/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const appChatIndexRoute = appChatIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => appChatRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -25,27 +37,33 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chat': typeof appChatRouteRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/chat/': typeof appChatIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/chat': typeof appChatIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/(app)/chat': typeof appChatRouteRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/(app)/chat/': typeof appChatIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/auth/$'
+  fullPaths: '/' | '/chat' | '/api/auth/$' | '/chat/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/auth/$'
-  id: '__root__' | '/' | '/api/auth/$'
+  to: '/' | '/api/auth/$' | '/chat'
+  id: '__root__' | '/' | '/(app)/chat' | '/api/auth/$' | '/(app)/chat/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  appChatRouteRoute: typeof appChatRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -58,6 +76,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/chat': {
+      id: '/(app)/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof appChatRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/chat/': {
+      id: '/(app)/chat/'
+      path: '/'
+      fullPath: '/chat/'
+      preLoaderRoute: typeof appChatIndexRouteImport
+      parentRoute: typeof appChatRouteRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -68,8 +100,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface appChatRouteRouteChildren {
+  appChatIndexRoute: typeof appChatIndexRoute
+}
+
+const appChatRouteRouteChildren: appChatRouteRouteChildren = {
+  appChatIndexRoute: appChatIndexRoute,
+}
+
+const appChatRouteRouteWithChildren = appChatRouteRoute._addFileChildren(
+  appChatRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  appChatRouteRoute: appChatRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
