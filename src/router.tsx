@@ -11,7 +11,7 @@ export function getRouter() {
   if (!CONVEX_URL) {
     console.error("missing envar VITE_CONVEX_URL");
   }
-  const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
+  const convexQueryClient = new ConvexQueryClient(CONVEX_URL, { expectAuth: true });
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -24,7 +24,7 @@ export function getRouter() {
 
   const router = createTanStackRouter({
     routeTree,
-    context: { queryClient },
+    context: { queryClient, convexQueryClient },
     scrollRestoration: true,
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,

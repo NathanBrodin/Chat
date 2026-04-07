@@ -13,6 +13,9 @@ const config = defineConfig({
     "*": "vp check --fix",
   },
   lint: { options: { typeAware: true, typeCheck: true } },
+  ssr: {
+    noExternal: ["@convex-dev/better-auth"],
+  },
   plugins: [
     devtools(),
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),
