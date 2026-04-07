@@ -4,6 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Authenticated, Unauthenticated, AuthLoading } from 'convex/react'
 
 import Particle from '@/components/test'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { authClient } from '@/lib/auth/auth-client'
 
 import { api } from '../../convex/_generated/api'
@@ -18,6 +19,7 @@ function App() {
 
   return (
     <div className="flex flex-col gap-2">
+      <ThemeToggle />
       Hello, world
       <ul>
         {data.map((todo) => (
