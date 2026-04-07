@@ -3,7 +3,7 @@ import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Authenticated, Unauthenticated, AuthLoading } from 'convex/react'
 
-import { authClient } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth/auth-client'
 
 import { api } from '../../convex/_generated/api'
 

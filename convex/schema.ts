@@ -1,7 +1,7 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
 
-import { tables as authTables } from './betterAuth/schema'
+import { tables as authTables } from './auth/schema'
 
 export default defineSchema({
   products: defineTable({

@@ -1,23 +1,12 @@
 import type { ConvexQueryClient } from '@convex-dev/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 
-import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
-import {
-  HeadContent,
-  Scripts,
-  createRootRouteWithContext,
-  useRouteContext,
-} from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
+import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 
-import { authClient } from '@/lib/auth-client'
-import { getToken } from '@/lib/auth-server'
+import { getAuth } from '@/lib/auth'
+import { AuthProvider } from '@/providers/auth'
 
 import appCss from '../styles.css?url'
-
-const getAuth = createServerFn({ method: 'GET' }).handler(async () => {
-  return await getToken()
-})
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -49,11 +38,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
   beforeLoad: async (ctx) => {
     const token = await getAuth()
-    // all queries, mutations and actions through TanStack Query will be
-    // authenticated during SSR if we have a valid token
     if (token) {
-      // During SSR only (the only time serverHttpClient exists),
-      // set the auth token to make HTTP queries with.
       ctx.context.convexQueryClient.serverHttpClient?.setAuth(token)
     }
     return {
@@ -65,7 +50,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const context = useRouteContext({ from: Route.id })
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -73,13 +57,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-sans wrap-anywhere antialiased">
-        <ConvexBetterAuthProvider
-          client={context.convexQueryClient.convexClient}
-          authClient={authClient}
-          initialToken={context.token}
-        >
-          {children}
-        </ConvexBetterAuthProvider>
+        <AuthProvider>{children}</AuthProvider>
         <Scripts />
       </body>
     </html>
