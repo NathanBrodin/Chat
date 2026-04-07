@@ -16,7 +16,6 @@
     "@convex-dev/better-auth": "^0.11.4",
     "@convex-dev/react-query": "0.1.0",
     "@rolldown/plugin-babel": "^0.2.2",
-    "@t3-oss/env-core": "^0.13.10",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-form": "latest",
@@ -33,8 +32,7 @@
     "nitro": "npm:nitro-nightly@latest",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "tailwindcss": "^4.1.18",
-    "zod": "^4.3.6"
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",

@@ -1,16 +1,7 @@
-import { createEnv } from '@t3-oss/env-core'
-import { z } from 'zod'
+const env = {
+  VITE_CONVEX_URL: import.meta.env.VITE_CONVEX_URL!,
+  VITE_CONVEX_SITE_URL: import.meta.env.VITE_CONVEX_SITE_URL!,
+} as const
 
-export const env = createEnv({
-  server: {
-    CONVEX_DEPLOYMENT: z.string(),
-    BETTER_AUTH_SECRET: z.string(),
-  },
-  clientPrefix: 'VITE_',
-  client: {
-    VITE_CONVEX_URL: z.string(),
-    VITE_SITE_URL: z.string(),
-  },
-  runtimeEnv: import.meta.env,
-  emptyStringAsUndefined: true,
-})
+export { env }
+export type ClientEnv = typeof env
