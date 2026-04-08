@@ -1,10 +1,12 @@
 import { convexQuery } from '@convex-dev/react-query'
 import { api } from '@convex/_generated/api'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { ChevronsUpDown, Sparkles } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
+import { ChevronsUpDown, LogOutIcon } from 'lucide-react'
 
 import {
   Menu,
+  MenuGroup,
   MenuGroupLabel,
   MenuItem,
   MenuPopup,
@@ -18,12 +20,26 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { UserAvatar } from '@/components/user-avatar'
+import { authClient } from '@/lib/auth/auth-client'
+
+import { SignInButton } from './sign-in'
 
 export function SidebarUser() {
+  const navigate = useNavigate()
   const { isMobile } = useSidebar()
   const { data: user } = useSuspenseQuery(convexQuery(api.auth.index.getCurrentUser, {}))
 
-  if (!user) return null
+  if (!user) return <SignInButton />
+
+  async function signOut() {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: async () => {
+          await navigate({ to: '/chat' })
+        },
+      },
+    })
+  }
 
   return (
     <SidebarMenu>
@@ -50,21 +66,22 @@ export function SidebarUser() {
             align="end"
             sideOffset={4}
           >
-            <MenuGroupLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <UserAvatar user={user} />
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+            <MenuGroup>
+              <MenuGroupLabel className="p-0 font-normal">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <UserAvatar user={user} />
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium">{user.name}</span>
+                    <span className="truncate text-xs">{user.email}</span>
+                  </div>
                 </div>
-              </div>
-            </MenuGroupLabel>
-            <MenuSeparator />
-            <MenuItem>
-              <Sparkles />
-              Upgrade to Pro
-            </MenuItem>
-            <MenuSeparator />
+              </MenuGroupLabel>
+              <MenuSeparator />
+              <MenuItem onClick={signOut}>
+                <LogOutIcon />
+                Log Out
+              </MenuItem>
+            </MenuGroup>
           </MenuPopup>
         </Menu>
       </SidebarMenuItem>
