@@ -27,8 +27,8 @@ export function Conversations() {
     <SidebarGroup>
       <SidebarGroupLabel>Conversations</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((chat) => (
-          <SidebarMenuButton key={chat.title}>{chat.title}</SidebarMenuButton>
+        {items.map((chat, index) => (
+          <SidebarMenuButton key={index}>{chat.title}</SidebarMenuButton>
         ))}
       </SidebarMenu>
     </SidebarGroup>
