@@ -77,7 +77,7 @@ function RouteComponent() {
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center sm:px-4 sm:py-8">
-      <Card className="w-full max-sm:rounded-none max-sm:border-x-0 max-sm:shadow-none sm:max-w-xl">
+      <Card className="w-full max-sm:rounded-none max-sm:border-x-0 max-sm:shadow-none max-sm:before:rounded-none sm:max-w-xl">
         <CardHeader>
           <CardTitle>Account</CardTitle>
           <CardDescription>Manage your profile and account settings.</CardDescription>

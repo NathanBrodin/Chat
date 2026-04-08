@@ -2,6 +2,7 @@ import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
 
 import { useAppForm } from '@/components/form/use-form'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardAction,
@@ -10,7 +11,10 @@ import {
   CardPanel,
   CardTitle,
 } from '@/components/ui/card'
+import { Field, FieldSeparator } from '@/components/ui/field'
 import { Form } from '@/components/ui/form'
+import { GitHubIcon } from '@/components/ui/icons/github'
+import { GoogleIcon } from '@/components/ui/icons/google'
 import { authClient } from '@/lib/auth/auth-client'
 import { getSafeAuthRedirect } from '@/lib/auth/get-safe-auth-redirect'
 
@@ -56,9 +60,16 @@ function RouteComponent() {
     },
   })
 
+  const signInWithGithub = async () => {
+    await authClient.signIn.social({
+      provider: 'github',
+      callbackURL: redirectTo,
+    })
+  }
+
   return (
-    <main className="flex min-h-screen w-full items-center justify-center px-4 py-8">
-      <Card className="w-full max-w-md">
+    <main className="flex min-h-screen w-full items-center justify-center sm:px-4 sm:py-8">
+      <Card className="w-full max-sm:rounded-none max-sm:border-x-0 max-sm:shadow-none max-sm:before:rounded-none sm:max-w-xl">
         <CardHeader>
           <CardTitle>Sign in to your account</CardTitle>
           <CardDescription>Pick up where you left off.</CardDescription>
@@ -80,6 +91,19 @@ function RouteComponent() {
               void form.handleSubmit()
             }}
           >
+            <Field className="grid sm:grid-cols-2">
+              <Button variant="outline" type="button" onClick={signInWithGithub}>
+                <GitHubIcon />
+                Login with Github
+              </Button>
+              <Button variant="outline" type="button">
+                <GoogleIcon />
+                Login with Google
+              </Button>
+            </Field>
+            <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+              Or continue with
+            </FieldSeparator>
             <form.AppField name="email">
               {(field) => (
                 <field.InputField
