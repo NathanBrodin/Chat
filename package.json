@@ -6,7 +6,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "vp dev --port 3000",
+    "dev": "vp dev --port 3001",
     "convex": "vpx convex dev",
     "build": "vp build",
     "preview": "vp preview",
