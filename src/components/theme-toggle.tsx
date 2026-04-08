@@ -1,34 +1,77 @@
 import { useTheme } from '@lonik/themer'
-import { useHotkey } from '@tanstack/react-hotkeys'
-import { useCallback } from 'react'
+import { ComputerIcon, MoonIcon, SunIcon } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
-import { MoonIcon } from '@/components/ui/icons/moon'
-import { SunMediumIcon } from '@/components/ui/icons/sun-medium'
-import { Kbd } from '@/components/ui/kbd'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
 
-  const switchTheme = useCallback(() => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-  }, [resolvedTheme, setTheme])
-
-  useHotkey('T', switchTheme)
+  const handleThemeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation()
+    setTheme(event.target.value)
+  }
 
   return (
-    <Tooltip>
-      <TooltipTrigger render={<Button variant="ghost" size="icon" onClick={switchTheme} />}>
-        <MoonIcon className="relative hidden after:absolute after:-inset-2 dark:block" />
-        <SunMediumIcon className="relative hidden not-dark:block after:absolute after:-inset-2" />
-        <span className="sr-only">Theme Toggle</span>
-      </TooltipTrigger>
+    <div className="flex items-center rounded-full border" onClick={(e) => e.stopPropagation()}>
+      <input
+        type="radio"
+        id="light"
+        name="theme"
+        value="light"
+        checked={theme === 'light'}
+        onChange={handleThemeChange}
+        className="hidden"
+      />
+      <label
+        htmlFor="light"
+        onClick={(e) => e.stopPropagation()}
+        className={cn(
+          'flex-1 cursor-pointer rounded-full p-1 transition-all',
+          theme === 'light' ? 'border [&_svg]:text-foreground bg-background' : 'bg-transparent',
+        )}
+      >
+        <SunIcon className="size-4" />
+      </label>
 
-      <TooltipContent>
-        Toggle Theme
-        <Kbd className="ml-1">T</Kbd>
-      </TooltipContent>
-    </Tooltip>
+      <input
+        type="radio"
+        id="dark"
+        name="theme"
+        value="dark"
+        checked={theme === 'dark'}
+        onChange={handleThemeChange}
+        className="hidden"
+      />
+      <label
+        htmlFor="dark"
+        onClick={(e) => e.stopPropagation()}
+        className={cn(
+          'flex-1 cursor-pointer rounded-full p-1 transition-all',
+          theme === 'dark' ? 'border [&_svg]:text-foreground bg-background' : 'bg-transparent',
+        )}
+      >
+        <MoonIcon className="size-4" />
+      </label>
+
+      <input
+        type="radio"
+        id="system"
+        name="theme"
+        value="system"
+        checked={theme === 'system'}
+        onChange={handleThemeChange}
+        className="hidden"
+      />
+      <label
+        htmlFor="system"
+        onClick={(e) => e.stopPropagation()}
+        className={cn(
+          'flex-1 cursor-pointer rounded-full p-1 transition-all',
+          theme === 'system' ? 'border [&_svg]:text-foreground bg-background' : 'bg-transparent',
+        )}
+      >
+        <ComputerIcon className="size-4" />
+      </label>
+    </div>
   )
 }
