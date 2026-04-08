@@ -8,7 +8,7 @@ import type { DataModel } from '../_generated/dataModel'
 
 import { components } from '../_generated/api'
 import { query } from '../_generated/server'
-import authConfig from './config'
+import authConfig from '../auth.config'
 import schema from './schema'
 
 export const authComponent = createClient<DataModel, typeof schema>(components.betterAuth, {
@@ -18,7 +18,7 @@ export const authComponent = createClient<DataModel, typeof schema>(components.b
 
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
   return {
-    baseURL: process.env.CONVEX_SITE_URL,
+    baseURL: process.env.SITE_URL,
     secret: process.env.BETTER_AUTH_SECRET,
     database: authComponent.adapter(ctx),
     emailAndPassword: {
