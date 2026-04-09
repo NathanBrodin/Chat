@@ -51,9 +51,11 @@ export function InputField({
 export function EmailField({
   label = 'Email',
   placeholder = 'john@example.com',
+  required = true,
 }: {
   label?: string
   placeholder?: string
+  required?: boolean
 }) {
   const field = useFieldContext<string>()
 
@@ -67,6 +69,7 @@ export function EmailField({
         aria-invalid={hasErrors || undefined}
         autoComplete="email"
         placeholder={placeholder}
+        required={required}
         type="email"
         value={field.state.value}
         onChange={(e) => field.handleChange(e.target.value)}
@@ -78,13 +81,15 @@ export function EmailField({
 }
 
 export function PasswordField({
+  newPassword,
   label = 'Password',
   placeholder = 'Enter your password',
-  newPassword,
+  required = true,
 }: {
   label?: string
   placeholder?: string
   newPassword?: boolean
+  required?: boolean
 }) {
   const [showPassword, setShowPassword] = useState(false)
   const field = useFieldContext<string>()
@@ -99,6 +104,7 @@ export function PasswordField({
         <InputGroupInput
           autoComplete={newPassword ? 'new-password' : 'current-password'}
           placeholder={placeholder}
+          required={required}
           type={showPassword ? 'text' : 'password'}
           aria-invalid={hasErrors || undefined}
           value={field.state.value}
