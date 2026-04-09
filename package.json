@@ -14,11 +14,13 @@
     "prepare": "vp config"
   },
   "dependencies": {
+    "@ai-sdk/react": "^3.0.156",
     "@base-ui/react": "^1.3.0",
     "@convex-dev/better-auth": "^0.11.4",
     "@convex-dev/react-query": "0.1.0",
     "@fontsource-variable/inter": "^5.2.8",
     "@lonik/themer": "^0.5.4",
+    "@openrouter/ai-sdk-provider": "^2.5.1",
     "@rolldown/plugin-babel": "^0.2.2",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
@@ -33,6 +35,7 @@
     "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "^1.132.0",
     "@tanstack/zod-form-adapter": "^0.42.1",
+    "ai": "^6.0.154",
     "better-auth": "^1.5.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
