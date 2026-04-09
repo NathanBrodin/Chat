@@ -3,6 +3,7 @@ import type { GenericCtx } from '@convex-dev/better-auth'
 import { createClient } from '@convex-dev/better-auth'
 import { convex } from '@convex-dev/better-auth/plugins'
 import { betterAuth, type BetterAuthOptions } from 'better-auth'
+import { lastLoginMethod } from 'better-auth/plugins'
 
 import type { DataModel } from '../_generated/dataModel'
 
@@ -29,13 +30,17 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
         clientId: process.env.GITHUB_CLIENT_ID!,
         clientSecret: process.env.GITHUB_CLIENT_SECRET!,
       },
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      },
     },
     user: {
       deleteUser: {
         enabled: true,
       },
     },
-    plugins: [convex({ authConfig })],
+    plugins: [convex({ authConfig }), lastLoginMethod()],
   } satisfies BetterAuthOptions
 }
 
