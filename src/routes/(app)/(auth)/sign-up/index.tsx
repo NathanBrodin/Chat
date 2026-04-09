@@ -1,7 +1,10 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { CircleAlertIcon } from 'lucide-react'
+import { useState } from 'react'
 import { z } from 'zod'
 
 import { useAppForm } from '@/components/form/use-form'
+import { Alert, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -43,13 +46,21 @@ function RouteComponent() {
   const search = Route.useSearch()
   const redirectTo = getSafeAuthRedirect(search.redirect)
 
+  const [socialLoading, setSocialLoading] = useState<'github' | 'google' | null>(null)
+  const [serverError, setServerError] = useState<string | undefined>(undefined)
+
   const form = useAppForm({
     defaultValues: {
       email: '',
       name: '',
       password: '',
     },
+    validators: {
+      onSubmit: signUpSchema,
+    },
     onSubmit: async ({ value }) => {
+      setServerError(undefined)
+
       const { error } = await authClient.signUp.email({
         callbackURL: redirectTo,
         email: value.email,
@@ -57,28 +68,26 @@ function RouteComponent() {
         password: value.password,
       })
 
-      console.log(error)
-    },
-    validators: {
-      onSubmit: signUpSchema,
+      if (error) {
+        setServerError(error.message ?? 'Failed to create account. Please try again.')
+      }
     },
   })
 
-  const signInWithGithub = async () => {
-    await authClient.signIn.social({
-      provider: 'github',
-      callbackURL: redirectTo,
-    })
-  }
-
-  const signInWithGoogle = async () => {
-    await authClient.signIn.social({
-      provider: 'google',
-      callbackURL: redirectTo,
-    })
+  const signInSocial = async (provider: 'github' | 'google') => {
+    setSocialLoading(provider)
+    try {
+      await authClient.signIn.social({
+        provider,
+        callbackURL: redirectTo,
+      })
+    } finally {
+      setSocialLoading(null)
+    }
   }
 
   const lastMethod = authClient.getLastUsedLoginMethod()
+  const isSocialLoading = socialLoading !== null
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center sm:px-4 sm:py-8">
@@ -100,7 +109,6 @@ function RouteComponent() {
           <Form
             onSubmit={(event) => {
               event.preventDefault()
-              event.stopPropagation()
               void form.handleSubmit()
             }}
           >
@@ -126,8 +134,10 @@ function RouteComponent() {
               <Button
                 variant="outline"
                 type="button"
-                onClick={signInWithGithub}
+                onClick={() => signInSocial('github')}
                 className="relative"
+                loading={socialLoading === 'github'}
+                disabled={isSocialLoading}
               >
                 <GitHubIcon />
                 Login with Github
@@ -140,8 +150,10 @@ function RouteComponent() {
               <Button
                 variant="outline"
                 type="button"
-                onClick={signInWithGoogle}
+                onClick={() => signInSocial('google')}
                 className="relative"
+                loading={socialLoading === 'google'}
+                disabled={isSocialLoading}
               >
                 <GoogleIcon />
                 Login with Google
@@ -152,9 +164,31 @@ function RouteComponent() {
                 )}
               </Button>
             </Field>
-            <form.AppForm>
-              <form.SubmitButton label="Create account" submittingLabel="Creating account" />
-            </form.AppForm>
+            <fieldset disabled={isSocialLoading} className="contents">
+              <form.AppField name="name">
+                {(field) => (
+                  <field.InputField
+                    autoComplete="name"
+                    label="Name"
+                    placeholder="John Doe"
+                    type="text"
+                  />
+                )}
+              </form.AppField>
+              <form.AppField name="email">{(field) => <field.EmailField />}</form.AppField>
+              <form.AppField name="password">
+                {(field) => <field.PasswordField newPassword />}
+              </form.AppField>
+              {serverError && (
+                <Alert variant="error">
+                  <CircleAlertIcon />
+                  <AlertTitle>{serverError}</AlertTitle>
+                </Alert>
+              )}
+              <form.AppForm>
+                <form.SubmitButton label="Create account" submittingLabel="Creating account" />
+              </form.AppForm>
+            </fieldset>
           </Form>
         </CardPanel>
       </Card>

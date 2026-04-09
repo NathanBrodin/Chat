@@ -1,4 +1,3 @@
-import { useStore } from '@tanstack/react-form'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { useState } from 'react'
 
@@ -27,14 +26,15 @@ export function InputField({
 }: InputFieldProps) {
   const field = useFieldContext<string>()
 
-  const meta = useStore(field.store, (state) => state.meta)
-  const hasErrors = meta.isTouched && meta.errors.length > 0
-
   return (
-    <Field name={field.name}>
+    <Field
+      name={field.name}
+      invalid={!field.state.meta.isValid}
+      dirty={field.state.meta.isDirty}
+      touched={field.state.meta.isTouched}
+    >
       <FieldLabel>{label}</FieldLabel>
       <Input
-        aria-invalid={hasErrors || undefined}
         autoComplete={autoComplete}
         placeholder={placeholder}
         required={required}
@@ -43,7 +43,9 @@ export function InputField({
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
       />
-      <FieldError />
+      <FieldError match={!field.state.meta.isValid}>
+        {field.state.meta.errors[0]?.message}
+      </FieldError>
     </Field>
   )
 }
@@ -59,14 +61,15 @@ export function EmailField({
 }) {
   const field = useFieldContext<string>()
 
-  const meta = useStore(field.store, (state) => state.meta)
-  const hasErrors = meta.isTouched && meta.errors.length > 0
-
   return (
-    <Field name={field.name}>
+    <Field
+      name={field.name}
+      invalid={!field.state.meta.isValid}
+      dirty={field.state.meta.isDirty}
+      touched={field.state.meta.isTouched}
+    >
       <FieldLabel>{label}</FieldLabel>
       <Input
-        aria-invalid={hasErrors || undefined}
         autoComplete="email"
         placeholder={placeholder}
         required={required}
@@ -75,7 +78,9 @@ export function EmailField({
         onChange={(e) => field.handleChange(e.target.value)}
         onBlur={field.handleBlur}
       />
-      <FieldError />
+      <FieldError match={!field.state.meta.isValid}>
+        {field.state.meta.errors[0]?.message}
+      </FieldError>
     </Field>
   )
 }
@@ -94,11 +99,13 @@ export function PasswordField({
   const [showPassword, setShowPassword] = useState(false)
   const field = useFieldContext<string>()
 
-  const meta = useStore(field.store, (state) => state.meta)
-  const hasErrors = meta.isTouched && meta.errors.length > 0
-
   return (
-    <Field name={field.name}>
+    <Field
+      name={field.name}
+      invalid={!field.state.meta.isValid}
+      dirty={field.state.meta.isDirty}
+      touched={field.state.meta.isTouched}
+    >
       <FieldLabel>{label}</FieldLabel>
       <InputGroup>
         <InputGroupInput
@@ -106,7 +113,6 @@ export function PasswordField({
           placeholder={placeholder}
           required={required}
           type={showPassword ? 'text' : 'password'}
-          aria-invalid={hasErrors || undefined}
           value={field.state.value}
           onChange={(e) => field.handleChange(e.target.value)}
           onBlur={field.handleBlur}
@@ -129,7 +135,9 @@ export function PasswordField({
           </Tooltip>
         </InputGroupAddon>
       </InputGroup>
-      <FieldError />
+      <FieldError match={!field.state.meta.isValid}>
+        {field.state.meta.errors[0]?.message}
+      </FieldError>
     </Field>
   )
 }
