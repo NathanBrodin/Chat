@@ -14,7 +14,7 @@ export const Route = createFileRoute('/api/chat')({
         const { messages }: { messages: UIMessage[] } = await request.json()
 
         const result = streamText({
-          model: openrouter.chat('google/gemma-4-26b-a4b-it:free'),
+          model: openrouter.chat('minimax/minimax-m2.5:free'),
           messages: await convertToModelMessages(messages),
           tools: {
             weather: tool({
