@@ -45,7 +45,10 @@ export const Route = createFileRoute('/api/chat')({
           },
         })
 
-        return result.toUIMessageStreamResponse()
+        return result.toUIMessageStreamResponse({
+          sendSources: true,
+          sendReasoning: true,
+        })
       },
     },
   },
