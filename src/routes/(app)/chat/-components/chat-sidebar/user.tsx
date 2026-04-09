@@ -52,7 +52,7 @@ export function SidebarUser() {
     <SidebarMenu>
       <SidebarMenuItem>
         <Menu>
-          <MenuTrigger render={<SidebarMenuButton size="lg" />}>
+          <MenuTrigger render={<SidebarMenuButton tooltip="Settings and Account" size="lg" />}>
             <UserAvatar user={user} />
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
