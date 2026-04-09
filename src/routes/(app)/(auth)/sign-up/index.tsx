@@ -2,6 +2,8 @@ import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
 
 import { useAppForm } from '@/components/form/use-form'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardAction,
@@ -10,7 +12,10 @@ import {
   CardPanel,
   CardTitle,
 } from '@/components/ui/card'
+import { Field, FieldSeparator } from '@/components/ui/field'
 import { Form } from '@/components/ui/form'
+import { GitHubIcon } from '@/components/ui/icons/github'
+import { GoogleIcon } from '@/components/ui/icons/google'
 import { authClient } from '@/lib/auth/auth-client'
 import { getSafeAuthRedirect } from '@/lib/auth/get-safe-auth-redirect'
 
@@ -59,9 +64,25 @@ function RouteComponent() {
     },
   })
 
+  const signInWithGithub = async () => {
+    await authClient.signIn.social({
+      provider: 'github',
+      callbackURL: redirectTo,
+    })
+  }
+
+  const signInWithGoogle = async () => {
+    await authClient.signIn.social({
+      provider: 'google',
+      callbackURL: redirectTo,
+    })
+  }
+
+  const lastMethod = authClient.getLastUsedLoginMethod()
+
   return (
-    <main className="flex min-h-screen w-full items-center justify-center px-4 py-8">
-      <Card className="w-full max-w-md">
+    <main className="flex min-h-screen w-full items-center justify-center sm:px-4 sm:py-8">
+      <Card className="w-full max-sm:rounded-none max-sm:border-x-0 max-sm:shadow-none max-sm:before:rounded-none sm:max-w-xl">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
           <CardDescription>Start fresh with your own workspace.</CardDescription>
@@ -93,26 +114,44 @@ function RouteComponent() {
                 />
               )}
             </form.AppField>
-            <form.AppField name="email">
-              {(field) => (
-                <field.InputField
-                  autoComplete="email"
-                  label="Email"
-                  placeholder="john@example.com"
-                  type="email"
-                />
-              )}
-            </form.AppField>
+            <form.AppField name="email">{(field) => <field.EmailField />}</form.AppField>
             <form.AppField name="password">
-              {(field) => (
-                <field.InputField
-                  autoComplete="new-password"
-                  label="Password"
-                  placeholder="Create a password"
-                  type="password"
-                />
-              )}
+              {(field) => <field.PasswordField newPassword />}
             </form.AppField>
+
+            <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+              Or continue with
+            </FieldSeparator>
+            <Field className="grid sm:grid-cols-2">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={signInWithGithub}
+                className="relative"
+              >
+                <GitHubIcon />
+                Login with Github
+                {lastMethod === 'github' && (
+                  <Badge className="absolute -top-1 -right-1" size="sm" variant="info">
+                    Last used
+                  </Badge>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={signInWithGoogle}
+                className="relative"
+              >
+                <GoogleIcon />
+                Login with Google
+                {lastMethod === 'google' && (
+                  <Badge className="absolute -top-1 -right-1" size="sm" variant="info">
+                    Last used
+                  </Badge>
+                )}
+              </Button>
+            </Field>
             <form.AppForm>
               <form.SubmitButton label="Create account" submittingLabel="Creating account" />
             </form.AppForm>

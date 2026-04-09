@@ -6,6 +6,7 @@ import { ArrowLeftIcon, LinkIcon, UnlinkIcon } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 
+import { AppLogo } from '@/components/app-logo'
 import { useAppForm } from '@/components/form/use-form'
 import {
   AlertDialog,
@@ -20,11 +21,13 @@ import {
 import { Button } from '@/components/ui/button'
 import {
   Card,
-  CardAction,
-  CardDescription,
-  CardHeader,
+  CardFrame,
+  CardFrameAction,
+  CardFrameDescription,
+  CardFrameFooter,
+  CardFrameHeader,
+  CardFrameTitle,
   CardPanel,
-  CardTitle,
 } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { GitHubIcon } from '@/components/ui/icons/github'
@@ -77,31 +80,36 @@ function RouteComponent() {
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center sm:px-4 sm:py-8">
-      <Card className="w-full max-sm:rounded-none max-sm:border-x-0 max-sm:shadow-none max-sm:before:rounded-none sm:max-w-xl">
-        <CardHeader>
-          <CardTitle>Account</CardTitle>
-          <CardDescription>Manage your profile and account settings.</CardDescription>
-          <CardAction>
+      <CardFrame className="w-full max-sm:rounded-none max-sm:border-x-0 max-sm:shadow-none max-sm:before:rounded-none sm:max-w-xl">
+        <CardFrameHeader>
+          <CardFrameTitle>Account</CardFrameTitle>
+          <CardFrameDescription>Manage your profile and account settings.</CardFrameDescription>
+          <CardFrameAction>
             <Button render={<Link to="/chat" />} size="sm" variant="ghost">
               <ArrowLeftIcon />
               Back
             </Button>
-          </CardAction>
-        </CardHeader>
-        <CardPanel className="flex flex-col gap-6">
-          <ProfileSection name={user.name ?? ''} user={user} />
-          <Separator />
-          <ProvidersSection />
-          <Separator />
-          <PasswordSection />
-          <Separator />
-          <DeleteSection
-            onDeleted={() => {
-              void navigate({ to: '/sign-in' })
-            }}
-          />
-        </CardPanel>
-      </Card>
+          </CardFrameAction>
+        </CardFrameHeader>
+        <Card>
+          <CardPanel className="flex flex-col gap-6">
+            <ProfileSection name={user.name ?? ''} user={user} />
+            <Separator />
+            <ProvidersSection />
+            <Separator />
+            <PasswordSection />
+            <Separator />
+            <DeleteSection
+              onDeleted={() => {
+                void navigate({ to: '/sign-in' })
+              }}
+            />
+          </CardPanel>
+        </Card>
+        <CardFrameFooter>
+          <AppLogo />
+        </CardFrameFooter>
+      </CardFrame>
     </main>
   )
 }
@@ -126,7 +134,7 @@ function ProfileSection({
       }
       await invalidateUser()
       setSaved(true)
-      setTimeout(() => setSaved(false), 2000)
+      setTimeout(() => setSaved(false), 4000)
     },
   })
 
@@ -285,7 +293,7 @@ function PasswordSection() {
       }
       form.reset()
       setSaved(true)
-      setTimeout(() => setSaved(false), 2000)
+      setTimeout(() => setSaved(false), 4000)
     },
   })
 
@@ -304,33 +312,22 @@ function PasswordSection() {
           void form.handleSubmit()
         }}
       >
-        <form.AppField name="currentPassword">
-          {(field) => (
-            <field.InputField
-              autoComplete="current-password"
-              label="Current password"
-              placeholder="Enter current password"
-              type="password"
-            />
-          )}
-        </form.AppField>
+        <form.AppField name="currentPassword">{(field) => <field.PasswordField />}</form.AppField>
         <form.AppField name="newPassword">
           {(field) => (
-            <field.InputField
-              autoComplete="new-password"
+            <field.PasswordField
+              newPassword
               label="New password"
               placeholder="Enter new password"
-              type="password"
             />
           )}
         </form.AppField>
         <form.AppField name="confirmPassword">
           {(field) => (
-            <field.InputField
-              autoComplete="new-password"
+            <field.PasswordField
+              newPassword
               label="Confirm new password"
               placeholder="Confirm new password"
-              type="password"
             />
           )}
         </form.AppField>

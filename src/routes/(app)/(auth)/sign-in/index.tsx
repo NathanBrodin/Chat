@@ -141,26 +141,8 @@ function RouteComponent() {
                 </Badge>
               )}
             </div>
-            <form.AppField name="email">
-              {(field) => (
-                <field.InputField
-                  autoComplete="email"
-                  label="Email"
-                  placeholder="john@example.com"
-                  type="email"
-                />
-              )}
-            </form.AppField>
-            <form.AppField name="password">
-              {(field) => (
-                <field.InputField
-                  autoComplete="current-password"
-                  label="Password"
-                  placeholder="Enter your password"
-                  type="password"
-                />
-              )}
-            </form.AppField>
+            <form.AppField name="email">{(field) => <field.EmailField />}</form.AppField>
+            <form.AppField name="password">{(field) => <field.PasswordField />}</form.AppField>
             <form.AppForm>
               <form.SubmitButton label="Sign in" submittingLabel="Signing in" />
             </form.AppForm>
