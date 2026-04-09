@@ -54,6 +54,10 @@ export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
-    return identity
+    if (identity === null) {
+      return null
+    }
+
+    return await authComponent.getAuthUser(ctx)
   },
 })

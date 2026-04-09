@@ -1,11 +1,15 @@
-import type { UserIdentity } from 'convex/server'
+type UserAvatarUser = {
+  email?: string | null
+  image?: string | null
+  name?: string | null
+}
 
 import { cn } from '@/lib/utils'
 
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
-export function UserAvatar({ user, className }: { user: UserIdentity; className?: string }) {
-  const name = user.name || user.nickname || user.email || '?'
+export function UserAvatar({ user, className }: { user: UserAvatarUser; className?: string }) {
+  const name = user.name || user.email || '?'
 
   const initials = name
     .trim()
@@ -17,7 +21,7 @@ export function UserAvatar({ user, className }: { user: UserIdentity; className?
 
   return (
     <Avatar className={cn('h-8 w-8 rounded-lg', className)}>
-      <AvatarImage src={user.pictureUrl} alt={user.name} />
+      <AvatarImage src={user.image ?? undefined} alt={user.name ?? undefined} />
       <AvatarFallback className="rounded-lg">{initials || '??'}</AvatarFallback>
     </Avatar>
   )

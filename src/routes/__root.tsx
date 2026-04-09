@@ -4,6 +4,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@lonik/themer'
 import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 
+import { ErrorComponent } from '@/components/error'
 import { NotFound } from '@/components/not-found'
 import { getAuth } from '@/lib/auth'
 import { AuthProvider } from '@/providers/auth'
@@ -50,6 +51,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   notFoundComponent: () => {
     return <NotFound />
   },
+  errorComponent: ErrorComponent,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {

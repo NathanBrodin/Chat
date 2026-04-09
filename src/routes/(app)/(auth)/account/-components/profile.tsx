@@ -1,6 +1,3 @@
-import { convexQuery } from '@convex-dev/react-query'
-import { api } from '@convex/_generated/api'
-import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { z } from 'zod'
 
@@ -13,13 +10,6 @@ const profileSchema = z.object({
   name: z.string().trim().min(1, 'Name is required'),
 })
 
-function useInvalidateUser() {
-  const queryClient = useQueryClient()
-  const queryOptions = convexQuery(api.auth.index.getCurrentUser, {})
-
-  return () => queryClient.invalidateQueries({ queryKey: queryOptions.queryKey })
-}
-
 export function ProfileSection({
   name,
   user,
@@ -27,7 +17,6 @@ export function ProfileSection({
   name: string
   user: Parameters<typeof UserAvatar>[0]['user']
 }) {
-  const invalidateUser = useInvalidateUser()
   const [saved, setSaved] = useState(false)
 
   const form = useAppForm({
@@ -38,7 +27,6 @@ export function ProfileSection({
       if (error) {
         throw error
       }
-      await invalidateUser()
       setSaved(true)
       setTimeout(() => setSaved(false), 4000)
     },

@@ -1,5 +1,3 @@
-import { convexQuery } from '@convex-dev/react-query'
-import { api } from '@convex/_generated/api'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { ArrowLeftIcon } from 'lucide-react'
@@ -17,6 +15,7 @@ import {
   CardPanel,
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { currentUserQueryOptions } from '@/lib/auth/current-user-query'
 
 import { DeleteSection } from './-components/delete'
 import { PasswordSection } from './-components/password'
@@ -29,11 +28,12 @@ export const Route = createFileRoute('/(app)/(auth)/account/')({
       throw redirect({ to: '/sign-in', search: { redirect: '/account' } })
     }
   },
+  loader: ({ context }) => context.queryClient.ensureQueryData(currentUserQueryOptions),
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { data: user } = useSuspenseQuery(convexQuery(api.auth.index.getCurrentUser, {}))
+  const { data: user } = useSuspenseQuery(currentUserQueryOptions)
   const navigate = useNavigate()
 
   if (!user) return null

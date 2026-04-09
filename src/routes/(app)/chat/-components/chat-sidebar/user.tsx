@@ -1,5 +1,3 @@
-import { convexQuery } from '@convex-dev/react-query'
-import { api } from '@convex/_generated/api'
 import { useTheme } from '@lonik/themer'
 import { useHotkey } from '@tanstack/react-hotkeys'
 import { useSuspenseQuery } from '@tanstack/react-query'
@@ -21,13 +19,14 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
 import { UserAvatar } from '@/components/user-avatar'
 import { authClient } from '@/lib/auth/auth-client'
+import { currentUserQueryOptions } from '@/lib/auth/current-user-query'
 
 import { SignInButton } from './sign-in'
 
 export function SidebarUser() {
   const navigate = useNavigate()
   const [dialogOpen, setDialogOpen] = useState(false)
-  const { data: user } = useSuspenseQuery(convexQuery(api.auth.index.getCurrentUser, {}))
+  const { data: user } = useSuspenseQuery(currentUserQueryOptions)
 
   const { resolvedTheme, setTheme } = useTheme()
 
