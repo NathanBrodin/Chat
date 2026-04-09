@@ -6,23 +6,7 @@ import {
 } from '@/components/ui/sidebar'
 
 export function Conversations() {
-  const items = [
-    {
-      title: 'Something that nanani nanana',
-    },
-    {
-      title: 'Something that nanani nanana',
-    },
-    {
-      title: 'Something that nanani nanana',
-    },
-    {
-      title: 'Something that nanani nanana',
-    },
-    {
-      title: 'Something that nanani nanana',
-    },
-  ]
+  const items: { title: string }[] = []
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Conversations</SidebarGroupLabel>
