@@ -15,9 +15,9 @@ export function Header() {
   const isCollapsed = state === 'collapsed'
 
   return (
-    <SidebarHeader>
+    <SidebarHeader className="p-2.5">
       <SidebarMenu>
-        <SidebarMenuItem className="flex flex-row items-center">
+        <SidebarMenuItem className="flex flex-row items-center ">
           <span
             className={cn(
               'transition-all flex-1 overflow-hidden whitespace-nowrap duration-200 ease-linear ',

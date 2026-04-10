@@ -14,7 +14,7 @@ export const Route = createFileRoute('/api/chat')({
         const { messages }: { messages: UIMessage[] } = await request.json()
 
         const result = streamText({
-          model: openrouter.chat('minimax/minimax-m2.5:free'),
+          model: openrouter.chat('arcee-ai/trinity-large-preview:free'),
           messages: await convertToModelMessages(messages),
           tools: {
             weather: tool({

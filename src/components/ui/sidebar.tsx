@@ -159,7 +159,7 @@ export function Sidebar({
   className,
   children,
   ...props
-}: React.ComponentProps<'div'> & {
+}: React.ComponentProps<'aside'> & {
   side?: 'left' | 'right'
   variant?: 'sidebar' | 'floating' | 'inset'
   collapsible?: 'offcanvas' | 'icon' | 'none'
@@ -168,7 +168,7 @@ export function Sidebar({
 
   if (collapsible === 'none') {
     return (
-      <div
+      <aside
         className={cn(
           'flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground',
           className,
@@ -177,7 +177,7 @@ export function Sidebar({
         {...props}
       >
         {children}
-      </div>
+      </aside>
     )
   }
 
@@ -207,7 +207,7 @@ export function Sidebar({
   }
 
   return (
-    <div
+    <aside
       className="group peer hidden text-sidebar-foreground md:block"
       data-collapsible={state === 'collapsed' ? collapsible : ''}
       data-side={side}
@@ -240,7 +240,6 @@ export function Sidebar({
           className,
         )}
         data-slot="sidebar-container"
-        {...props}
       >
         <div
           className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm/5"
@@ -250,7 +249,7 @@ export function Sidebar({
           {children}
         </div>
       </div>
-    </div>
+    </aside>
   )
 }
 

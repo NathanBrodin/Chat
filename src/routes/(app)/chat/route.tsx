@@ -13,9 +13,9 @@ export const Route = createFileRoute('/(app)/chat')({
 
 function RouteComponent() {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-svh overflow-hidden">
       <ChatSidebar />
-      <SidebarInset>
+      <SidebarInset className="flex min-h-0 flex-1 flex-col divide-y overflow-hidden">
         <Outlet />
       </SidebarInset>
     </SidebarProvider>
