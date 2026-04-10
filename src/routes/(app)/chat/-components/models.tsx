@@ -4,7 +4,7 @@ import { AlertCircleIcon, CheckIcon } from 'lucide-react'
 import { Fragment, useMemo, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
-import type { Model } from '@/lib/models/functions'
+import type { Model } from '@/lib/models/types'
 
 import {
   ModelSelector,
@@ -24,6 +24,7 @@ import {
   ModelSelectorTrigger,
 } from '@/components/ai-elements/model-selector'
 import { Button } from '@/components/ui/button'
+import { CommandFooter } from '@/components/ui/command'
 import { getModels as getServerModels } from '@/lib/models/functions'
 
 interface ModelGroup {
@@ -31,11 +32,34 @@ interface ModelGroup {
   items: Model[]
 }
 
+/**
+ * Extracts the model group from a string.
+ * Returns the text before the first colon, or "Others" if no colon exists.
+ */
+const getModelGroup = (name: string): string => {
+  if (!name.includes(':')) {
+    return 'Others'
+  }
+  return name.split(':')[0].trim()
+}
+
+/**
+ * Extracts the model name from a string.
+ * Returns the text after the first colon, or the original string if no colon exists.
+ */
+const getModelName = (name: string): string => {
+  if (!name.includes(':')) {
+    return name.trim()
+  }
+  // Split by first colon and take everything after it
+  return name.substring(name.indexOf(':') + 1).trim()
+}
+
 function groupModels(models: Model[]): ModelGroup[] {
   const map = new Map<string, Model[]>()
 
   for (const model of models) {
-    const groupName = model.name.split(':')[0] ?? 'Other'
+    const groupName = getModelGroup(model.name)
     const existing = map.get(groupName)
     if (existing) {
       existing.push(model)
@@ -53,6 +77,7 @@ export function ChatModels() {
     'z-ai/glm-4.5-air:free',
   )
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false)
+  const [highlightedItem, setHighlightedItem] = useState<Model | undefined>()
 
   const getModels = useServerFn(getServerModels)
   const { data, error, isLoading } = useQuery({
@@ -61,10 +86,7 @@ export function ChatModels() {
     retry: false,
   })
 
-  const modelGroups = useMemo<ModelGroup[]>(
-    () => (data?.data ? groupModels(data.data) : []),
-    [data],
-  )
+  const modelGroups = useMemo<ModelGroup[]>(() => (data ? groupModels(data) : []), [data])
 
   const selectedModelData = useMemo(
     () => modelGroups.flatMap((g) => g.items).find((m) => m.id === model),
@@ -87,14 +109,19 @@ export function ChatModels() {
         ) : selectedModelData ? (
           <>
             <ModelSelectorLogo provider={selectedModelData.id?.split('/')[0]} />
-            <ModelSelectorName>{selectedModelData.name.split(':')[1]}</ModelSelectorName>
+            <ModelSelectorName>{getModelName(selectedModelData.name)}</ModelSelectorName>
           </>
         ) : (
           <ModelSelectorName>Select a model</ModelSelectorName>
         )}
       </ModelSelectorTrigger>
       <ModelSelectorPopup>
-        <ModelSelectorCommand items={modelGroups}>
+        <ModelSelectorCommand
+          items={modelGroups}
+          onItemHighlighted={(highlightedValue) => {
+            setHighlightedItem(highlightedValue as Model | undefined)
+          }}
+        >
           <ModelSelectorInput placeholder="Search models..." />
           <ModelSelectorPanel>
             {error ? (
@@ -119,7 +146,7 @@ export function ChatModels() {
                               value={item.id}
                             >
                               <ModelSelectorLogo provider={item.id?.split('/')[0]} />
-                              <ModelSelectorName>{item.name.split(':')[1]}</ModelSelectorName>
+                              <ModelSelectorName>{getModelName(item.name)}</ModelSelectorName>
                               {model === item.id ? (
                                 <CheckIcon className="ml-auto size-4 shrink-0" />
                               ) : (
@@ -135,6 +162,9 @@ export function ChatModels() {
               </>
             )}
           </ModelSelectorPanel>
+          <CommandFooter>
+            <p className="line-clamp-2">{highlightedItem?.description}</p>
+          </CommandFooter>
         </ModelSelectorCommand>
       </ModelSelectorPopup>
     </ModelSelector>
