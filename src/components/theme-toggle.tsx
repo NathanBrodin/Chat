@@ -8,7 +8,13 @@ export function ThemeToggle() {
 
   const handleThemeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation()
-    setTheme(event.target.value)
+
+    if (!document.startViewTransition) {
+      setTheme(event.target.value)
+      return
+    }
+
+    document.startViewTransition(() => setTheme(event.target.value))
   }
 
   return (

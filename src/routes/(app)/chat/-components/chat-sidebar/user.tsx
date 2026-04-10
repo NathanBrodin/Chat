@@ -31,7 +31,14 @@ export function SidebarUser() {
   const { resolvedTheme, setTheme } = useTheme()
 
   const switchTheme = useCallback(() => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+    const theme = resolvedTheme === 'dark' ? 'light' : 'dark'
+
+    if (!document.startViewTransition) {
+      setTheme(theme)
+      return
+    }
+
+    document.startViewTransition(() => setTheme(theme))
   }, [resolvedTheme, setTheme])
 
   useHotkey('T', switchTheme)
