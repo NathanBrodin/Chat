@@ -38,14 +38,9 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import { InputGroup, InputGroupAddon, InputGroupTextarea } from '@/components/ui/input-group'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@/components/ui/menu'
 import {
   Select,
   SelectContent,
@@ -376,7 +371,7 @@ export const usePromptInputReferencedSources = () => {
   return ctx
 }
 
-export type PromptInputActionAddAttachmentsProps = ComponentProps<typeof DropdownMenuItem> & {
+export type PromptInputActionAddAttachmentsProps = ComponentProps<typeof MenuItem> & {
   label?: string
 }
 
@@ -386,8 +381,8 @@ export const PromptInputActionAddAttachments = ({
 }: PromptInputActionAddAttachmentsProps) => {
   const attachments = usePromptInputAttachments()
 
-  const handleSelect = useCallback(
-    (e: Event) => {
+  const handleSelect = useCallback<NonNullable<ComponentProps<typeof MenuItem>['onClick']>>(
+    (e) => {
       e.preventDefault()
       attachments.openFileDialog()
     },
@@ -395,26 +390,26 @@ export const PromptInputActionAddAttachments = ({
   )
 
   return (
-    <DropdownMenuItem {...props} onSelect={handleSelect}>
-      <ImageIcon className="mr-2 size-4" /> {label}
-    </DropdownMenuItem>
+    <MenuItem {...props} onClick={handleSelect}>
+      <ImageIcon /> {label}
+    </MenuItem>
   )
 }
 
-export type PromptInputActionAddScreenshotProps = ComponentProps<typeof DropdownMenuItem> & {
+export type PromptInputActionAddScreenshotProps = ComponentProps<typeof MenuItem> & {
   label?: string
 }
 
 export const PromptInputActionAddScreenshot = ({
   label = 'Take screenshot',
-  onSelect,
+  onClick,
   ...props
 }: PromptInputActionAddScreenshotProps) => {
   const attachments = usePromptInputAttachments()
 
-  const handleSelect = useCallback(
-    async (event: Event) => {
-      onSelect?.(event)
+  const handleSelect = useCallback<NonNullable<ComponentProps<typeof MenuItem>['onClick']>>(
+    async (event) => {
+      onClick?.(event)
       if (event.defaultPrevented) {
         return
       }
@@ -434,14 +429,14 @@ export const PromptInputActionAddScreenshot = ({
         throw error
       }
     },
-    [onSelect, attachments],
+    [onClick, attachments],
   )
 
   return (
-    <DropdownMenuItem {...props} onSelect={handleSelect}>
-      <Monitor className="mr-2 size-4" />
+    <MenuItem {...props} onClick={handleSelect}>
+      <Monitor />
       {label}
-    </DropdownMenuItem>
+    </MenuItem>
   )
 }
 
@@ -980,7 +975,10 @@ export const PromptInputTextarea = ({
 
   return (
     <InputGroupTextarea
-      className={cn('field-sizing-content max-h-48 min-h-16', className)}
+      className={cn(
+        'h-full w-full field-sizing-content [&_[data-slot=textarea]]:max-h-48 [&_[data-slot=textarea]]:overflow-y-auto [&_[data-slot=textarea]]:[scrollbar-width:thin] [&_[data-slot=textarea]]:[scrollbar-color:color-mix(in_srgb,var(--foreground)_20%,transparent)_transparent] [&_[data-slot=textarea]::-webkit-scrollbar]:h-1.5 [&_[data-slot=textarea]::-webkit-scrollbar]:w-1.5 [&_[data-slot=textarea]::-webkit-scrollbar-thumb]:rounded-full [&_[data-slot=textarea]::-webkit-scrollbar-thumb]:bg-foreground/20',
+        className,
+      )}
       name="message"
       onCompositionEnd={handleCompositionEnd}
       onCompositionStart={handleCompositionStart}
@@ -1063,10 +1061,8 @@ export const PromptInputButton = ({
   )
 }
 
-export type PromptInputActionMenuProps = ComponentProps<typeof DropdownMenu>
-export const PromptInputActionMenu = (props: PromptInputActionMenuProps) => (
-  <DropdownMenu {...props} />
-)
+export type PromptInputActionMenuProps = ComponentProps<typeof Menu>
+export const PromptInputActionMenu = (props: PromptInputActionMenuProps) => <Menu {...props} />
 
 export type PromptInputActionMenuTriggerProps = PromptInputButtonProps
 
@@ -1075,26 +1071,28 @@ export const PromptInputActionMenuTrigger = ({
   children,
   ...props
 }: PromptInputActionMenuTriggerProps) => (
-  <DropdownMenuTrigger asChild>
-    <PromptInputButton className={className} {...props}>
-      {children ?? <PlusIcon className="size-4" />}
-    </PromptInputButton>
-  </DropdownMenuTrigger>
+  <MenuTrigger
+    render={
+      <PromptInputButton className={className} {...props}>
+        {children ?? <PlusIcon className="size-4" />}
+      </PromptInputButton>
+    }
+  />
 )
 
-export type PromptInputActionMenuContentProps = ComponentProps<typeof DropdownMenuContent>
+export type PromptInputActionMenuContentProps = ComponentProps<typeof MenuPopup>
 export const PromptInputActionMenuContent = ({
   className,
   ...props
 }: PromptInputActionMenuContentProps) => (
-  <DropdownMenuContent align="start" className={cn(className)} {...props} />
+  <MenuPopup align="start" className={cn(className)} {...props} />
 )
 
-export type PromptInputActionMenuItemProps = ComponentProps<typeof DropdownMenuItem>
+export type PromptInputActionMenuItemProps = ComponentProps<typeof MenuItem>
 export const PromptInputActionMenuItem = ({
   className,
   ...props
-}: PromptInputActionMenuItemProps) => <DropdownMenuItem className={cn(className)} {...props} />
+}: PromptInputActionMenuItemProps) => <MenuItem className={cn(className)} {...props} />
 
 // Note: Actions that perform side-effects (like opening a file dialog)
 // are provided in opt-in modules (e.g., prompt-input-attachments).

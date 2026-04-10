@@ -1,61 +1,54 @@
-import type { ComponentProps, ReactNode } from 'react'
+import type { ComponentProps } from 'react'
 
 import {
   Command,
+  CommandCollection,
   CommandDialog,
+  CommandDialogPopup,
+  CommandDialogTrigger,
   CommandEmpty,
   CommandGroup,
   CommandGroupLabel,
   CommandInput,
   CommandItem,
   CommandList,
+  CommandPanel,
   CommandSeparator,
   CommandShortcut,
 } from '@/components/ui/command'
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
-export type ModelSelectorProps = ComponentProps<typeof Dialog>
+// ── Dialog-level components ──────────────────────────────────────────
 
-export const ModelSelector = (props: ModelSelectorProps) => <Dialog {...props} />
+export type ModelSelectorProps = ComponentProps<typeof CommandDialog>
 
-export type ModelSelectorTriggerProps = ComponentProps<typeof DialogTrigger>
+export const ModelSelector = (props: ModelSelectorProps) => <CommandDialog {...props} />
+
+export type ModelSelectorTriggerProps = ComponentProps<typeof CommandDialogTrigger>
 
 export const ModelSelectorTrigger = (props: ModelSelectorTriggerProps) => (
-  <DialogTrigger {...props} />
+  <CommandDialogTrigger {...props} />
 )
 
-export type ModelSelectorContentProps = ComponentProps<typeof DialogContent> & {
-  title?: ReactNode
-}
+export type ModelSelectorPopupProps = ComponentProps<typeof CommandDialogPopup>
 
-export const ModelSelectorContent = ({
-  className,
-  children,
-  title = 'Model Selector',
-  ...props
-}: ModelSelectorContentProps) => (
-  <DialogContent
-    aria-describedby={undefined}
-    className={cn('outline! border-none! p-0 outline-border! outline-solid!', className)}
-    {...props}
-  >
-    <DialogTitle className="sr-only">{title}</DialogTitle>
-    <div className="**:data-[slot=command-input-wrapper]:h-auto">
-      <Command>{children}</Command>
-    </div>
-  </DialogContent>
+export const ModelSelectorPopup = ({ className, ...props }: ModelSelectorPopupProps) => (
+  <CommandDialogPopup className={cn('max-w-lg', className)} {...props} />
 )
 
-export type ModelSelectorDialogProps = ComponentProps<typeof CommandDialog>
+// ── Command-level components ─────────────────────────────────────────
 
-export const ModelSelectorDialog = (props: ModelSelectorDialogProps) => <CommandDialog {...props} />
+export type ModelSelectorCommandProps = ComponentProps<typeof Command>
+
+export const ModelSelectorCommand = (props: ModelSelectorCommandProps) => <Command {...props} />
 
 export type ModelSelectorInputProps = ComponentProps<typeof CommandInput>
 
-export const ModelSelectorInput = ({ className, ...props }: ModelSelectorInputProps) => (
-  <CommandInput className={cn('h-auto py-3.5', className)} {...props} />
-)
+export const ModelSelectorInput = (props: ModelSelectorInputProps) => <CommandInput {...props} />
+
+export type ModelSelectorPanelProps = ComponentProps<typeof CommandPanel>
+
+export const ModelSelectorPanel = (props: ModelSelectorPanelProps) => <CommandPanel {...props} />
 
 export type ModelSelectorListProps = ComponentProps<typeof CommandList>
 
@@ -75,9 +68,17 @@ export const ModelSelectorGroupLabel = (props: ModelSelectorGroupLabelProps) => 
   <CommandGroupLabel {...props} />
 )
 
+export type ModelSelectorCollectionProps = ComponentProps<typeof CommandCollection>
+
+export const ModelSelectorCollection = (props: ModelSelectorCollectionProps) => (
+  <CommandCollection {...props} />
+)
+
 export type ModelSelectorItemProps = ComponentProps<typeof CommandItem>
 
-export const ModelSelectorItem = (props: ModelSelectorItemProps) => <CommandItem {...props} />
+export const ModelSelectorItem = ({ className, ...props }: ModelSelectorItemProps) => (
+  <CommandItem className={cn('gap-2', className)} {...props} />
+)
 
 export type ModelSelectorShortcutProps = ComponentProps<typeof CommandShortcut>
 
@@ -91,73 +92,17 @@ export const ModelSelectorSeparator = (props: ModelSelectorSeparatorProps) => (
   <CommandSeparator {...props} />
 )
 
+// ── Display helpers ──────────────────────────────────────────────────
+
 export type ModelSelectorLogoProps = Omit<ComponentProps<'img'>, 'src' | 'alt'> & {
-  provider:
-    | 'moonshotai-cn'
-    | 'lucidquery'
-    | 'moonshotai'
-    | 'zai-coding-plan'
-    | 'alibaba'
-    | 'xai'
-    | 'vultr'
-    | 'nvidia'
-    | 'upstage'
-    | 'groq'
-    | 'github-copilot'
-    | 'mistral'
-    | 'vercel'
-    | 'nebius'
-    | 'deepseek'
-    | 'alibaba-cn'
-    | 'google-vertex-anthropic'
-    | 'venice'
-    | 'chutes'
-    | 'cortecs'
-    | 'github-models'
-    | 'togetherai'
-    | 'azure'
-    | 'baseten'
-    | 'huggingface'
-    | 'opencode'
-    | 'fastrouter'
-    | 'google'
-    | 'google-vertex'
-    | 'cloudflare-workers-ai'
-    | 'inception'
-    | 'wandb'
-    | 'openai'
-    | 'zhipuai-coding-plan'
-    | 'perplexity'
-    | 'openrouter'
-    | 'zenmux'
-    | 'v0'
-    | 'iflowcn'
-    | 'synthetic'
-    | 'deepinfra'
-    | 'zhipuai'
-    | 'submodel'
-    | 'zai'
-    | 'inference'
-    | 'requesty'
-    | 'morph'
-    | 'lmstudio'
-    | 'anthropic'
-    | 'aihubmix'
-    | 'fireworks-ai'
-    | 'modelscope'
-    | 'llama'
-    | 'scaleway'
-    | 'amazon-bedrock'
-    | 'cerebras'
-    // oxlint-disable-next-line typescript-eslint(ban-types) -- intentional pattern for autocomplete-friendly string union
-    | (string & {})
+  provider?: string
 }
 
 export const ModelSelectorLogo = ({ provider, className, ...props }: ModelSelectorLogoProps) => (
   <img
     {...props}
     alt={`${provider} logo`}
-    className={cn('size-3 dark:invert', className)}
+    className={cn('size-4 dark:invert', className)}
     height={12}
     src={`https://models.dev/logos/${provider}.svg`}
     width={12}

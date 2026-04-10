@@ -2,7 +2,7 @@ import type { FileUIPart, ToolUIPart } from 'ai'
 
 import { CheckIcon, GlobeIcon } from 'lucide-react'
 import { nanoid } from 'nanoid'
-import { useCallback, useMemo, useState } from 'react'
+import { Fragment, useCallback, useMemo, useState } from 'react'
 
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input'
 
@@ -30,7 +30,8 @@ import {
 } from '@/components/ai-elements/message'
 import {
   ModelSelector,
-  ModelSelectorContent,
+  ModelSelectorCollection,
+  ModelSelectorCommand,
   ModelSelectorEmpty,
   ModelSelectorGroup,
   ModelSelectorGroupLabel,
@@ -40,6 +41,9 @@ import {
   ModelSelectorLogo,
   ModelSelectorLogoGroup,
   ModelSelectorName,
+  ModelSelectorPanel,
+  ModelSelectorPopup,
+  ModelSelectorSeparator,
   ModelSelectorTrigger,
 } from '@/components/ai-elements/model-selector'
 import {
@@ -270,43 +274,67 @@ Don't overuse these hooks! They come with their own overhead. Only use them when
   },
 ]
 
-const models = [
+interface ModelItem {
+  value: string
+  label: string
+  chefSlug: string
+  providers: string[]
+}
+
+interface ModelGroup {
+  value: string
+  items: ModelItem[]
+}
+
+const modelGroups: ModelGroup[] = [
   {
-    chef: 'OpenAI',
-    chefSlug: 'openai',
-    id: 'gpt-4o',
-    name: 'GPT-4o',
-    providers: ['openai', 'azure'],
+    value: 'OpenAI',
+    items: [
+      {
+        value: 'gpt-4o',
+        label: 'GPT-4o',
+        chefSlug: 'openai',
+        providers: ['openai', 'azure'],
+      },
+      {
+        value: 'gpt-4o-mini',
+        label: 'GPT-4o Mini',
+        chefSlug: 'openai',
+        providers: ['openai', 'azure'],
+      },
+    ],
   },
   {
-    chef: 'OpenAI',
-    chefSlug: 'openai',
-    id: 'gpt-4o-mini',
-    name: 'GPT-4o Mini',
-    providers: ['openai', 'azure'],
+    value: 'Anthropic',
+    items: [
+      {
+        value: 'claude-opus-4-20250514',
+        label: 'Claude 4 Opus',
+        chefSlug: 'anthropic',
+        providers: ['anthropic', 'azure', 'google', 'amazon-bedrock'],
+      },
+      {
+        value: 'claude-sonnet-4-20250514',
+        label: 'Claude 4 Sonnet',
+        chefSlug: 'anthropic',
+        providers: ['anthropic', 'azure', 'google', 'amazon-bedrock'],
+      },
+    ],
   },
   {
-    chef: 'Anthropic',
-    chefSlug: 'anthropic',
-    id: 'claude-opus-4-20250514',
-    name: 'Claude 4 Opus',
-    providers: ['anthropic', 'azure', 'google', 'amazon-bedrock'],
-  },
-  {
-    chef: 'Anthropic',
-    chefSlug: 'anthropic',
-    id: 'claude-sonnet-4-20250514',
-    name: 'Claude 4 Sonnet',
-    providers: ['anthropic', 'azure', 'google', 'amazon-bedrock'],
-  },
-  {
-    chef: 'Google',
-    chefSlug: 'google',
-    id: 'gemini-2.0-flash-exp',
-    name: 'Gemini 2.0 Flash',
-    providers: ['google'],
+    value: 'Google',
+    items: [
+      {
+        value: 'gemini-2.0-flash-exp',
+        label: 'Gemini 2.0 Flash',
+        chefSlug: 'google',
+        providers: ['google'],
+      },
+    ],
   },
 ]
+
+const allModels = modelGroups.flatMap((g) => g.items)
 
 const suggestions = [
   'What are the latest trends in AI?',
@@ -332,8 +360,6 @@ const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
-
-const chefs = ['OpenAI', 'Anthropic', 'Google']
 
 const AttachmentItem = ({
   attachment,
@@ -391,35 +417,8 @@ const SuggestionItem = ({
   return <Suggestion onClick={handleClick} suggestion={suggestion} />
 }
 
-const ModelItem = ({
-  m,
-  isSelected,
-  onSelect,
-}: {
-  m: (typeof models)[0]
-  isSelected: boolean
-  onSelect: (id: string) => void
-}) => {
-  const handleSelect = useCallback(() => {
-    onSelect(m.id)
-  }, [onSelect, m.id])
-
-  return (
-    <ModelSelectorItem onSelect={handleSelect} value={m.id}>
-      <ModelSelectorLogo provider={m.chefSlug} />
-      <ModelSelectorName>{m.name}</ModelSelectorName>
-      <ModelSelectorLogoGroup>
-        {m.providers.map((provider) => (
-          <ModelSelectorLogo key={provider} provider={provider} />
-        ))}
-      </ModelSelectorLogoGroup>
-      {isSelected ? <CheckIcon className="ml-auto size-4" /> : <div className="ml-auto size-4" />}
-    </ModelSelectorItem>
-  )
-}
-
 const Example = () => {
-  const [model, setModel] = useState<string>(models[0].id)
+  const [model, setModel] = useState<string>(allModels[0].value)
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false)
   const [text, setText] = useState<string>('')
   const [useWebSearch, setUseWebSearch] = useState<boolean>(false)
@@ -427,7 +426,7 @@ const Example = () => {
   const [messages, setMessages] = useState<MessageType[]>(initialMessages)
   const [, setStreamingMessageId] = useState<string | null>(null)
 
-  const selectedModelData = useMemo(() => models.find((m) => m.id === model), [model])
+  const selectedModelData = useMemo(() => allModels.find((m) => m.value === model), [model])
 
   const updateMessageContent = useCallback((messageId: string, newContent: string) => {
     setMessages((prev) =>
@@ -547,8 +546,8 @@ const Example = () => {
     setUseWebSearch((prev) => !prev)
   }, [])
 
-  const handleModelSelect = useCallback((modelId: string) => {
-    setModel(modelId)
+  const handleModelSelect = useCallback((item: ModelItem) => {
+    setModel(item.value)
     setModelSelectorOpen(false)
   }, [])
 
@@ -646,31 +645,50 @@ const Example = () => {
                     {selectedModelData?.chefSlug && (
                       <ModelSelectorLogo provider={selectedModelData.chefSlug} />
                     )}
-                    {selectedModelData?.name && (
-                      <ModelSelectorName>{selectedModelData.name}</ModelSelectorName>
+                    {selectedModelData?.label && (
+                      <ModelSelectorName>{selectedModelData.label}</ModelSelectorName>
                     )}
                   </ModelSelectorTrigger>
-                  <ModelSelectorContent>
-                    <ModelSelectorInput placeholder="Search models..." />
-                    <ModelSelectorList>
-                      <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
-                      {chefs.map((chef) => (
-                        <ModelSelectorGroup key={chef}>
-                          <ModelSelectorGroupLabel>{chef}</ModelSelectorGroupLabel>
-                          {models
-                            .filter((m) => m.chef === chef)
-                            .map((m) => (
-                              <ModelItem
-                                isSelected={model === m.id}
-                                key={m.id}
-                                m={m}
-                                onSelect={handleModelSelect}
-                              />
-                            ))}
-                        </ModelSelectorGroup>
-                      ))}
-                    </ModelSelectorList>
-                  </ModelSelectorContent>
+                  <ModelSelectorPopup>
+                    <ModelSelectorCommand items={modelGroups}>
+                      <ModelSelectorInput placeholder="Search models..." />
+                      <ModelSelectorPanel>
+                        <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
+                        <ModelSelectorList>
+                          {(group: ModelGroup, index: number) => (
+                            <Fragment key={group.value}>
+                              {index > 0 && <ModelSelectorSeparator />}
+                              <ModelSelectorGroup items={group.items}>
+                                <ModelSelectorGroupLabel>{group.value}</ModelSelectorGroupLabel>
+                                <ModelSelectorCollection>
+                                  {(item: ModelItem) => (
+                                    <ModelSelectorItem
+                                      key={item.value}
+                                      onClick={() => handleModelSelect(item)}
+                                      value={item.value}
+                                    >
+                                      <ModelSelectorLogo provider={item.chefSlug} />
+                                      <ModelSelectorName>{item.label}</ModelSelectorName>
+                                      <ModelSelectorLogoGroup>
+                                        {item.providers.map((provider) => (
+                                          <ModelSelectorLogo key={provider} provider={provider} />
+                                        ))}
+                                      </ModelSelectorLogoGroup>
+                                      {model === item.value ? (
+                                        <CheckIcon className="ml-auto size-4" />
+                                      ) : (
+                                        <div className="ml-auto size-4" />
+                                      )}
+                                    </ModelSelectorItem>
+                                  )}
+                                </ModelSelectorCollection>
+                              </ModelSelectorGroup>
+                            </Fragment>
+                          )}
+                        </ModelSelectorList>
+                      </ModelSelectorPanel>
+                    </ModelSelectorCommand>
+                  </ModelSelectorPopup>
                 </ModelSelector>
               </PromptInputTools>
               <PromptInputSubmit disabled={isSubmitDisabled} status={status} />

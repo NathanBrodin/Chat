@@ -2,7 +2,13 @@ import { useTheme } from '@lonik/themer'
 import { useHotkey } from '@tanstack/react-hotkeys'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { ChevronsUpDown, KeyboardIcon, LogOutIcon, SettingsIcon } from 'lucide-react'
+import {
+  ChevronsUpDown,
+  KeyboardIcon,
+  LogOutIcon,
+  PaintbrushIcon,
+  SettingsIcon,
+} from 'lucide-react'
 import { useCallback, useState } from 'react'
 
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -14,6 +20,7 @@ import {
   MenuItem,
   MenuPopup,
   MenuSeparator,
+  MenuShortcut,
   MenuTrigger,
 } from '@/components/ui/menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar'
@@ -86,17 +93,20 @@ export function SidebarUser() {
               </MenuItem>
               <MenuSeparator />
               <MenuItem>
+                <PaintbrushIcon />
                 Theme
-                <ThemeToggle />
+                <MenuShortcut>
+                  <ThemeToggle />
+                </MenuShortcut>
               </MenuItem>
               <MenuItem onClick={() => setDialogOpen(true)}>
-                Keyboard Shortcuts
                 <KeyboardIcon />
+                Keyboard Shortcuts
               </MenuItem>
               <MenuSeparator />
               <MenuItem onClick={signOut}>
-                Log Out
                 <LogOutIcon />
+                Log Out
               </MenuItem>
             </MenuGroup>
           </MenuPopup>
