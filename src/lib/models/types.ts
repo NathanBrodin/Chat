@@ -19,8 +19,6 @@ export const ModelsGetParametersCategory = z.union([
 export const ModelsGetQueryParams = z
   .object({
     category: ModelsGetParametersCategory.optional(),
-    supported_parameters: z.string().optional(),
-    output_modalities: z.string().optional(),
   })
   .default({})
 
@@ -98,22 +96,20 @@ export const ModelGroup = z.union([
 export type ModelArchitecture = z.infer<typeof ModelArchitecture>
 export const ModelArchitecture = z.object({
   input_modalities: z.array(InputModality),
-  instruct_type: z
-    .union([z.union([ModelArchitectureInstructType, z.null()]), z.undefined()])
-    .optional(),
+  instruct_type: z.union([ModelArchitectureInstructType, z.null()]).optional(),
   modality: z.union([z.string(), z.null()]),
   output_modalities: z.array(OutputModality),
-  tokenizer: z.union([ModelGroup, z.undefined()]).optional(),
+  tokenizer: ModelGroup.optional(),
 })
 
 export type DefaultParameters = z.infer<typeof DefaultParameters>
 export const DefaultParameters = z.object({
-  frequency_penalty: z.number().optional(),
-  presence_penalty: z.number().optional(),
-  repetition_penalty: z.number().optional(),
-  temperature: z.number().optional(),
-  top_k: z.union([z.number(), z.null()]).optional(),
-  top_p: z.number().optional(),
+  frequency_penalty: z.number().nullable().optional(),
+  presence_penalty: z.number().nullable().optional(),
+  repetition_penalty: z.number().nullable().optional(),
+  temperature: z.number().nullable().optional(),
+  top_k: z.number().nullable().optional(),
+  top_p: z.number().nullable().optional(),
 })
 
 export type ModelLinks = z.infer<typeof ModelLinks>
@@ -127,61 +123,21 @@ export const PerRequestLimits = z.object({
   prompt_tokens: z.number(),
 })
 
-export type PublicPricingAudio = z.infer<typeof PublicPricingAudio>
-export const PublicPricingAudio = z.object({})
-
-export type PublicPricingAudioOutput = z.infer<typeof PublicPricingAudioOutput>
-export const PublicPricingAudioOutput = z.object({})
-
-export type PublicPricingCompletion = z.infer<typeof PublicPricingCompletion>
-export const PublicPricingCompletion = z.object({})
-
-export type PublicPricingImage = z.infer<typeof PublicPricingImage>
-export const PublicPricingImage = z.object({})
-
-export type PublicPricingImageOutput = z.infer<typeof PublicPricingImageOutput>
-export const PublicPricingImageOutput = z.object({})
-
-export type PublicPricingImageToken = z.infer<typeof PublicPricingImageToken>
-export const PublicPricingImageToken = z.object({})
-
-export type PublicPricingInputAudioCache = z.infer<typeof PublicPricingInputAudioCache>
-export const PublicPricingInputAudioCache = z.object({})
-
-export type PublicPricingInputCacheRead = z.infer<typeof PublicPricingInputCacheRead>
-export const PublicPricingInputCacheRead = z.object({})
-
-export type PublicPricingInputCacheWrite = z.infer<typeof PublicPricingInputCacheWrite>
-export const PublicPricingInputCacheWrite = z.object({})
-
-export type PublicPricingInternalReasoning = z.infer<typeof PublicPricingInternalReasoning>
-export const PublicPricingInternalReasoning = z.object({})
-
-export type PublicPricingPrompt = z.infer<typeof PublicPricingPrompt>
-export const PublicPricingPrompt = z.object({})
-
-export type PublicPricingRequest = z.infer<typeof PublicPricingRequest>
-export const PublicPricingRequest = z.object({})
-
-export type PublicPricingWebSearch = z.infer<typeof PublicPricingWebSearch>
-export const PublicPricingWebSearch = z.object({})
-
 export type PublicPricing = z.infer<typeof PublicPricing>
 export const PublicPricing = z.object({
-  audio: z.union([PublicPricingAudio, z.undefined()]).optional(),
-  audio_output: z.union([PublicPricingAudioOutput, z.undefined()]).optional(),
-  completion: PublicPricingCompletion,
-  discount: z.union([z.number(), z.undefined()]).optional(),
-  image: z.union([PublicPricingImage, z.undefined()]).optional(),
-  image_output: z.union([PublicPricingImageOutput, z.undefined()]).optional(),
-  image_token: z.union([PublicPricingImageToken, z.undefined()]).optional(),
-  input_audio_cache: z.union([PublicPricingInputAudioCache, z.undefined()]).optional(),
-  input_cache_read: z.union([PublicPricingInputCacheRead, z.undefined()]).optional(),
-  input_cache_write: z.union([PublicPricingInputCacheWrite, z.undefined()]).optional(),
-  internal_reasoning: z.union([PublicPricingInternalReasoning, z.undefined()]).optional(),
-  prompt: PublicPricingPrompt,
-  request: z.union([PublicPricingRequest, z.undefined()]).optional(),
-  web_search: z.union([PublicPricingWebSearch, z.undefined()]).optional(),
+  prompt: z.string(),
+  completion: z.string(),
+  request: z.string().optional(),
+  image: z.string().optional(),
+  image_token: z.string().optional(),
+  image_output: z.string().optional(),
+  audio: z.string().optional(),
+  input_audio_cache: z.string().optional(),
+  web_search: z.string().optional(),
+  internal_reasoning: z.string().optional(),
+  input_cache_read: z.string().optional(),
+  input_cache_write: z.string().optional(),
+  discount: z.number().optional(),
 })
 
 export type Parameter = z.infer<typeof Parameter>
@@ -215,26 +171,26 @@ export const Parameter = z.union([
 
 export type TopProviderInfo = z.infer<typeof TopProviderInfo>
 export const TopProviderInfo = z.object({
-  context_length: z.union([z.number(), z.undefined()]).optional(),
+  context_length: z.number().nullable().optional(),
   is_moderated: z.boolean(),
-  max_completion_tokens: z.union([z.number(), z.undefined()]).optional(),
+  max_completion_tokens: z.number().nullable().optional(),
 })
 
 export type Model = z.infer<typeof Model>
 export const Model = z.object({
   architecture: ModelArchitecture,
   canonical_slug: z.string(),
-  context_length: z.number(),
+  context_length: z.number().nullable(),
   created: z.number(),
   default_parameters: DefaultParameters,
-  description: z.union([z.string(), z.undefined()]).optional(),
-  expiration_date: z.union([z.union([z.string(), z.null()]), z.undefined()]).optional(),
-  hugging_face_id: z.union([z.union([z.string(), z.null()]), z.undefined()]).optional(),
+  description: z.string().optional(),
+  expiration_date: z.string().nullable().optional(),
+  hugging_face_id: z.string().nullable().optional(),
   id: z.string(),
-  knowledge_cutoff: z.union([z.union([z.string(), z.null()]), z.undefined()]).optional(),
+  knowledge_cutoff: z.string().nullable().optional(),
   links: ModelLinks,
   name: z.string(),
-  per_request_limits: PerRequestLimits,
+  per_request_limits: PerRequestLimits.nullable(),
   pricing: PublicPricing,
   supported_parameters: z.array(Parameter),
   top_provider: TopProviderInfo,

@@ -39,11 +39,12 @@ export const getModels = createServerFn({ method: 'GET' })
 
     const json = await response.json()
     const parsedResult = ModelsListResponse.safeParse(json)
+    const models = parsedResult.success ? parsedResult.data.data : (json.data as ModelsListResponseData)
 
-    if (!parsedResult.success) {
-      // console.warn('OpenRouter Schema Mismatch:', JSON.stringify(parsedResult.error, null, 2))
-      return json.data as ModelsListResponseData
-    }
-
-    return parsedResult.data.data
+    return models.filter((model) => {
+      const { input_modalities, output_modalities } = model.architecture
+      const hasTextInput = input_modalities.includes('text')
+      const isTextOutputOnly = output_modalities.every((m) => m === 'text')
+      return hasTextInput && isTextOutputOnly
+    })
   })

@@ -17,6 +17,9 @@ import {
   CommandShortcut,
 } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
+import type { Model, PublicPricing } from '@/lib/models/types'
+import { Badge } from '../ui/badge'
+import { FileTextIcon, WrenchIcon } from 'lucide-react'
 
 // ── Dialog-level components ──────────────────────────────────────────
 
@@ -126,3 +129,91 @@ export type ModelSelectorNameProps = ComponentProps<'span'>
 export const ModelSelectorName = ({ className, ...props }: ModelSelectorNameProps) => (
   <span className={cn('flex-1 truncate text-left', className)} {...props} />
 )
+
+const isFreeModel = (id: string) => id.endsWith(':free')
+
+/**
+ * Converts a per-token price string to a human-readable per-1M-token price.
+ * e.g. "0.0000002" → "$0.20"
+ * Returns null if the value is zero or unparseable.
+ */
+function formatPricePerMillion(raw: string): string | null {
+  const perToken = parseFloat(raw)
+  if (isNaN(perToken) || perToken === 0) return null
+  const perMillion = perToken * 1_000_000
+  const formatted =
+    perMillion >= 1
+      ? `$${perMillion.toFixed(perMillion >= 10 ? 0 : 1)}`
+      : `$${perMillion.toPrecision(2)}`
+  return formatted
+}
+
+/**
+ * Compact pricing label showing input / output cost per 1M tokens.
+ * Shows a "Free" badge if both prompt and completion are zero.
+ */
+function ModelPricing({ pricing, id }: { pricing: PublicPricing; id: string }) {
+  if (isFreeModel(id)) {
+    return (
+      <Badge variant="info">
+        Free
+      </Badge>
+    )
+  }
+
+  const input = formatPricePerMillion(pricing.prompt)
+  const output = formatPricePerMillion(pricing.completion)
+
+  if (!input && !output) {
+    return (
+      <Badge variant="info">
+        Free
+      </Badge>
+    )
+  }
+
+  return (
+    <span className="text-xs tabular-nums text-muted-foreground">
+      {input ?? '$0'}{' '}
+      <span className="opacity-40">/</span>{' '}
+      {output ?? '$0'}
+    </span>
+  )
+}
+
+export function ModelCapabilityBadges({ model }: { model: Model }) {
+  const hasFileInput = model.architecture.input_modalities.includes('file')
+  const hasTools = model.supported_parameters.includes('tools')
+
+  return (
+    <span className="ml-auto flex shrink-0 items-center gap-1.5">
+      <ModelPricing id={model.id} pricing={model.pricing} />
+      {hasFileInput && (
+        <span className="text-muted-foreground" title="Supports file/document input">
+          <FileTextIcon className="size-3" />
+        </span>
+      )}
+      {hasTools && (
+        <span className="text-muted-foreground" title="Supports tool use">
+          <WrenchIcon className="size-3" />
+        </span>
+      )}
+    </span>
+  )
+}
+
+export function formatContextLength(tokens: number): string {
+  if (tokens >= 1_000_000) {
+    const val = tokens / 1_000_000
+    return `${val % 1 === 0 ? val : val.toFixed(1)}M`
+  }
+  const k = tokens / 1_000
+  return `${k % 1 === 0 ? k : k.toFixed(0)}K`
+}
+
+export function formatKnowledgeCutoff(raw: string): string | null {
+  const match = raw.match(/^(\d{4})-(\d{2})/)
+  if (!match) return null
+  const date = new Date(parseInt(match[1]), parseInt(match[2]) - 1, 1)
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+}
