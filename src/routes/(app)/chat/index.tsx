@@ -1,8 +1,15 @@
-import { useChat, type UIMessage } from '@ai-sdk/react'
+import { useChat } from '@ai-sdk/react'
 import { createFileRoute } from '@tanstack/react-router'
-import { nanoid } from 'nanoid'
+import { MessageSquare } from 'lucide-react'
 import { useState } from 'react'
 
+import {
+  Conversation,
+  ConversationContent,
+  ConversationEmptyState,
+  ConversationScrollButton,
+} from '@/components/ai-elements/conversation'
+import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message'
 import {
   PromptInput,
   PromptInputBody,
@@ -18,7 +25,6 @@ import {
   PromptInputActionAddScreenshot,
   PromptInputHeader,
 } from '@/components/ai-elements/prompt-input'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
 import { PromptInputAttachmentsDisplay } from './-components/attachments-display'
 import { ChatHeader } from './-components/header'
@@ -45,9 +51,37 @@ function Chat() {
 
   return (
     <>
-      <ChatHeader />
-      <div className="min-h-0 flex-1 overflow-hidden">
-        <ScrollArea className="h-full py-4" scrollFade scrollbarGutter>
+      <ChatHeader messages={messages} />
+      <Conversation>
+        <ConversationContent>
+          {messages.length === 0 ? (
+            <ConversationEmptyState
+              icon={<MessageSquare className="size-12" />}
+              title="Start a conversation"
+              description="Type a message below to begin chatting"
+            />
+          ) : (
+            messages.map((message) => (
+              <Message from={message.role} key={message.id}>
+                <MessageContent>
+                  {message.parts.map((part, i) => {
+                    switch (part.type) {
+                      case 'text':
+                        return (
+                          <MessageResponse key={`${message.id}-${i}`}>{part.text}</MessageResponse>
+                        )
+                      default:
+                        return null
+                    }
+                  })}
+                </MessageContent>
+              </Message>
+            ))
+          )}
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
+      {/*<ScrollArea className="h-full py-4" scrollFade scrollbarGutter>
           {messages.map((message) => (
             <div key={message.id} className="mx-auto max-w-7xl px-4 whitespace-pre-wrap ">
               {message.role === 'user' ? 'User: ' : 'AI: '}
@@ -59,8 +93,7 @@ function Chat() {
               })}
             </div>
           ))}
-        </ScrollArea>
-      </div>
+        </ScrollArea>*/}
       <div className="mx-auto w-full max-w-7xl shrink-0 p-2.5 px-4">
         <PromptInput onSubmit={handleSubmit} globalDrop multiple>
           <PromptInputHeader>

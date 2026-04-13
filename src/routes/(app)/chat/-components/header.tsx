@@ -1,9 +1,21 @@
-import { GhostIcon, Settings2Icon } from 'lucide-react'
+import type { UIMessage } from 'ai'
 
+import { GhostIcon, PencilIcon, Settings2Icon, TrashIcon } from 'lucide-react'
+
+import { ConversationDownload } from '@/components/ai-elements/conversation'
 import { Button } from '@/components/ui/button'
+import {
+  Menu,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuItem,
+  MenuPopup,
+  MenuSeparator,
+  MenuTrigger,
+} from '@/components/ui/menu'
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
 
-export function ChatHeader() {
+export function ChatHeader({ messages }: { messages: UIMessage[] }) {
   const { isMobile } = useSidebar()
 
   return (
@@ -16,9 +28,27 @@ export function ChatHeader() {
         <Button variant="outline" size="icon">
           <GhostIcon />
         </Button>
-        <Button variant="outline" size="icon">
-          <Settings2Icon />
-        </Button>
+        <Menu>
+          <MenuTrigger render={<Button variant="outline" size="icon" />}>
+            <Settings2Icon />
+          </MenuTrigger>
+          <MenuPopup align="start" sideOffset={4}>
+            <ConversationDownload messages={messages} />
+            <MenuSeparator />
+
+            <MenuGroup>
+              <MenuGroupLabel>Manage conversation</MenuGroupLabel>
+              <MenuItem>
+                <PencilIcon aria-hidden="true" />
+                Rename
+              </MenuItem>
+              <MenuItem variant="destructive">
+                <TrashIcon aria-hidden="true" />
+                Delete
+              </MenuItem>
+            </MenuGroup>
+          </MenuPopup>
+        </Menu>
       </div>
     </header>
   )

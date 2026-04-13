@@ -49,10 +49,63 @@ export const Route = createFileRoute('/api/chat')({
               `data: {"type":"text-delta","id":"text-1","delta":"### 3. Code Block\\n"}\n\n`,
               `data: {"type":"text-delta","id":"text-1","delta":"\`\`\`typescript\\n"}\n\n`,
               `data: {"type":"text-delta","id":"text-1","delta":"const testUI = (): boolean => {\\n"}\n\n`,
-              `data: {"type":"text-delta","id":"text-1","delta":"  console.log(\\\"Rendering rich markdown!\\\");\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"  console.log(\\"Rendering rich markdown!\\");\\n"}\n\n`,
               `data: {"type":"text-delta","id":"text-1","delta":"  return true;\\n"}\n\n`,
               `data: {"type":"text-delta","id":"text-1","delta":"};\\n"}\n\n`,
               `data: {"type":"text-delta","id":"text-1","delta":"\`\`\`\\n\\n"}\n\n`,
+
+              // Blockquotes
+              `data: {"type":"text-delta","id":"text-1","delta":"### 4. Blockquotes\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"> This is a blockquote.\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"> It can span multiple lines\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"> and even contain *formatting*.\\n\\n"}\n\n`,
+
+              // Horizontal Rules
+              `data: {"type":"text-delta","id":"text-1","delta":"### 5. Horizontal Rules\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"Below is a horizontal rule:\\n\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"---\\n\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"And another one:\\n\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"***\\n\\n"}\n\n`,
+
+              // Task Lists
+              `data: {"type":"text-delta","id":"text-1","delta":"### 6. Task Lists\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"- [x] Write documentation\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"- [x] Add unit tests\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"- [ ] Deploy to production\\n\\n"}\n\n`,
+
+              // Nested Lists
+              `data: {"type":"text-delta","id":"text-1","delta":"### 7. Nested Lists\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"1. First item\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"   - Nested item A\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"   - Nested item B\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"2. Second item\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"   1. Sub-nested item\\n\\n"}\n\n`,
+
+              // Links and Images
+              `data: {"type":"text-delta","id":"text-1","delta":"### 11. Links\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"Check out [our documentation](https://example.com/docs) for more info.\\n\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"Visit the [GitHub repository](https://github.com/example/repo).\\n\\n"}\n\n`,
+
+              // Emphasis Styles
+              `data: {"type":"text-delta","id":"text-1","delta":"### 12. Text Emphasis\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"This is *italic text*.\\n\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"This is **bold text**.\\n\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"This is ***bold and italic***.\\n\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"This is ~~strikethrough~~.\\n\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"Use \`inline code\` for code references.\\n\\n"}\n\n`,
+
+              // Complex Table
+              `data: {"type":"text-delta","id":"text-1","delta":"### 13. Complex Table\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"| Name | Type | Default | Description |\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"| :--- | :--- | :---: | :--- |\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"| port | number | 3000 | Server port |\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"| debug | boolean | false | Enable debug mode |\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"| theme | string | 'dark' | UI theme |\\n\\n"}\n\n`,
+
+              // Definition List (HTML-style)
+              `data: {"type":"text-delta","id":"text-1","delta":"### 14. Definition Term\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"**Streaming**\\n"}\n\n`,
+              `data: {"type":"text-delta","id":"text-1","delta":"A technique for sending data in discrete chunks over a network connection.\\n\\n"}\n\n`,
 
               // Outro
               `data: {"type":"text-delta","id":"text-1","delta":"Happy coding! 🚀"}\n\n`,

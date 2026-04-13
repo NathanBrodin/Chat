@@ -4,28 +4,73 @@ import type { UIMessage } from 'ai'
 import type { ComponentProps } from 'react'
 
 import { ArrowDownIcon, DownloadIcon } from 'lucide-react'
-import { useCallback } from 'react'
-import { StickToBottom, useStickToBottomContext } from 'use-stick-to-bottom'
+import { createContext, use, useCallback } from 'react'
+import { useStickToBottom } from 'use-stick-to-bottom'
 
 import { Button } from '@/components/ui/button'
+import { ScrollAreaPrimitive, ScrollBar } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 
-export type ConversationProps = ComponentProps<typeof StickToBottom>
+import { MenuItem } from '../ui/menu'
 
-export const Conversation = ({ className, ...props }: ConversationProps) => (
-  <StickToBottom
-    className={cn('relative flex-1 overflow-y-hidden', className)}
-    initial="smooth"
-    resize="smooth"
-    role="log"
-    {...props}
-  />
-)
+type ConversationContextValue = Pick<
+  ReturnType<typeof useStickToBottom>,
+  'isAtBottom' | 'scrollToBottom'
+>
 
-export type ConversationContentProps = ComponentProps<typeof StickToBottom.Content>
+const ConversationContext = createContext<ConversationContextValue | null>(null)
+
+type ConversationRootProps = Omit<ComponentProps<typeof ScrollAreaPrimitive.Root>, 'children'>
+
+export type ConversationProps = ConversationRootProps & {
+  children: React.ReactNode
+  scrollFade?: boolean
+  scrollbarGutter?: boolean
+}
+
+export const Conversation = ({
+  children,
+  className,
+  scrollFade = true,
+  scrollbarGutter = true,
+  role = 'log',
+  ...props
+}: ConversationProps) => {
+  const { contentRef, isAtBottom, scrollRef, scrollToBottom } = useStickToBottom({
+    initial: 'smooth',
+    resize: 'smooth',
+  })
+
+  return (
+    <ConversationContext.Provider value={{ isAtBottom, scrollToBottom }}>
+      <ScrollAreaPrimitive.Root
+        className={cn('relative h-full min-h-0', className)}
+        role={role}
+        {...props}
+      >
+        <ScrollAreaPrimitive.Viewport
+          ref={scrollRef}
+          className={cn(
+            'h-full rounded-[inherit] outline-none transition-shadows focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background data-has-overflow-y:overscroll-y-contain data-has-overflow-x:overscroll-x-contain',
+            scrollFade &&
+              'mask-t-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-start)))] mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] mask-l-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-start)))] mask-r-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-end)))] [--fade-size:3.5rem]',
+            scrollbarGutter && 'data-has-overflow-y:pe-2.5 data-has-overflow-x:pb-2.5',
+          )}
+        >
+          <div ref={contentRef}>{children}</div>
+        </ScrollAreaPrimitive.Viewport>
+        <ScrollBar orientation="vertical" />
+        <ScrollBar orientation="horizontal" />
+        <ScrollAreaPrimitive.Corner data-slot="scroll-area-corner" />
+      </ScrollAreaPrimitive.Root>
+    </ConversationContext.Provider>
+  )
+}
+
+export type ConversationContentProps = ComponentProps<'div'>
 
 export const ConversationContent = ({ className, ...props }: ConversationContentProps) => (
-  <StickToBottom.Content className={cn('flex flex-col gap-8 p-4', className)} {...props} />
+  <div className={cn('flex flex-col gap-8 p-4 mx-auto max-w-7xl', className)} {...props} />
 )
 
 export type ConversationEmptyStateProps = ComponentProps<'div'> & {
@@ -67,7 +112,13 @@ export const ConversationScrollButton = ({
   className,
   ...props
 }: ConversationScrollButtonProps) => {
-  const { isAtBottom, scrollToBottom } = useStickToBottomContext()
+  const context = use(ConversationContext)
+
+  if (!context) {
+    throw new Error('ConversationScrollButton must be used within Conversation')
+  }
+
+  const { isAtBottom, scrollToBottom } = context
 
   const handleScrollToBottom = useCallback(() => {
     scrollToBottom()
@@ -98,7 +149,7 @@ const getMessageText = (message: UIMessage): string =>
     .map((part) => part.text)
     .join('')
 
-export type ConversationDownloadProps = Omit<ComponentProps<typeof Button>, 'onClick'> & {
+export type ConversationDownloadProps = Omit<ComponentProps<typeof MenuItem>, 'onClick'> & {
   messages: UIMessage[]
   filename?: string
   formatMessage?: (message: UIMessage, index: number) => string
@@ -136,18 +187,9 @@ export const ConversationDownload = ({
   }, [messages, filename, formatMessage])
 
   return (
-    <Button
-      className={cn(
-        'absolute top-4 right-4 rounded-full dark:bg-background dark:hover:bg-muted',
-        className,
-      )}
-      onClick={handleDownload}
-      size="icon"
-      type="button"
-      variant="outline"
-      {...props}
-    >
-      {children ?? <DownloadIcon className="size-4" />}
-    </Button>
+    <MenuItem className={cn(className)} onClick={handleDownload} {...props}>
+      <DownloadIcon />
+      Download conversation
+    </MenuItem>
   )
 }
