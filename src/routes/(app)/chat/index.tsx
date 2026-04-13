@@ -1,5 +1,6 @@
-import { useChat } from '@ai-sdk/react'
+import { useChat, type UIMessage } from '@ai-sdk/react'
 import { createFileRoute } from '@tanstack/react-router'
+import { nanoid } from 'nanoid'
 import { useState } from 'react'
 
 import {
@@ -27,26 +28,16 @@ export const Route = createFileRoute('/(app)/chat/')({
   component: Chat,
 })
 
-const TEST_MESSAGES = Array.from({ length: 150 }, (_, i) => ({
-  id: `msg-${i}`,
-  role: i % 2 === 0 ? 'user' : 'assistant',
-  parts: [
-    {
-      type: 'text',
-      text: `${i % 2 === 0 ? 'User' : 'AI'} message ${i + 1}: Lorem ipsum dolor sit amet.`,
-    },
-  ],
-}))
-
 function Chat() {
   const [text, setText] = useState<string>('')
-  const { status, sendMessage } = useChat()
+  const { status, messages, sendMessage } = useChat({})
+
   const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text)
     if (!hasText) {
       return
     }
-    sendMessage({
+    void sendMessage({
       text: message.text,
     })
     setText('')
@@ -57,7 +48,7 @@ function Chat() {
       <ChatHeader />
       <div className="min-h-0 flex-1 overflow-hidden">
         <ScrollArea className="h-full py-4" scrollFade scrollbarGutter>
-          {TEST_MESSAGES.map((message) => (
+          {messages.map((message) => (
             <div key={message.id} className="mx-auto max-w-7xl px-4 whitespace-pre-wrap ">
               {message.role === 'user' ? 'User: ' : 'AI: '}
               {message.parts.map((part, i) => {
