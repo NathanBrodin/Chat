@@ -1,5 +1,9 @@
 import type { ComponentProps } from 'react'
 
+import { FileTextIcon, WrenchIcon } from 'lucide-react'
+
+import type { Model, PublicPricing } from '@/lib/models/types'
+
 import {
   Command,
   CommandCollection,
@@ -17,9 +21,8 @@ import {
   CommandShortcut,
 } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
-import type { Model, PublicPricing } from '@/lib/models/types'
+
 import { Badge } from '../ui/badge'
-import { FileTextIcon, WrenchIcon } from 'lucide-react'
 
 // ── Dialog-level components ──────────────────────────────────────────
 
@@ -154,29 +157,19 @@ function formatPricePerMillion(raw: string): string | null {
  */
 function ModelPricing({ pricing, id }: { pricing: PublicPricing; id: string }) {
   if (isFreeModel(id)) {
-    return (
-      <Badge variant="info">
-        Free
-      </Badge>
-    )
+    return <Badge variant="info">Free</Badge>
   }
 
   const input = formatPricePerMillion(pricing.prompt)
   const output = formatPricePerMillion(pricing.completion)
 
   if (!input && !output) {
-    return (
-      <Badge variant="info">
-        Free
-      </Badge>
-    )
+    return <Badge variant="info">Free</Badge>
   }
 
   return (
-    <span className="text-xs tabular-nums text-muted-foreground">
-      {input ?? '$0'}{' '}
-      <span className="opacity-40">/</span>{' '}
-      {output ?? '$0'}
+    <span className="text-xs text-muted-foreground tabular-nums">
+      {input ?? '$0'} <span className="opacity-40">/</span> {output ?? '$0'}
     </span>
   )
 }

@@ -24,12 +24,12 @@ import {
   ModelSelectorSeparator,
   ModelSelectorTrigger,
   formatContextLength,
-  formatKnowledgeCutoff
+  formatKnowledgeCutoff,
 } from '@/components/ai-elements/model-selector'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CommandFooter } from '@/components/ui/command'
 import { getModels as getServerModels } from '@/lib/models/functions'
-import { Badge } from '@/components/ui/badge'
 
 interface ModelGroup {
   value: string
@@ -144,24 +144,24 @@ export function ChatModels() {
                       <ModelSelectorGroup items={group.items}>
                         <ModelSelectorGroupLabel>{group.value}</ModelSelectorGroupLabel>
                         <ModelSelectorCollection>
-                           {(item: Model) => (
-                             <ModelSelectorItem
-                               key={item.id}
-                               onClick={() => handleItemClick(item)}
-                               value={item.id}
-                             >
-                               <ModelSelectorLogo provider={item.id?.split('/')[0]} />
-                               <ModelSelectorName>{getModelName(item.name)}</ModelSelectorName>
-                               {model === item.id ? (
-                                 <span className="ml-auto flex shrink-0 items-center gap-1">
-                                   <CheckIcon className="size-4" />
-                                 </span>
-                               ) : (
-                                 <ModelCapabilityBadges model={item} />
-                               )}
-                             </ModelSelectorItem>
-                           )}
-                         </ModelSelectorCollection>
+                          {(item: Model) => (
+                            <ModelSelectorItem
+                              key={item.id}
+                              onClick={() => handleItemClick(item)}
+                              value={item.id}
+                            >
+                              <ModelSelectorLogo provider={item.id?.split('/')[0]} />
+                              <ModelSelectorName>{getModelName(item.name)}</ModelSelectorName>
+                              {model === item.id ? (
+                                <span className="ml-auto flex shrink-0 items-center gap-1">
+                                  <CheckIcon className="size-4" />
+                                </span>
+                              ) : (
+                                <ModelCapabilityBadges model={item} />
+                              )}
+                            </ModelSelectorItem>
+                          )}
+                        </ModelSelectorCollection>
                       </ModelSelectorGroup>
                     </Fragment>
                   )}
@@ -178,18 +178,17 @@ export function ChatModels() {
                   </p>
                 )}
 
-                <div className='flex flex-wrap gap-1'>
-
-                {highlightedItem.context_length && (
-                  <Badge variant='secondary'>
+                <div className="flex flex-wrap gap-1">
+                  {highlightedItem.context_length && (
+                    <Badge variant="secondary">
                       Context: {formatContextLength(highlightedItem.context_length)}
-                  </Badge>
-                )}
-                {highlightedItem.knowledge_cutoff && (
-                  <Badge variant='secondary'>
-                    Cutoff: {formatKnowledgeCutoff(highlightedItem.knowledge_cutoff)}
-                  </Badge>
-                )}
+                    </Badge>
+                  )}
+                  {highlightedItem.knowledge_cutoff && (
+                    <Badge variant="secondary">
+                      Cutoff: {formatKnowledgeCutoff(highlightedItem.knowledge_cutoff)}
+                    </Badge>
+                  )}
                 </div>
               </div>
             )}

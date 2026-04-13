@@ -996,7 +996,7 @@ export type PromptInputHeaderProps = Omit<ComponentProps<typeof InputGroupAddon>
 export const PromptInputHeader = ({ className, ...props }: PromptInputHeaderProps) => (
   <InputGroupAddon
     align="block-end"
-    className={cn('order-first flex-wrap gap-1', className)}
+    className={cn('order-first flex-wrap gap-1 p-0! px-0! pb-0! empty:hidden', className)}
     {...props}
   />
 )
@@ -1052,7 +1052,7 @@ export const PromptInputButton = ({
 
   return (
     <Tooltip>
-      <TooltipTrigger render={button} />
+      <TooltipTrigger delay={0} render={button} />
       <TooltipContent side={side}>
         {tooltipContent}
         {shortcut && <span className="ml-2 text-muted-foreground">{shortcut}</span>}

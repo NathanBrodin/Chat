@@ -15,9 +15,11 @@ import {
   PromptInputActionMenuContent,
   PromptInputActionAddAttachments,
   PromptInputActionAddScreenshot,
+  PromptInputHeader,
 } from '@/components/ai-elements/prompt-input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
+import { PromptInputAttachmentsDisplay } from './-components/attachments-display'
 import { ChatHeader } from './-components/header'
 import { ChatModels } from './-components/models'
 
@@ -70,13 +72,20 @@ function Chat() {
       </div>
       <div className="mx-auto w-full max-w-7xl shrink-0 p-2.5 px-4">
         <PromptInput onSubmit={handleSubmit} globalDrop multiple>
+          <PromptInputHeader>
+            <PromptInputAttachmentsDisplay />
+          </PromptInputHeader>
           <PromptInputBody>
             <PromptInputTextarea onChange={(e) => setText(e.target.value)} value={text} />
           </PromptInputBody>
           <PromptInputFooter>
             <PromptInputTools>
               <PromptInputActionMenu>
-                <PromptInputActionMenuTrigger />
+                <PromptInputActionMenuTrigger
+                  tooltip={{
+                    content: 'Attach files',
+                  }}
+                />
                 <PromptInputActionMenuContent>
                   <PromptInputActionAddAttachments />
                   <PromptInputActionAddScreenshot />
