@@ -68,7 +68,13 @@ function Chat() {
                     switch (part.type) {
                       case 'text':
                         return (
-                          <MessageResponse key={`${message.id}-${i}`}>{part.text}</MessageResponse>
+                          <MessageResponse
+                            key={`${message.id}-${i}`}
+                            isAnimating={status === 'streaming' && message.role === 'assistant'}
+                            animated={{ animation: 'blurIn' }}
+                          >
+                            {part.text}
+                          </MessageResponse>
                         )
                       default:
                         return null

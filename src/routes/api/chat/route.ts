@@ -19,7 +19,7 @@ export const Route = createFileRoute('/api/chat')({
       POST: async ({ request }) => {
         return new Response(
           simulateReadableStream({
-            initialDelayInMs: 100, // Delay before the first chunk
+            initialDelayInMs: 300, // Delay before the first chunk
             chunkDelayInMs: 100, // Delay between chunks
             chunks: [
               `data: {"type":"start","messageId":"msg-123"}\n\n`,
