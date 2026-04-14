@@ -1,4 +1,5 @@
-import { PanelRightCloseIcon, PanelRightOpenIcon } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { PanelRightCloseIcon, PanelRightOpenIcon, SquarePenIcon } from 'lucide-react'
 
 import { AppLogo } from '@/components/app-logo'
 import {
@@ -33,6 +34,12 @@ export function Header() {
           >
             {state === 'expanded' ? <PanelRightOpenIcon /> : <PanelRightCloseIcon />}
             <span className="sr-only">Toggle Sidebar</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton tooltip="New Chat" render={<Link to="/chat" />}>
+            <SquarePenIcon />
+            <span>New Chat</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

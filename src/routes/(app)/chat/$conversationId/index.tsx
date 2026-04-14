@@ -1,9 +1,10 @@
+import type { UIMessage } from 'ai'
+
 import { useChat } from '@ai-sdk/react'
-import { useNavigate } from '@tanstack/react-router'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DefaultChatTransport } from 'ai'
 import { MessageSquare } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   Conversation,
@@ -27,79 +28,107 @@ import {
   PromptInputActionAddScreenshot,
   PromptInputHeader,
 } from '@/components/ai-elements/prompt-input'
-import { createConversation } from '@/lib/chat/functions'
-import { createLocalConversation } from '@/lib/chat/local-storage'
+import { getConversation, getConversationMessages } from '@/lib/chat/functions'
+import { isLocalConversation, loadLocalMessages, saveLocalMessages } from '@/lib/chat/local-storage'
 
-import { PromptInputAttachmentsDisplay } from './-components/attachments-display'
-import { ChatHeader } from './-components/header'
-import { ChatModels } from './-components/models'
+import { PromptInputAttachmentsDisplay } from '../-components/attachments-display'
+import { ChatHeader } from '../-components/header'
+import { ChatModels } from '../-components/models'
 
-export const Route = createFileRoute('/(app)/chat/')({
-  component: Chat,
+export const Route = createFileRoute('/(app)/chat/$conversationId/')({
+  validateSearch: (search: Record<string, unknown>) => ({
+    initialMessage: (search.initialMessage as string) || undefined,
+  }),
+  loader: async ({ params }) => {
+    const { conversationId } = params
+
+    // Skip server-side loading for local (anonymous) conversations
+    if (isLocalConversation(conversationId)) {
+      return { conversation: null, initialMessages: [] as UIMessage[] }
+    }
+
+    const [conversation, rawMessages] = await Promise.all([
+      getConversation({ data: { conversationId } }),
+      getConversationMessages({ data: { conversationId } }),
+    ])
+
+    const initialMessages = rawMessages.map((m) => JSON.parse(m) as UIMessage)
+
+    return { conversation, initialMessages }
+  },
+  component: ConversationPage,
 })
 
-function Chat() {
-  const [text, setText] = useState<string>('')
+function ConversationPage() {
+  const { conversationId } = Route.useParams()
+  const { initialMessage } = Route.useSearch()
+  const { conversation, initialMessages: serverMessages } = Route.useLoaderData()
   const navigate = useNavigate()
-  const isAuthenticated = Route.useRouteContext({ select: (s) => s.isAuthenticated })
-  const isCreatingRef = useRef(false)
+
+  const [text, setText] = useState<string>('')
+  const initialMessageSentRef = useRef(false)
+
+  // For local conversations, load from localStorage
+  const isLocal = isLocalConversation(conversationId)
+  const [localMessages] = useState<UIMessage[]>(() =>
+    isLocal ? loadLocalMessages(conversationId) : [],
+  )
+
+  const initialMessages = isLocal ? localMessages : serverMessages
 
   const { status, messages, sendMessage } = useChat({
+    id: conversationId,
+    messages: initialMessages,
     transport: new DefaultChatTransport({
       api: '/api/chat',
       prepareSendMessagesRequest({ messages }) {
         return {
           body: {
             message: messages[messages.length - 1],
-            id: null, // new conversation, no ID yet
+            // For local conversations, don't pass ID so server won't try to persist
+            id: isLocal ? null : conversationId,
           },
         }
       },
     }),
+    onFinish: (event) => {
+      // For local conversations, save to localStorage after each response
+      if (isLocal) {
+        // event.messages contains the full up-to-date array including the new assistant message
+        saveLocalMessages(conversationId, event.messages)
+      }
+    },
   })
 
-  const handleSubmit = async (message: PromptInputMessage) => {
-    const hasText = Boolean(message.text)
-    if (!hasText || isCreatingRef.current) {
-      return
-    }
-
-    // Generate a title from the first message (truncated to 50 chars)
-    const title =
-      message.text.length > 50 ? message.text.substring(0, 50).trimEnd() + '...' : message.text
-
-    if (isAuthenticated) {
-      // Create a conversation in Convex first, then redirect
-      isCreatingRef.current = true
-      try {
-        const conversationId = await createConversation({ data: { title } })
-        // Navigate to the conversation page — the message will be sent there
-        void navigate({
-          to: '/chat/$conversationId',
-          params: { conversationId },
-          search: { initialMessage: message.text },
-        })
-      } catch (error) {
-        console.error('Failed to create conversation:', error)
-        isCreatingRef.current = false
-        // Fall back to sending without persistence
-        void sendMessage({ text: message.text })
-        setText('')
-      }
-    } else {
-      // Anonymous: create a local conversation and redirect
-      const localId = createLocalConversation(title)
+  // Auto-send the initial message if redirected from the new conversation page
+  useEffect(() => {
+    if (initialMessage && !initialMessageSentRef.current) {
+      initialMessageSentRef.current = true
+      void sendMessage({ text: initialMessage })
+      // Clean up the search param from the URL
       void navigate({
         to: '/chat/$conversationId',
-        params: { conversationId: localId },
-        search: { initialMessage: message.text },
+        params: { conversationId },
+        search: { initialMessage: undefined },
+        replace: true,
       })
     }
+  }, [initialMessage, sendMessage, navigate, conversationId])
+
+  const handleSubmit = (message: PromptInputMessage) => {
+    const hasText = Boolean(message.text)
+    if (!hasText) {
+      return
+    }
+    void sendMessage({ text: message.text })
+    setText('')
   }
+
+  const title = conversation?.title ?? (isLocal ? 'Local conversation' : 'Conversation')
 
   return (
     <>
-      <ChatHeader title="New conversation" />
+      <ChatHeader title={title} conversationId={conversationId} />
       <Conversation>
         <ConversationContent>
           {messages.length === 0 ? (
