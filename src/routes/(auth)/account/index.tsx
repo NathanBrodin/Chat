@@ -22,7 +22,7 @@ import { PasswordSection } from './-components/password'
 import { ProfileSection } from './-components/profile'
 import { ProvidersSection } from './-components/providers'
 
-export const Route = createFileRoute('/(app)/(auth)/account/')({
+export const Route = createFileRoute('/(auth)/account/')({
   beforeLoad: ({ context }) => {
     if (!context.isAuthenticated) {
       throw redirect({ to: '/sign-in', search: { redirect: '/account' } })

@@ -5,10 +5,6 @@ import type { Id } from './_generated/dataModel'
 import { internal } from './_generated/api'
 import { internalMutation, mutation, query, type QueryCtx } from './_generated/server'
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 async function getUserId(ctx: QueryCtx): Promise<string | null> {
   const identity = await ctx.auth.getUserIdentity()
   return identity?.tokenIdentifier ?? null
@@ -28,10 +24,6 @@ async function assertOwnership(ctx: QueryCtx, conversationId: Id<'conversations'
   }
   return { userId, conversation }
 }
-
-// ---------------------------------------------------------------------------
-// Mutations
-// ---------------------------------------------------------------------------
 
 export const create = mutation({
   args: {
@@ -82,7 +74,7 @@ export const remove = mutation({
 
     // If there are more messages, schedule another run to clean up the rest
     if (messageBatch.length === 500) {
-      await ctx.scheduler.runAfter(0, internal.conversations.removeRemainingMessages, {
+      await ctx.scheduler.runAfter(0, internal.chat.removeRemainingMessages, {
         conversationId: args.conversationId,
       })
     }
@@ -106,7 +98,7 @@ export const removeRemainingMessages = internalMutation({
     }
 
     if (messageBatch.length === 500) {
-      await ctx.scheduler.runAfter(0, internal.conversations.removeRemainingMessages, {
+      await ctx.scheduler.runAfter(0, internal.chat.removeRemainingMessages, {
         conversationId: args.conversationId,
       })
     }

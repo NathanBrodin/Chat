@@ -170,7 +170,6 @@ export const ConversationDownload = ({
   filename = 'conversation.md',
   formatMessage = defaultFormatMessage,
   className,
-  children,
   ...props
 }: ConversationDownloadProps) => {
   const handleDownload = useCallback(() => {

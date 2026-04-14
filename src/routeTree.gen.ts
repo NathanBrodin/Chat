@@ -9,162 +9,151 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as chatRouteRouteImport } from './routes/(chat)/route'
+import { Route as chatIndexRouteImport } from './routes/(chat)/index'
 import { Route as ApiChatRouteRouteImport } from './routes/api/chat/route'
-import { Route as appChatRouteRouteImport } from './routes/(app)/chat/route'
-import { Route as appTmpIndexRouteImport } from './routes/(app)/tmp/index'
-import { Route as appChatIndexRouteImport } from './routes/(app)/chat/index'
+import { Route as chatChatIndexRouteImport } from './routes/(chat)/chat/index'
+import { Route as authSignUpIndexRouteImport } from './routes/(auth)/sign-up/index'
+import { Route as authSignInIndexRouteImport } from './routes/(auth)/sign-in/index'
+import { Route as authAccountIndexRouteImport } from './routes/(auth)/account/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as appChatConversationIdIndexRouteImport } from './routes/(app)/chat/$conversationId/index'
-import { Route as appauthSignUpIndexRouteImport } from './routes/(app)/(auth)/sign-up/index'
-import { Route as appauthSignInIndexRouteImport } from './routes/(app)/(auth)/sign-in/index'
-import { Route as appauthAccountIndexRouteImport } from './routes/(app)/(auth)/account/index'
+import { Route as chatChatIdIndexRouteImport } from './routes/(chat)/chat/$id/index'
 
-const IndexRoute = IndexRouteImport.update({
+const chatRouteRoute = chatRouteRouteImport.update({
+  id: '/(chat)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const chatIndexRoute = chatIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => chatRouteRoute,
 } as any)
 const ApiChatRouteRoute = ApiChatRouteRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appChatRouteRoute = appChatRouteRouteImport.update({
-  id: '/(app)/chat',
-  path: '/chat',
+const chatChatIndexRoute = chatChatIndexRouteImport.update({
+  id: '/chat/',
+  path: '/chat/',
+  getParentRoute: () => chatRouteRoute,
+} as any)
+const authSignUpIndexRoute = authSignUpIndexRouteImport.update({
+  id: '/(auth)/sign-up/',
+  path: '/sign-up/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appTmpIndexRoute = appTmpIndexRouteImport.update({
-  id: '/(app)/tmp/',
-  path: '/tmp/',
+const authSignInIndexRoute = authSignInIndexRouteImport.update({
+  id: '/(auth)/sign-in/',
+  path: '/sign-in/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appChatIndexRoute = appChatIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => appChatRouteRoute,
+const authAccountIndexRoute = authAccountIndexRouteImport.update({
+  id: '/(auth)/account/',
+  path: '/account/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appChatConversationIdIndexRoute =
-  appChatConversationIdIndexRouteImport.update({
-    id: '/$conversationId/',
-    path: '/$conversationId/',
-    getParentRoute: () => appChatRouteRoute,
-  } as any)
-const appauthSignUpIndexRoute = appauthSignUpIndexRouteImport.update({
-  id: '/(app)/(auth)/sign-up/',
-  path: '/sign-up/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const appauthSignInIndexRoute = appauthSignInIndexRouteImport.update({
-  id: '/(app)/(auth)/sign-in/',
-  path: '/sign-in/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const appauthAccountIndexRoute = appauthAccountIndexRouteImport.update({
-  id: '/(app)/(auth)/account/',
-  path: '/account/',
-  getParentRoute: () => rootRouteImport,
+const chatChatIdIndexRoute = chatChatIdIndexRouteImport.update({
+  id: '/chat/$id/',
+  path: '/chat/$id/',
+  getParentRoute: () => chatRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/chat': typeof appChatRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
+  '/': typeof chatIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/chat/': typeof appChatIndexRoute
-  '/tmp/': typeof appTmpIndexRoute
-  '/account/': typeof appauthAccountIndexRoute
-  '/sign-in/': typeof appauthSignInIndexRoute
-  '/sign-up/': typeof appauthSignUpIndexRoute
-  '/chat/$conversationId/': typeof appChatConversationIdIndexRoute
+  '/account/': typeof authAccountIndexRoute
+  '/sign-in/': typeof authSignInIndexRoute
+  '/sign-up/': typeof authSignUpIndexRoute
+  '/chat/': typeof chatChatIndexRoute
+  '/chat/$id/': typeof chatChatIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/api/chat': typeof ApiChatRouteRoute
+  '/': typeof chatIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/chat': typeof appChatIndexRoute
-  '/tmp': typeof appTmpIndexRoute
-  '/account': typeof appauthAccountIndexRoute
-  '/sign-in': typeof appauthSignInIndexRoute
-  '/sign-up': typeof appauthSignUpIndexRoute
-  '/chat/$conversationId': typeof appChatConversationIdIndexRoute
+  '/account': typeof authAccountIndexRoute
+  '/sign-in': typeof authSignInIndexRoute
+  '/sign-up': typeof authSignUpIndexRoute
+  '/chat': typeof chatChatIndexRoute
+  '/chat/$id': typeof chatChatIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/(app)/chat': typeof appChatRouteRouteWithChildren
+  '/(chat)': typeof chatRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
+  '/(chat)/': typeof chatIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/(app)/chat/': typeof appChatIndexRoute
-  '/(app)/tmp/': typeof appTmpIndexRoute
-  '/(app)/(auth)/account/': typeof appauthAccountIndexRoute
-  '/(app)/(auth)/sign-in/': typeof appauthSignInIndexRoute
-  '/(app)/(auth)/sign-up/': typeof appauthSignUpIndexRoute
-  '/(app)/chat/$conversationId/': typeof appChatConversationIdIndexRoute
+  '/(auth)/account/': typeof authAccountIndexRoute
+  '/(auth)/sign-in/': typeof authSignInIndexRoute
+  '/(auth)/sign-up/': typeof authSignUpIndexRoute
+  '/(chat)/chat/': typeof chatChatIndexRoute
+  '/(chat)/chat/$id/': typeof chatChatIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/chat'
     | '/api/chat'
+    | '/'
     | '/api/auth/$'
-    | '/chat/'
-    | '/tmp/'
     | '/account/'
     | '/sign-in/'
     | '/sign-up/'
-    | '/chat/$conversationId/'
+    | '/chat/'
+    | '/chat/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/api/chat'
+    | '/'
     | '/api/auth/$'
-    | '/chat'
-    | '/tmp'
     | '/account'
     | '/sign-in'
     | '/sign-up'
-    | '/chat/$conversationId'
+    | '/chat'
+    | '/chat/$id'
   id:
     | '__root__'
-    | '/'
-    | '/(app)/chat'
+    | '/(chat)'
     | '/api/chat'
+    | '/(chat)/'
     | '/api/auth/$'
-    | '/(app)/chat/'
-    | '/(app)/tmp/'
-    | '/(app)/(auth)/account/'
-    | '/(app)/(auth)/sign-in/'
-    | '/(app)/(auth)/sign-up/'
-    | '/(app)/chat/$conversationId/'
+    | '/(auth)/account/'
+    | '/(auth)/sign-in/'
+    | '/(auth)/sign-up/'
+    | '/(chat)/chat/'
+    | '/(chat)/chat/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  appChatRouteRoute: typeof appChatRouteRouteWithChildren
+  chatRouteRoute: typeof chatRouteRouteWithChildren
   ApiChatRouteRoute: typeof ApiChatRouteRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  appTmpIndexRoute: typeof appTmpIndexRoute
-  appauthAccountIndexRoute: typeof appauthAccountIndexRoute
-  appauthSignInIndexRoute: typeof appauthSignInIndexRoute
-  appauthSignUpIndexRoute: typeof appauthSignUpIndexRoute
+  authAccountIndexRoute: typeof authAccountIndexRoute
+  authSignInIndexRoute: typeof authSignInIndexRoute
+  authSignUpIndexRoute: typeof authSignUpIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/(chat)': {
+      id: '/(chat)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof chatRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(chat)/': {
+      id: '/(chat)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof chatIndexRouteImport
+      parentRoute: typeof chatRouteRoute
     }
     '/api/chat': {
       id: '/api/chat'
@@ -173,26 +162,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)/chat': {
-      id: '/(app)/chat'
+    '/(chat)/chat/': {
+      id: '/(chat)/chat/'
       path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof appChatRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(app)/tmp/': {
-      id: '/(app)/tmp/'
-      path: '/tmp'
-      fullPath: '/tmp/'
-      preLoaderRoute: typeof appTmpIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(app)/chat/': {
-      id: '/(app)/chat/'
-      path: '/'
       fullPath: '/chat/'
-      preLoaderRoute: typeof appChatIndexRouteImport
-      parentRoute: typeof appChatRouteRoute
+      preLoaderRoute: typeof chatChatIndexRouteImport
+      parentRoute: typeof chatRouteRoute
+    }
+    '/(auth)/sign-up/': {
+      id: '/(auth)/sign-up/'
+      path: '/sign-up'
+      fullPath: '/sign-up/'
+      preLoaderRoute: typeof authSignUpIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/sign-in/': {
+      id: '/(auth)/sign-in/'
+      path: '/sign-in'
+      fullPath: '/sign-in/'
+      preLoaderRoute: typeof authSignInIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/account/': {
+      id: '/(auth)/account/'
+      path: '/account'
+      fullPath: '/account/'
+      preLoaderRoute: typeof authAccountIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -201,60 +197,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)/chat/$conversationId/': {
-      id: '/(app)/chat/$conversationId/'
-      path: '/$conversationId'
-      fullPath: '/chat/$conversationId/'
-      preLoaderRoute: typeof appChatConversationIdIndexRouteImport
-      parentRoute: typeof appChatRouteRoute
-    }
-    '/(app)/(auth)/sign-up/': {
-      id: '/(app)/(auth)/sign-up/'
-      path: '/sign-up'
-      fullPath: '/sign-up/'
-      preLoaderRoute: typeof appauthSignUpIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(app)/(auth)/sign-in/': {
-      id: '/(app)/(auth)/sign-in/'
-      path: '/sign-in'
-      fullPath: '/sign-in/'
-      preLoaderRoute: typeof appauthSignInIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(app)/(auth)/account/': {
-      id: '/(app)/(auth)/account/'
-      path: '/account'
-      fullPath: '/account/'
-      preLoaderRoute: typeof appauthAccountIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/(chat)/chat/$id/': {
+      id: '/(chat)/chat/$id/'
+      path: '/chat/$id'
+      fullPath: '/chat/$id/'
+      preLoaderRoute: typeof chatChatIdIndexRouteImport
+      parentRoute: typeof chatRouteRoute
     }
   }
 }
 
-interface appChatRouteRouteChildren {
-  appChatIndexRoute: typeof appChatIndexRoute
-  appChatConversationIdIndexRoute: typeof appChatConversationIdIndexRoute
+interface chatRouteRouteChildren {
+  chatIndexRoute: typeof chatIndexRoute
+  chatChatIndexRoute: typeof chatChatIndexRoute
+  chatChatIdIndexRoute: typeof chatChatIdIndexRoute
 }
 
-const appChatRouteRouteChildren: appChatRouteRouteChildren = {
-  appChatIndexRoute: appChatIndexRoute,
-  appChatConversationIdIndexRoute: appChatConversationIdIndexRoute,
+const chatRouteRouteChildren: chatRouteRouteChildren = {
+  chatIndexRoute: chatIndexRoute,
+  chatChatIndexRoute: chatChatIndexRoute,
+  chatChatIdIndexRoute: chatChatIdIndexRoute,
 }
 
-const appChatRouteRouteWithChildren = appChatRouteRoute._addFileChildren(
-  appChatRouteRouteChildren,
+const chatRouteRouteWithChildren = chatRouteRoute._addFileChildren(
+  chatRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  appChatRouteRoute: appChatRouteRouteWithChildren,
+  chatRouteRoute: chatRouteRouteWithChildren,
   ApiChatRouteRoute: ApiChatRouteRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  appTmpIndexRoute: appTmpIndexRoute,
-  appauthAccountIndexRoute: appauthAccountIndexRoute,
-  appauthSignInIndexRoute: appauthSignInIndexRoute,
-  appauthSignUpIndexRoute: appauthSignUpIndexRoute,
+  authAccountIndexRoute: authAccountIndexRoute,
+  authSignInIndexRoute: authSignInIndexRoute,
+  authSignUpIndexRoute: authSignUpIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

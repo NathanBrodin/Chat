@@ -80,7 +80,7 @@ function subscribeLocal(callback: () => void) {
 
 export function Conversations() {
   const isAuthenticated = useRouteContext({
-    from: '/(app)/chat',
+    from: '/(chat)',
     select: (s) => s.isAuthenticated,
   })
 

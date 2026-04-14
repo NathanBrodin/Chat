@@ -26,12 +26,13 @@ const searchSchema = z.object({
   redirect: z.string().optional().catch(undefined),
 })
 
-const signInSchema = z.object({
-  email: z.string('Enter a valid email address'),
+const signUpSchema = z.object({
+  email: z.email('Enter a valid email address'),
+  name: z.string().trim().min(1, 'Enter your name'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
-export const Route = createFileRoute('/(app)/(auth)/sign-in/')({
+export const Route = createFileRoute('/(auth)/sign-up/')({
   beforeLoad: ({ context, search }) => {
     if (context.isAuthenticated) {
       throw redirect({ to: search.redirect ?? '/' })
@@ -51,22 +52,24 @@ function RouteComponent() {
   const form = useAppForm({
     defaultValues: {
       email: '',
+      name: '',
       password: '',
     },
     validators: {
-      onSubmit: signInSchema,
+      onSubmit: signUpSchema,
     },
     onSubmit: async ({ value }) => {
       setServerError(undefined)
 
-      const { error } = await authClient.signIn.email({
+      const { error } = await authClient.signUp.email({
         callbackURL: redirectTo,
         email: value.email,
+        name: value.name.trim(),
         password: value.password,
       })
 
       if (error) {
-        setServerError(error.message ?? 'Invalid email or password. Please try again.')
+        setServerError(error.message ?? 'Failed to create account. Please try again.')
       }
     },
   })
@@ -90,15 +93,15 @@ function RouteComponent() {
     <main className="flex min-h-screen w-full items-center justify-center sm:px-4 sm:py-8">
       <Card className="w-full max-sm:rounded-none max-sm:border-x-0 max-sm:shadow-none max-sm:before:rounded-none sm:max-w-xl">
         <CardHeader>
-          <CardTitle>Sign in to your account</CardTitle>
-          <CardDescription>Pick up where you left off.</CardDescription>
+          <CardTitle>Create your account</CardTitle>
+          <CardDescription>Start fresh with your own workspace.</CardDescription>
           <CardAction>
             <Link
               className="text-sm leading-4.5 text-muted-foreground hover:underline"
               search={{ redirect: redirectTo }}
-              to="/sign-up"
+              to="/sign-in"
             >
-              Sign up
+              Sign in
             </Link>
           </CardAction>
         </CardHeader>
@@ -109,6 +112,24 @@ function RouteComponent() {
               void form.handleSubmit()
             }}
           >
+            <form.AppField name="name">
+              {(field) => (
+                <field.InputField
+                  autoComplete="name"
+                  label="Name"
+                  placeholder="John Doe"
+                  type="text"
+                />
+              )}
+            </form.AppField>
+            <form.AppField name="email">{(field) => <field.EmailField />}</form.AppField>
+            <form.AppField name="password">
+              {(field) => <field.PasswordField newPassword />}
+            </form.AppField>
+
+            <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+              Or continue with
+            </FieldSeparator>
             <Field className="grid sm:grid-cols-2">
               <Button
                 variant="outline"
@@ -143,19 +164,21 @@ function RouteComponent() {
                 )}
               </Button>
             </Field>
-            <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-              Or continue with
-            </FieldSeparator>
-            <div className="relative w-full">
-              {lastMethod === 'email' && (
-                <Badge className="absolute top-0 right-0" size="sm" variant="info">
-                  Last used
-                </Badge>
-              )}
-            </div>
             <fieldset disabled={isSocialLoading} className="contents">
+              <form.AppField name="name">
+                {(field) => (
+                  <field.InputField
+                    autoComplete="name"
+                    label="Name"
+                    placeholder="John Doe"
+                    type="text"
+                  />
+                )}
+              </form.AppField>
               <form.AppField name="email">{(field) => <field.EmailField />}</form.AppField>
-              <form.AppField name="password">{(field) => <field.PasswordField />}</form.AppField>
+              <form.AppField name="password">
+                {(field) => <field.PasswordField newPassword />}
+              </form.AppField>
               {serverError && (
                 <Alert variant="error">
                   <CircleAlertIcon />
@@ -163,7 +186,7 @@ function RouteComponent() {
                 </Alert>
               )}
               <form.AppForm>
-                <form.SubmitButton label="Sign in" submittingLabel="Signing in" />
+                <form.SubmitButton label="Create account" submittingLabel="Creating account" />
               </form.AppForm>
             </fieldset>
           </Form>

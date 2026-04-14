@@ -6,7 +6,7 @@ import { currentUserQueryOptions } from '@/lib/auth/current-user-query'
 
 import { ChatSidebar } from './-components/chat-sidebar'
 
-export const Route = createFileRoute('/(app)/chat')({
+export const Route = createFileRoute('/(chat)')({
   loader: ({ context }) => context.queryClient.ensureQueryData(currentUserQueryOptions),
   component: RouteComponent,
 })

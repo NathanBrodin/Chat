@@ -8,7 +8,7 @@ import { fetchAuthMutation, fetchAuthQuery } from '@/lib/auth/auth-server'
 export const createConversation = createServerFn({ method: 'POST' })
   .inputValidator((data: { title: string }) => data)
   .handler(async ({ data }) => {
-    const conversationId = await fetchAuthMutation(api.conversations.create, {
+    const conversationId = await fetchAuthMutation(api.chat.create, {
       title: data.title,
     })
     return conversationId as string
@@ -17,7 +17,7 @@ export const createConversation = createServerFn({ method: 'POST' })
 export const renameConversation = createServerFn({ method: 'POST' })
   .inputValidator((data: { conversationId: string; title: string }) => data)
   .handler(async ({ data }) => {
-    await fetchAuthMutation(api.conversations.rename, {
+    await fetchAuthMutation(api.chat.rename, {
       conversationId: data.conversationId as Id<'conversations'>,
       title: data.title,
     })
@@ -26,7 +26,7 @@ export const renameConversation = createServerFn({ method: 'POST' })
 export const removeConversation = createServerFn({ method: 'POST' })
   .inputValidator((data: { conversationId: string }) => data)
   .handler(async ({ data }) => {
-    await fetchAuthMutation(api.conversations.remove, {
+    await fetchAuthMutation(api.chat.remove, {
       conversationId: data.conversationId as Id<'conversations'>,
     })
   })
@@ -34,7 +34,7 @@ export const removeConversation = createServerFn({ method: 'POST' })
 export const getConversationMessages = createServerFn({ method: 'GET' })
   .inputValidator((data: { conversationId: string }) => data)
   .handler(async ({ data }) => {
-    return await fetchAuthQuery(api.conversations.getMessages, {
+    return await fetchAuthQuery(api.chat.getMessages, {
       conversationId: data.conversationId as Id<'conversations'>,
     })
   })
@@ -42,7 +42,7 @@ export const getConversationMessages = createServerFn({ method: 'GET' })
 export const getConversation = createServerFn({ method: 'GET' })
   .inputValidator((data: { conversationId: string }) => data)
   .handler(async ({ data }) => {
-    return await fetchAuthQuery(api.conversations.get, {
+    return await fetchAuthQuery(api.chat.get, {
       conversationId: data.conversationId as Id<'conversations'>,
     })
   })

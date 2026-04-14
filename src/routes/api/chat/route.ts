@@ -56,7 +56,7 @@ export const Route = createFileRoute('/api/chat')({
         let previousMessages: UIMessage[] = []
         if (id) {
           try {
-            const rawMessages: string[] = await fetchAuthQuery(api.conversations.getMessages, {
+            const rawMessages: string[] = await fetchAuthQuery(api.chat.getMessages, {
               conversationId: id as any,
             })
             previousMessages = rawMessages.map((m) => JSON.parse(m) as UIMessage)
@@ -107,7 +107,7 @@ export const Route = createFileRoute('/api/chat')({
             if (!id) return
 
             try {
-              await fetchAuthMutation(api.conversations.saveMessages, {
+              await fetchAuthMutation(api.chat.saveMessages, {
                 conversationId: id as any,
                 messages: finalMessages.map((m) => ({
                   id: m.id,
