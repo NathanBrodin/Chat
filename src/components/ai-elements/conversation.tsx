@@ -189,7 +189,7 @@ export const ConversationDownload = ({
   return (
     <MenuItem className={cn(className)} onClick={handleDownload} {...props}>
       <DownloadIcon />
-      Download conversation
+      Download
     </MenuItem>
   )
 }
