@@ -1,6 +1,7 @@
 import { api } from '@convex/_generated/api'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { createFileRoute } from '@tanstack/react-router'
+import { NoSuchModelError } from 'ai'
 import {
   type UIMessage,
   TypeValidationError,
@@ -50,7 +51,15 @@ export const Route = createFileRoute('/api/chat')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { message, id }: { message: UIMessage; id: string | null } = await request.json()
+        const {
+          message,
+          id,
+          model,
+        }: { message: UIMessage; id: string | null; model: string | null } = await request.json()
+
+        if (!model) {
+          throw new NoSuchModelError({ modelId: 'no-model', modelType: 'languageModel' })
+        }
 
         // Load previous messages from Convex if we have a conversation ID
         let previousMessages: UIMessage[] = []
@@ -87,7 +96,7 @@ export const Route = createFileRoute('/api/chat')({
         }
 
         const result = streamText({
-          model: openrouter.chat('arcee-ai/trinity-large-preview:free'),
+          model: openrouter.chat(model),
           messages: await convertToModelMessages(validatedMessages),
           tools,
         })

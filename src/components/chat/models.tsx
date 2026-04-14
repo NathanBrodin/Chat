@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { AlertCircleIcon, CheckIcon } from 'lucide-react'
 import { Fragment, useMemo, useState } from 'react'
-import { useLocalStorage } from 'usehooks-ts'
 
 import type { Model } from '@/lib/models/types'
 
@@ -30,6 +29,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CommandFooter } from '@/components/ui/command'
 import { getModels as getServerModels } from '@/lib/models/functions'
+
+import { useChatContext } from '.'
 
 interface ModelGroup {
   value: string
@@ -75,11 +76,65 @@ function groupModels(models: Model[]): ModelGroup[] {
   return Array.from(map.entries()).map(([value, items]) => ({ value, items }))
 }
 
+export const defaultModel: Model = {
+  id: 'openrouter/free',
+  canonical_slug: 'openrouter/free',
+  hugging_face_id: '',
+  name: 'Free Models Router',
+  created: 1769917427,
+  description:
+    'The simplest way to get free inference. openrouter/free is a router that selects free models at random from the models available on OpenRouter. The router smartly filters for models that...',
+  context_length: 200000,
+  architecture: {
+    modality: 'text+image->text',
+    input_modalities: ['text', 'image'],
+    output_modalities: ['text'],
+    tokenizer: 'Router',
+    instruct_type: null,
+  },
+  pricing: {
+    prompt: '0',
+    completion: '0',
+  },
+  top_provider: {
+    context_length: null,
+    max_completion_tokens: null,
+    is_moderated: false,
+  },
+  per_request_limits: null,
+  supported_parameters: [
+    'frequency_penalty',
+    'include_reasoning',
+    'max_tokens',
+    'min_p',
+    'presence_penalty',
+    'reasoning',
+    'repetition_penalty',
+    'response_format',
+    'seed',
+    'stop',
+    'structured_outputs',
+    'temperature',
+    'tool_choice',
+    'tools',
+    'top_k',
+    'top_p',
+  ],
+  default_parameters: {
+    temperature: null,
+    top_p: null,
+    frequency_penalty: null,
+  },
+  knowledge_cutoff: null,
+  expiration_date: null,
+  links: {
+    details: '/api/v1/models/openrouter/free/endpoints',
+  },
+}
+
 export function ChatModels() {
-  const [model, setModel] = useLocalStorage<string | null>(
-    'selected-model',
-    'z-ai/glm-4.5-air:free',
-  )
+  const { model, setModel } = useChatContext()
+
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false)
   const [highlightedItem, setHighlightedItem] = useState<Model | undefined>()
 
@@ -93,13 +148,12 @@ export function ChatModels() {
   const modelGroups = useMemo<ModelGroup[]>(() => (data ? groupModels(data) : []), [data])
 
   const selectedModelData = useMemo(
-    () => modelGroups.flatMap((g) => g.items).find((m) => m.id === model),
+    () => modelGroups.flatMap((g) => g.items).find((m) => m.id === model.id),
     [modelGroups, model],
   )
 
   function handleItemClick(item: Model) {
-    console.log(item)
-    setModel(item.id)
+    setModel(item)
     setModelSelectorOpen(false)
   }
 
@@ -152,7 +206,7 @@ export function ChatModels() {
                             >
                               <ModelSelectorLogo provider={item.id?.split('/')[0]} />
                               <ModelSelectorName>{getModelName(item.name)}</ModelSelectorName>
-                              {model === item.id ? (
+                              {model.id === item.id ? (
                                 <span className="ml-auto flex shrink-0 items-center gap-1">
                                   <CheckIcon className="size-4" />
                                 </span>

@@ -2,7 +2,6 @@ import { convexQuery } from '@convex-dev/react-query'
 import { api } from '@convex/_generated/api'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useRouteContext } from '@tanstack/react-router'
-import { useSyncExternalStore } from 'react'
 
 import {
   SidebarGroup,
@@ -11,7 +10,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { type LocalConversation, listLocalConversations } from '@/lib/chat/local-storage'
 
 interface ConversationItem {
   id: string
@@ -49,35 +47,6 @@ function groupByTimePeriod(items: ConversationItem[]) {
   return groups.filter((g) => g.items.length > 0)
 }
 
-// Subscribe to localStorage changes for anonymous conversations
-let localSnapshot: LocalConversation[] = []
-
-function getLocalSnapshot(): LocalConversation[] {
-  // This is called on every render — keep it cheap
-  return localSnapshot
-}
-
-function refreshLocalSnapshot() {
-  localSnapshot = listLocalConversations()
-}
-
-// Initialize on first import (client-side only)
-if (typeof window !== 'undefined') {
-  refreshLocalSnapshot()
-}
-
-function subscribeLocal(callback: () => void) {
-  // Re-poll localStorage when storage events fire (other tabs)
-  const handler = (e: StorageEvent) => {
-    if (e.key?.startsWith('chat:')) {
-      refreshLocalSnapshot()
-      callback()
-    }
-  }
-  window.addEventListener('storage', handler)
-  return () => window.removeEventListener('storage', handler)
-}
-
 export function Conversations() {
   const isAuthenticated = useRouteContext({
     from: '/(chat)',
@@ -86,13 +55,9 @@ export function Conversations() {
 
   // Fetch Convex conversations for authenticated users
   const { data: convexConversations } = useQuery({
-    ...convexQuery(api.conversations.listByUser, isAuthenticated ? {} : 'skip'),
+    ...convexQuery(api.chat.listByUser, isAuthenticated ? {} : 'skip'),
   })
 
-  // Get local conversations for anonymous users
-  const localConversations = useSyncExternalStore(subscribeLocal, getLocalSnapshot, () => [])
-
-  // Merge into a unified list
   const items: ConversationItem[] = []
 
   if (convexConversations) {
@@ -101,16 +66,6 @@ export function Conversations() {
         id: c._id,
         title: c.title,
         timestamp: c._creationTime,
-      })
-    }
-  }
-
-  if (!isAuthenticated) {
-    for (const c of localConversations) {
-      items.push({
-        id: c.id,
-        title: c.title,
-        timestamp: c.updatedAt,
       })
     }
   }
@@ -145,9 +100,8 @@ export function Conversations() {
                   tooltip={item.title}
                   render={
                     <Link
-                      to="/chat/$conversationId"
-                      params={{ conversationId: item.id }}
-                      search={{ initialMessage: undefined }}
+                      to="/chat/$id"
+                      params={{ id: item.id }}
                       activeProps={{ 'data-active': true } as Record<string, unknown>}
                     />
                   }
