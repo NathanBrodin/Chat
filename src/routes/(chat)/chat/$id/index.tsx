@@ -39,5 +39,5 @@ function RouteComponent() {
     throw notFound()
   }
 
-  return <Chat id={id} initialMessages={messages} title={conversation.title} />
+  return <Chat initialMessages={messages} title={conversation.title} />
 }

@@ -1,4 +1,5 @@
 import { useChat, type UIMessage } from '@ai-sdk/react'
+import { useLocation } from '@tanstack/react-router'
 import { DefaultChatTransport } from 'ai'
 import { createContext, useContext } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
@@ -21,14 +22,19 @@ type ChatContextValue = Omit<ReturnType<typeof useChat>, 'setMessages'> & {
 const ChatContext = createContext<ChatContextValue | null>(null)
 
 type ChatProps = {
-  id?: string
   initialMessages?: UIMessage[]
   title?: string
 }
 
-export function Chat({ id, initialMessages, title }: ChatProps) {
+function extractChatId(pathname: string): string | undefined {
+  const match = pathname.match(/\/chat\/([^/]+)/)
+  return match ? match[1] : undefined
+}
+
+export function Chat({ initialMessages, title }: ChatProps) {
   const [model, setModel] = useLocalStorage<Model>('model', defaultModel)
-  const conversationId = id
+  const location = useLocation()
+  const conversationId = extractChatId(location.pathname)
 
   const chat = useChat({
     messages: initialMessages,

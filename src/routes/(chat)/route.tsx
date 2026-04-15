@@ -31,7 +31,7 @@ function RouteComponent() {
     <SidebarProvider className="h-svh overflow-hidden">
       <ChatSidebar />
       <SidebarInset className="flex min-h-0 flex-1 flex-col divide-y overflow-hidden">
-        <Chat id={id} initialMessages={messages} title={conversation?.title} />
+        <Chat initialMessages={messages} title={conversation?.title} />
       </SidebarInset>
     </SidebarProvider>
   )
