@@ -37,7 +37,7 @@ export function Header() {
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton tooltip="New Chat" render={<Link to="/chat" />}>
+          <SidebarMenuButton tooltip="New Chat" render={<Link to="/" />}>
             <SquarePenIcon />
             <span>New Chat</span>
           </SidebarMenuButton>
