@@ -1,3 +1,6 @@
+import { api } from '@convex/_generated/api'
+import { useNavigate } from '@tanstack/react-router'
+import { useMutation } from 'convex/react'
 import { useState } from 'react'
 
 import { PromptInputAttachmentsDisplay } from '@/components/ai-elements/attachments-display'
@@ -21,13 +24,25 @@ import { useChatContext } from '.'
 import { ChatModels } from './models'
 
 export function ChatInput() {
-  const { sendMessage, status } = useChatContext()
+  const { sendMessage, status, conversationId } = useChatContext()
+  const navigate = useNavigate()
+  const createChat = useMutation(api.chat.create)
   const [text, setText] = useState<string>('')
 
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text)
     if (!hasText) {
       return
+    }
+
+    if (!conversationId) {
+      const title =
+        message.text.length > 50 ? message.text.substring(0, 50).trimEnd() + '...' : message.text
+
+      const id = await createChat({ title })
+      if (id && typeof id === 'string') {
+        navigate({ to: '/chat/$id', params: { id } })
+      }
     }
 
     void sendMessage({ text: message.text })

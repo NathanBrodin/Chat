@@ -32,7 +32,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getUserId(ctx)
     if (!userId) {
-      throw new Error('Not authenticated')
+      return undefined
     }
 
     const conversationId = await ctx.db.insert('conversations', {

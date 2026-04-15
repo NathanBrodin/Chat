@@ -49,7 +49,7 @@ export function ChatHeader() {
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { id, messages, title } = useChatContext()
+  const { conversationId, messages, title } = useChatContext()
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -63,13 +63,13 @@ export function ChatHeader() {
       onSubmit: renameConversationSchema,
     },
     onSubmit: async ({ value }) => {
-      if (!id) {
+      if (!conversationId) {
         return
       }
 
       await renameConversation({
         data: {
-          conversationId: id,
+          conversationId,
           title: value.title.trim(),
         },
       })
@@ -80,7 +80,7 @@ export function ChatHeader() {
   })
 
   async function handleDelete() {
-    if (!id) {
+    if (!conversationId) {
       return
     }
 
@@ -88,7 +88,7 @@ export function ChatHeader() {
     try {
       await removeConversation({
         data: {
-          conversationId: id,
+          conversationId,
         },
       })
 
@@ -118,7 +118,7 @@ export function ChatHeader() {
             <MenuGroup>
               <MenuGroupLabel>Manage conversation</MenuGroupLabel>
               <ConversationDownload messages={messages} />
-              {id && (
+              {conversationId && (
                 <>
                   <MenuItem onClick={() => setIsEditDialogOpen(true)}>
                     <PencilIcon aria-hidden="true" />

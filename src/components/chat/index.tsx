@@ -15,6 +15,7 @@ type ChatContextValue = Omit<ReturnType<typeof useChat>, 'setMessages'> & {
   title?: string
   model: Model
   setModel: (model: Model) => void
+  conversationId?: string
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null)
@@ -27,9 +28,9 @@ type ChatProps = {
 
 export function Chat({ id, initialMessages, title }: ChatProps) {
   const [model, setModel] = useLocalStorage<Model>('model', defaultModel)
+  const conversationId = id
 
   const chat = useChat({
-    id,
     messages: initialMessages,
     transport: new DefaultChatTransport({
       api: '/api/chat',
@@ -37,7 +38,7 @@ export function Chat({ id, initialMessages, title }: ChatProps) {
         return {
           body: {
             message: messages[messages.length - 1],
-            id,
+            id: conversationId,
             model: model.id,
           },
         }
@@ -46,7 +47,7 @@ export function Chat({ id, initialMessages, title }: ChatProps) {
   })
 
   return (
-    <ChatContext.Provider value={{ ...chat, title, model, setModel }}>
+    <ChatContext.Provider value={{ ...chat, title, model, setModel, conversationId }}>
       <ChatHeader />
       <ChatConversation />
       <ChatError />

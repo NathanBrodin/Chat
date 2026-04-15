@@ -113,6 +113,7 @@ export const Route = createFileRoute('/api/chat')({
             size: 16,
           }),
           onFinish: async ({ messages: finalMessages }) => {
+            console.log('Saving this', finalMessages)
             if (!id) return
 
             try {
