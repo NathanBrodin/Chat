@@ -17,8 +17,8 @@ export function Header() {
 
   return (
     <SidebarHeader className="p-2.5">
-      <SidebarMenu>
-        <SidebarMenuItem className="flex flex-row items-center ">
+      <SidebarMenu className="gap-2">
+        <SidebarMenuItem className="flex flex-row items-center py-0">
           <span
             className={cn(
               'transition-all flex-1 overflow-hidden whitespace-nowrap duration-200 ease-linear ',

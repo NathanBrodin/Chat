@@ -89,10 +89,12 @@ export function SidebarUser() {
                     <span className="truncate text-xs">{user.email}</span>
                   </div>
                 </div>
-                <SettingsIcon className="size-4" />
+                <MenuShortcut>
+                  <SettingsIcon className="mr-1.5 size-4" />
+                </MenuShortcut>
               </MenuItem>
               <MenuSeparator />
-              <MenuItem>
+              <MenuItem className="cursor-default">
                 <PaintbrushIcon />
                 Theme
                 <MenuShortcut>

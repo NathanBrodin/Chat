@@ -1,6 +1,6 @@
 export function AppLogo() {
   return (
-    <p className="flex gap-1 font-heading font-semibold">
+    <p className="flex gap-1 font-heading text-lg font-semibold">
       <span className="text-primary">Nathan's</span>
       <span className="text-muted-foreground">AI</span>
     </p>

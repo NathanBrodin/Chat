@@ -51,7 +51,7 @@ export const Route = createFileRoute('/api/chat')({
         }
 
         // Validate messages against tools to ensure consistency
-        const validatedMessages = await validateChatMessages(messages, [message])
+        const validatedMessages = await validateChatMessages(messages)
 
         const result = streamText({
           model: openrouter.chat(model),
