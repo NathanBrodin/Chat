@@ -1,5 +1,6 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { api } from '@convex/_generated/api'
 import { useNavigate } from '@tanstack/react-router'
+import { useMutation } from 'convex/react'
 import { GhostIcon, PencilIcon, Settings2Icon, TrashIcon } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
@@ -37,7 +38,6 @@ import {
   MenuTrigger,
 } from '@/components/ui/menu'
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
-import { removeConversation, renameConversation } from '@/lib/chat/functions'
 
 import { useChatContext } from '.'
 
@@ -48,12 +48,12 @@ const renameConversationSchema = z.object({
 export function ChatHeader() {
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const { conversationId, messages, title } = useChatContext()
+  const deleteConversation = useMutation(api.chat.remove)
+  const renameConversation = useMutation(api.chat.rename)
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
 
   const form = useAppForm({
     defaultValues: {
@@ -67,14 +67,11 @@ export function ChatHeader() {
         return
       }
 
-      await renameConversation({
-        data: {
-          conversationId,
-          title: value.title.trim(),
-        },
+      renameConversation({
+        title: value.title.trim(),
+        conversationId: conversationId as any,
       })
 
-      await queryClient.invalidateQueries()
       setIsEditDialogOpen(false)
     },
   })
@@ -84,20 +81,9 @@ export function ChatHeader() {
       return
     }
 
-    setIsDeleting(true)
-    try {
-      await removeConversation({
-        data: {
-          conversationId,
-        },
-      })
-
-      await queryClient.invalidateQueries()
-      setIsDeleteDialogOpen(false)
-      await navigate({ to: '/chat' })
-    } finally {
-      setIsDeleting(false)
-    }
+    deleteConversation({ conversationId: conversationId as any })
+    setIsDeleteDialogOpen(false)
+    await navigate({ to: '/' })
   }
 
   return (
@@ -174,12 +160,7 @@ export function ChatHeader() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogClose render={<Button variant="ghost" />}>Cancel</AlertDialogClose>
-              <Button
-                loading={isDeleting}
-                type="button"
-                variant="destructive"
-                onClick={() => void handleDelete()}
-              >
+              <Button type="button" variant="destructive" onClick={() => void handleDelete()}>
                 Delete conversation
               </Button>
             </AlertDialogFooter>
