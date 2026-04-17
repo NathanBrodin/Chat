@@ -31,22 +31,24 @@ export const Route = createFileRoute('/api/chat')({
           throw new NoSuchModelError({ modelId: 'no-model', modelType: 'languageModel' })
         }
 
-        // Load previous messages from Convex if we have a conversation ID
-        let previousMessages: UIMessage[] = []
-        if (id) {
-          try {
-            const rawMessages: string[] = await fetchAuthQuery(api.chat.getMessages, {
-              conversationId: id as any,
-            })
-            previousMessages = parseStoredMessages(rawMessages)
-          } catch {
-            // If loading fails (e.g. conversation not found), start fresh
-            previousMessages = []
-          }
-        }
+        let messages: UIMessage[] = []
 
-        // Append the new message from the client
-        const messages = [...previousMessages, message]
+        if (id) {
+          // Save the user's message
+          await fetchAuthMutation(api.chat.insertMessage, {
+            conversationId: id as any,
+            messageId: message.id,
+            messageData: JSON.stringify(message),
+          })
+
+          // Load previous messages
+          const rawMessages = await fetchAuthQuery(api.chat.getMessages, {
+            conversationId: id as any,
+          })
+          messages = parseStoredMessages(rawMessages)
+        } else {
+          messages = [message]
+        }
 
         // Validate messages against tools to ensure consistency
         const validatedMessages = await validateChatMessages(messages, [message])
@@ -68,17 +70,14 @@ export const Route = createFileRoute('/api/chat')({
             prefix: 'msg',
             size: 16,
           }),
-          onFinish: async ({ messages: finalMessages }) => {
-            console.log('Saving ', id)
+          onFinish: async ({ responseMessage }) => {
             if (!id) return
 
             try {
-              await fetchAuthMutation(api.chat.saveMessages, {
+              await fetchAuthMutation(api.chat.insertMessage, {
                 conversationId: id as any,
-                messages: finalMessages.map((m) => ({
-                  id: m.id,
-                  messageData: JSON.stringify(m),
-                })),
+                messageId: responseMessage.id,
+                messageData: JSON.stringify(responseMessage),
               })
             } catch (error) {
               console.error('Failed to save messages:', error)

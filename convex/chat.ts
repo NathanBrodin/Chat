@@ -2,8 +2,7 @@ import { v } from 'convex/values'
 
 import type { Id } from './_generated/dataModel'
 
-import { internal } from './_generated/api'
-import { internalMutation, mutation, query, type QueryCtx } from './_generated/server'
+import { mutation, query, type QueryCtx } from './_generated/server'
 
 async function getUserId(ctx: QueryCtx): Promise<string | null> {
   const identity = await ctx.auth.getUserIdentity()
@@ -62,96 +61,43 @@ export const remove = mutation({
   handler: async (ctx, args) => {
     await assertOwnership(ctx, args.conversationId)
 
-    // Delete all messages in batches to stay within transaction limits
-    const messageBatch = await ctx.db
-      .query('messages')
-      .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId))
-      .take(500)
+    while (true) {
+      const messages = await ctx.db
+        .query('messages')
+        .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId))
+        .take(100)
 
-    for (const msg of messageBatch) {
-      await ctx.db.delete(msg._id)
-    }
+      if (messages.length === 0) {
+        break
+      }
 
-    // If there are more messages, schedule another run to clean up the rest
-    if (messageBatch.length === 500) {
-      await ctx.scheduler.runAfter(0, internal.chat.removeRemainingMessages, {
-        conversationId: args.conversationId,
-      })
+      for (const message of messages) {
+        await ctx.db.delete(message._id)
+      }
     }
 
     await ctx.db.delete(args.conversationId)
   },
 })
 
-export const removeRemainingMessages = internalMutation({
+export const insertMessage = mutation({
   args: {
     conversationId: v.id('conversations'),
-  },
-  handler: async (ctx, args) => {
-    const messageBatch = await ctx.db
-      .query('messages')
-      .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId))
-      .take(500)
-
-    for (const msg of messageBatch) {
-      await ctx.db.delete(msg._id)
-    }
-
-    if (messageBatch.length === 500) {
-      await ctx.scheduler.runAfter(0, internal.chat.removeRemainingMessages, {
-        conversationId: args.conversationId,
-      })
-    }
-  },
-})
-
-export const saveMessages = mutation({
-  args: {
-    conversationId: v.id('conversations'),
-    messages: v.array(
-      v.object({
-        id: v.string(),
-        messageData: v.string(),
-      }),
-    ),
+    messageId: v.string(),
+    messageData: v.string(),
   },
   handler: async (ctx, args) => {
     await assertOwnership(ctx, args.conversationId)
 
-    const existingMessages = await ctx.db
-      .query('messages')
-      .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId))
-      .collect()
-
-    const existingByMessageId = new Map(existingMessages.map((m) => [m.messageId, m]))
-    const nextMessageIds = new Set(args.messages.map((message) => message.id))
-
-    for (const msg of args.messages) {
-      const existing = existingByMessageId.get(msg.id)
-      if (existing) {
-        if (existing.messageData !== msg.messageData) {
-          await ctx.db.patch(existing._id, { messageData: msg.messageData })
-        }
-      } else {
-        await ctx.db.insert('messages', {
-          conversationId: args.conversationId,
-          messageId: msg.id,
-          messageData: msg.messageData,
-        })
-      }
-    }
-
-    for (const existing of existingMessages) {
-      if (!nextMessageIds.has(existing.messageId)) {
-        await ctx.db.delete(existing._id)
-      }
-    }
+    return await ctx.db.insert('messages', {
+      conversationId: args.conversationId,
+      messageId: args.messageId,
+      messageData: args.messageData,
+    })
   },
 })
 
-// ---------------------------------------------------------------------------
 // Queries
-// ---------------------------------------------------------------------------
 
 export const listByUser = query({
   args: {},
