@@ -118,18 +118,17 @@ export const saveMessages = mutation({
   handler: async (ctx, args) => {
     await assertOwnership(ctx, args.conversationId)
 
-    // Load existing messages keyed by messageId for upsert logic
     const existingMessages = await ctx.db
       .query('messages')
       .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId))
       .collect()
 
     const existingByMessageId = new Map(existingMessages.map((m) => [m.messageId, m]))
+    const nextMessageIds = new Set(args.messages.map((message) => message.id))
 
     for (const msg of args.messages) {
       const existing = existingByMessageId.get(msg.id)
       if (existing) {
-        // Only patch if data changed
         if (existing.messageData !== msg.messageData) {
           await ctx.db.patch(existing._id, { messageData: msg.messageData })
         }
@@ -139,6 +138,12 @@ export const saveMessages = mutation({
           messageId: msg.id,
           messageData: msg.messageData,
         })
+      }
+    }
+
+    for (const existing of existingMessages) {
+      if (!nextMessageIds.has(existing.messageId)) {
+        await ctx.db.delete(existing._id)
       }
     }
   },

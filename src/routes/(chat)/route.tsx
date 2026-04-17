@@ -15,45 +15,91 @@ export const Route = createFileRoute('/(chat)')({
   loader: async ({ context, location }) => {
     await context.queryClient.ensureQueryData(currentUserQueryOptions)
 
-    const id = location.pathname.match(/^\/chat\/([^/]+)$/)?.[1]
+    const id = location.pathname.match(/^\/chat\/([^/]+)\/?$/)?.[1]
 
     if (!id) {
       return
     }
 
-    await Promise.all([
-      context.queryClient.ensureQueryData(
-        convexQuery(api.chat.get, { conversationId: id as never }),
-      ),
-      context.queryClient.ensureQueryData(
-        convexQuery(api.chat.getMessages, { conversationId: id as never }),
-      ),
-    ])
+    const conversation = await context.queryClient.ensureQueryData(
+      convexQuery(api.chat.get, { conversationId: id as never }),
+    )
+
+    if (!conversation) {
+      throw notFound()
+    }
+
+    await context.queryClient.ensureQueryData(
+      convexQuery(api.chat.getMessages, { conversationId: id as never }),
+    )
   },
   component: RouteComponent,
 })
 
+function parseStoredMessages(rawMessages: string[] | undefined): UIMessage[] {
+  if (!rawMessages) {
+    return []
+  }
+
+  const messages: UIMessage[] = []
+
+  for (const rawMessage of rawMessages) {
+    try {
+      messages.push(JSON.parse(rawMessage) as UIMessage)
+    } catch (error) {
+      console.error('Failed to parse stored message:', error)
+    }
+  }
+
+  return messages
+}
+
+function ChatRouteLoading() {
+  return (
+    <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
+      Loading conversation...
+    </div>
+  )
+}
+
 function RouteComponent() {
   const { id } = useParams({ strict: false })
 
-  const { data: conversation } = useQuery({
+  const conversationQuery = useQuery({
     ...convexQuery(api.chat.get, id ? { conversationId: id as never } : 'skip'),
   })
-  const { data: rawMessages } = useQuery({
+
+  const messagesQuery = useQuery({
     ...convexQuery(api.chat.getMessages, id ? { conversationId: id as never } : 'skip'),
   })
 
-  const messages = rawMessages?.map((message) => JSON.parse(message) as UIMessage) || []
+  if (id && (conversationQuery.isPending || messagesQuery.isPending)) {
+    return (
+      <SidebarProvider className="h-svh overflow-hidden">
+        <ChatSidebar />
+        <SidebarInset className="flex min-h-0 flex-1 flex-col divide-y overflow-hidden">
+          <ChatRouteLoading />
+        </SidebarInset>
+      </SidebarProvider>
+    )
+  }
 
-  if (id && conversation === null) {
+  if (id && !conversationQuery.data) {
     throw notFound()
   }
+
+  const initialMessages = parseStoredMessages(messagesQuery.data)
 
   return (
     <SidebarProvider className="h-svh overflow-hidden">
       <ChatSidebar />
       <SidebarInset className="flex min-h-0 flex-1 flex-col divide-y overflow-hidden">
-        <Chat key={id} initialMessages={messages} title={conversation?.title} />
+        <Chat
+          key={id ?? 'new-chat'}
+          conversationId={id}
+          initialMessages={initialMessages}
+          title={conversationQuery.data?.title}
+        />
       </SidebarInset>
     </SidebarProvider>
   )

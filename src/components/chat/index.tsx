@@ -1,10 +1,11 @@
 import { useChat, type UIMessage } from '@ai-sdk/react'
-import { useLocation } from '@tanstack/react-router'
 import { DefaultChatTransport } from 'ai'
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
 import type { Model } from '@/lib/models/types'
+
+import { consumePendingMessage } from '@/lib/chat/pending-message'
 
 import { ChatConversation } from './conversation'
 import { ChatError } from './error'
@@ -22,35 +23,44 @@ type ChatContextValue = Omit<ReturnType<typeof useChat>, 'setMessages'> & {
 const ChatContext = createContext<ChatContextValue | null>(null)
 
 type ChatProps = {
+  conversationId?: string
   initialMessages?: UIMessage[]
   title?: string
 }
 
-function extractChatId(pathname: string): string | undefined {
-  const match = pathname.match(/\/chat\/([^/]+)/)
-  return match ? match[1] : undefined
-}
-
-export function Chat({ initialMessages, title }: ChatProps) {
+export function Chat({ conversationId, initialMessages, title }: ChatProps) {
   const [model, setModel] = useLocalStorage<Model>('model', defaultModel)
-  const location = useLocation()
-  const conversationId = extractChatId(location.pathname)
 
   const chat = useChat({
+    id: conversationId,
     messages: initialMessages,
     transport: new DefaultChatTransport({
       api: '/api/chat',
-      prepareSendMessagesRequest({ messages }) {
+      prepareSendMessagesRequest({ id, messages }) {
         return {
           body: {
             message: messages[messages.length - 1],
-            id: conversationId,
+            id: id ?? null,
             model: model.id,
           },
         }
       },
     }),
   })
+
+  useEffect(() => {
+    if (!conversationId) {
+      return
+    }
+
+    const pendingMessage = consumePendingMessage(conversationId)
+
+    if (!pendingMessage) {
+      return
+    }
+
+    void chat.sendMessage({ text: pendingMessage })
+  }, [conversationId, chat])
 
   return (
     <ChatContext.Provider value={{ ...chat, title, model, setModel, conversationId }}>
