@@ -1,5 +1,3 @@
-import type { UIMessage } from 'ai'
-
 import { convexQuery } from '@convex-dev/react-query'
 import { api } from '@convex/_generated/api'
 import { useQuery } from '@tanstack/react-query'
@@ -8,6 +6,7 @@ import { createFileRoute, notFound, useParams } from '@tanstack/react-router'
 import { Chat } from '@/components/chat'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { currentUserQueryOptions } from '@/lib/auth/current-user-query'
+import { parseStoredMessages } from '@/lib/chat/utils'
 
 import { ChatSidebar } from './-components/chat-sidebar'
 
@@ -36,32 +35,6 @@ export const Route = createFileRoute('/(chat)')({
   component: RouteComponent,
 })
 
-function parseStoredMessages(rawMessages: string[] | undefined): UIMessage[] {
-  if (!rawMessages) {
-    return []
-  }
-
-  const messages: UIMessage[] = []
-
-  for (const rawMessage of rawMessages) {
-    try {
-      messages.push(JSON.parse(rawMessage) as UIMessage)
-    } catch (error) {
-      console.error('Failed to parse stored message:', error)
-    }
-  }
-
-  return messages
-}
-
-function ChatRouteLoading() {
-  return (
-    <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-      Loading conversation...
-    </div>
-  )
-}
-
 function RouteComponent() {
   const { id } = useParams({ strict: false })
 
@@ -73,21 +46,6 @@ function RouteComponent() {
     ...convexQuery(api.chat.getMessages, id ? { conversationId: id as never } : 'skip'),
   })
 
-  if (id && (conversationQuery.isPending || messagesQuery.isPending)) {
-    return (
-      <SidebarProvider className="h-svh overflow-hidden">
-        <ChatSidebar />
-        <SidebarInset className="flex min-h-0 flex-1 flex-col divide-y overflow-hidden">
-          <ChatRouteLoading />
-        </SidebarInset>
-      </SidebarProvider>
-    )
-  }
-
-  if (id && !conversationQuery.data) {
-    throw notFound()
-  }
-
   const initialMessages = parseStoredMessages(messagesQuery.data)
 
   return (
@@ -95,7 +53,6 @@ function RouteComponent() {
       <ChatSidebar />
       <SidebarInset className="flex min-h-0 flex-1 flex-col divide-y overflow-hidden">
         <Chat
-          key={id ?? 'new-chat'}
           conversationId={id}
           initialMessages={initialMessages}
           title={conversationQuery.data?.title}
