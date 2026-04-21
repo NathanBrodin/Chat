@@ -25,6 +25,7 @@ export function ChatConversation() {
         ) : (
           messages.map((message, index) => (
             <ChatMessage
+              key={message.id}
               message={message}
               isLastMessage={index === messages.length - 1}
               isStreaming={status === 'streaming'}

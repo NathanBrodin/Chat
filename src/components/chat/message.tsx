@@ -1,5 +1,6 @@
-import type { UIMessage } from 'ai'
+import type { ChatMessage } from '@/lib/chat/types'
 
+import { MessageAttachmentsDisplay } from '../ai-elements/attachments-display'
 import { Message, MessageContent, MessageResponse } from '../ai-elements/message'
 import { Reasoning, ReasoningContent, ReasoningTrigger } from '../ai-elements/reasoning'
 
@@ -8,7 +9,7 @@ export function ChatMessage({
   isLastMessage,
   isStreaming,
 }: {
-  message: UIMessage
+  message: ChatMessage
   isLastMessage: boolean
   isStreaming: boolean
 }) {
@@ -38,6 +39,7 @@ export function ChatMessage({
           return null
         })}
       </MessageContent>
+      <MessageAttachmentsDisplay message={message} />
     </Message>
   )
 }

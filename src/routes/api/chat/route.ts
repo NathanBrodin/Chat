@@ -1,17 +1,40 @@
 import { api } from '@convex/_generated/api'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  NoSuchModelError,
-  type UIMessage,
-  convertToModelMessages,
-  createIdGenerator,
-  streamText,
-} from 'ai'
+import { NoSuchModelError, convertToModelMessages, createIdGenerator, streamText } from 'ai'
+
+import type { ChatAttachmentMetadata, ChatMessageMetadata, ChatMessage } from '@/lib/chat/types'
 
 import { fetchAuthMutation, fetchAuthQuery } from '@/lib/auth/auth-server'
 import { tools } from '@/lib/chat/tools'
 import { parseStoredMessages, validateChatMessages } from '@/lib/chat/utils'
+
+function getMessageAttachments(message: ChatMessage): ChatAttachmentMetadata[] | undefined {
+  const attachments = message.metadata?.attachments?.filter((attachment) => attachment.storageId)
+  return attachments?.length ? attachments : undefined
+}
+
+function toStoredMessage(message: ChatMessage) {
+  const metadata = message.metadata
+    ? Object.fromEntries(Object.entries(message.metadata).filter(([key]) => key !== 'attachments'))
+    : undefined
+
+  return {
+    ...message,
+    metadata:
+      metadata && Object.keys(metadata).length > 0
+        ? (metadata as Omit<ChatMessageMetadata, 'attachments'>)
+        : undefined,
+    parts: message.parts.map((part) => {
+      if (part.type !== 'file') {
+        return part
+      }
+
+      const { url: _url, ...storedPart } = part
+      return storedPart
+    }),
+  }
+}
 
 const openrouter = createOpenRouter({
   apiKey: import.meta.env.OPENROUTER_API_KEY,
@@ -25,20 +48,26 @@ export const Route = createFileRoute('/api/chat')({
           message,
           id,
           model,
-        }: { message: UIMessage; id: string | null; model: string | null } = await request.json()
+        }: { message: ChatMessage; id: string | null; model: string | null } = await request.json()
 
         if (!model) {
           throw new NoSuchModelError({ modelId: 'no-model', modelType: 'languageModel' })
         }
 
-        let messages: UIMessage[] = []
+        let messages: ChatMessage[] = []
 
         if (id) {
+          const attachments = getMessageAttachments(message)
+
           // Save the user's message
           await fetchAuthMutation(api.chat.insertMessage, {
             conversationId: id as any,
             messageId: message.id,
-            messageData: JSON.stringify(message),
+            attachments: attachments?.map((attachment) => ({
+              ...attachment,
+              storageId: attachment.storageId as any,
+            })),
+            messageData: JSON.stringify(toStoredMessage(message)),
           })
 
           // Load previous messages

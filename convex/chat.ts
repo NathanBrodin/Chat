@@ -4,6 +4,13 @@ import type { Id } from './_generated/dataModel'
 
 import { mutation, query, type QueryCtx } from './_generated/server'
 
+const attachmentValidator = v.object({
+  storageId: v.id('_storage'),
+  filename: v.optional(v.string()),
+  mediaType: v.string(),
+  size: v.optional(v.number()),
+})
+
 async function getUserId(ctx: QueryCtx): Promise<string | null> {
   const identity = await ctx.auth.getUserIdentity()
   return identity?.tokenIdentifier ?? null
@@ -72,6 +79,10 @@ export const remove = mutation({
       }
 
       for (const message of messages) {
+        for (const attachment of message.attachments ?? []) {
+          await ctx.storage.delete(attachment.storageId)
+        }
+
         await ctx.db.delete(message._id)
       }
     }
@@ -85,15 +96,29 @@ export const insertMessage = mutation({
     conversationId: v.id('conversations'),
     messageId: v.string(),
     messageData: v.string(),
+    attachments: v.optional(v.array(attachmentValidator)),
   },
   handler: async (ctx, args) => {
     await assertOwnership(ctx, args.conversationId)
 
     return await ctx.db.insert('messages', {
+      attachments: args.attachments,
       conversationId: args.conversationId,
       messageId: args.messageId,
       messageData: args.messageData,
     })
+  },
+})
+
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getUserId(ctx)
+    if (!userId) {
+      throw new Error('Not authenticated')
+    }
+
+    return await ctx.storage.generateUploadUrl()
   },
 })
 
@@ -154,6 +179,46 @@ export const getMessages = query({
       .order('asc')
       .collect()
 
-    return messages.map((m) => m.messageData)
+    return await Promise.all(
+      messages.map(async (message) => {
+        const parsedMessage = JSON.parse(message.messageData) as {
+          parts?: Array<{
+            type?: string
+            filename?: string
+            mediaType?: string
+            url?: string
+          }>
+        }
+
+        if (!Array.isArray(parsedMessage.parts) || (message.attachments?.length ?? 0) === 0) {
+          return message.messageData
+        }
+
+        let attachmentIndex = 0
+
+        const hydratedParts = await Promise.all(
+          parsedMessage.parts.map(async (part) => {
+            if (part.type !== 'file') {
+              return part
+            }
+
+            const attachment = message.attachments?.[attachmentIndex]
+            attachmentIndex += 1
+
+            if (!attachment) {
+              return part
+            }
+
+            const url = await ctx.storage.getUrl(attachment.storageId)
+            return url ? { ...part, url } : part
+          }),
+        )
+
+        return JSON.stringify({
+          ...parsedMessage,
+          parts: hydratedParts,
+        })
+      }),
+    )
   },
 })

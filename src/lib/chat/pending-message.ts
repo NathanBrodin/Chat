@@ -1,29 +1,15 @@
-const pendingMessages = new Map<string, string>()
+import type { PendingChatMessage } from './types'
 
-function getStorageKey(conversationId: string) {
-  return `pending-chat-message:${conversationId}`
-}
+const pendingMessages = new Map<string, PendingChatMessage>()
 
-export function setPendingMessage(conversationId: string, message: string) {
+export function setPendingMessage(conversationId: string, message: PendingChatMessage) {
   pendingMessages.set(conversationId, message)
-
-  if (typeof window !== 'undefined') {
-    window.sessionStorage.setItem(getStorageKey(conversationId), message)
-  }
 }
 
 export function consumePendingMessage(conversationId: string) {
-  const message =
-    pendingMessages.get(conversationId) ??
-    (typeof window !== 'undefined'
-      ? (window.sessionStorage.getItem(getStorageKey(conversationId)) ?? undefined)
-      : undefined)
+  const storedMessage = pendingMessages.get(conversationId)
 
   pendingMessages.delete(conversationId)
 
-  if (typeof window !== 'undefined') {
-    window.sessionStorage.removeItem(getStorageKey(conversationId))
-  }
-
-  return message
+  return storedMessage
 }

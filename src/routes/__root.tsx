@@ -6,6 +6,7 @@ import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/reac
 
 import { ErrorComponent } from '@/components/error'
 import { NotFound } from '@/components/not-found'
+import { AnchoredToastProvider, ToastProvider } from '@/components/ui/toast'
 import { getAuth } from '@/lib/auth'
 import { AuthProvider } from '@/providers/auth'
 
@@ -62,7 +63,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans wrap-anywhere antialiased">
         <ThemeProvider disableTransitionOnChange>
-          <AuthProvider>{children}</AuthProvider>
+          <ToastProvider>
+            <AnchoredToastProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </AnchoredToastProvider>
+          </ToastProvider>
         </ThemeProvider>
         <Scripts />
       </body>

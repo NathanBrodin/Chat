@@ -12,6 +12,16 @@ export default defineSchema({
     conversationId: v.id('conversations'),
     messageId: v.string(),
     messageData: v.string(),
+    attachments: v.optional(
+      v.array(
+        v.object({
+          storageId: v.id('_storage'),
+          filename: v.optional(v.string()),
+          mediaType: v.string(),
+          size: v.optional(v.number()),
+        }),
+      ),
+    ),
   })
     .index('by_conversationId', ['conversationId'])
     .index('by_conversationId_and_messageId', ['conversationId', 'messageId']),

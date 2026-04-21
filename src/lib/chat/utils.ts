@@ -1,17 +1,19 @@
-import { TypeValidationError, validateUIMessages, type UIMessage } from 'ai'
+import { TypeValidationError, validateUIMessages } from 'ai'
+
+import type { ChatMessage } from './types'
 
 import { tools } from './tools'
 
-export function parseStoredMessages(rawMessages: readonly string[] | undefined): UIMessage[] {
+export function parseStoredMessages(rawMessages: readonly string[] | undefined): ChatMessage[] {
   if (!rawMessages?.length) {
     return []
   }
 
-  const messages: UIMessage[] = []
+  const messages: ChatMessage[] = []
 
   for (const rawMessage of rawMessages) {
     try {
-      messages.push(JSON.parse(rawMessage) as UIMessage)
+      messages.push(JSON.parse(rawMessage) as ChatMessage)
     } catch (error) {
       console.error('Failed to parse stored message:', error)
     }
@@ -21,9 +23,9 @@ export function parseStoredMessages(rawMessages: readonly string[] | undefined):
 }
 
 export async function validateChatMessages(
-  messages: UIMessage[],
-  fallbackMessages: UIMessage[] = [],
-): Promise<UIMessage[]> {
+  messages: ChatMessage[],
+  fallbackMessages: ChatMessage[] = [],
+): Promise<ChatMessage[]> {
   if (!messages.length) {
     return []
   }

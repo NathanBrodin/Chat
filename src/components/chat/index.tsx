@@ -1,8 +1,9 @@
-import { useChat, type UIMessage } from '@ai-sdk/react'
+import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { createContext, useContext, useEffect } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
+import type { ChatMessage } from '@/lib/chat/types'
 import type { Model } from '@/lib/models/types'
 
 import { consumePendingMessage } from '@/lib/chat/pending-message'
@@ -13,7 +14,7 @@ import { ChatHeader } from './header'
 import { ChatInput } from './input'
 import { defaultModel } from './models'
 
-type ChatContextValue = Omit<ReturnType<typeof useChat>, 'setMessages'> & {
+type ChatContextValue = Omit<ReturnType<typeof useChat<ChatMessage>>, 'setMessages'> & {
   title?: string
   model: Model
   setModel: (model: Model) => void
@@ -24,14 +25,14 @@ const ChatContext = createContext<ChatContextValue | null>(null)
 
 type ChatProps = {
   conversationId?: string
-  initialMessages?: UIMessage[]
+  initialMessages?: ChatMessage[]
   title?: string
 }
 
 export function Chat({ conversationId, initialMessages, title }: ChatProps) {
   const [model, setModel] = useLocalStorage<Model>('model', defaultModel)
 
-  const chat = useChat({
+  const chat = useChat<ChatMessage>({
     id: conversationId,
     messages: initialMessages,
     transport: new DefaultChatTransport({
@@ -59,7 +60,7 @@ export function Chat({ conversationId, initialMessages, title }: ChatProps) {
       return
     }
 
-    void chat.sendMessage({ text: pendingMessage })
+    void chat.sendMessage(pendingMessage)
   }, [conversationId, chat])
 
   return (
