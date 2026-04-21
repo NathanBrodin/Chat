@@ -1,224 +1,84 @@
-import { v } from 'convex/values'
+import { paginationOptsValidator } from "convex/server";
+import {
+  abortStream,
+  createThread,
+  listUIMessages,
+  syncStreams,
+  vStreamArgs,
+} from "@convex-dev/agent";
+import { v } from "convex/values";
+import { internalAction, mutation, query } from "./_generated/server";
+import { authorizeThreadAccess } from "./thread";
+import { agent } from "./agent";
+import { components, internal } from "./_generated/api";
 
-import type { Id } from './_generated/dataModel'
+export const initiateAsyncStreaming = mutation({
+  args: { prompt: v.string(), threadId: v.string() },
+  handler: async (ctx, { prompt, threadId }) => {
+    await authorizeThreadAccess(ctx, threadId);
+    const { messageId } = await agent.saveMessage(ctx, {
+      threadId,
+      prompt,
+      skipEmbeddings: true,
+    });
+    await ctx.scheduler.runAfter(0, internal.chat.streamAsync, {
+      threadId,
+      promptMessageId: messageId,
+    });
+  },
+});
 
-import { mutation, query, type QueryCtx } from './_generated/server'
+export const streamAsync = internalAction({
+  args: { promptMessageId: v.string(), threadId: v.string() },
+  handler: async (ctx, { promptMessageId, threadId }) => {
+    const result = await agent.streamText(
+      ctx,
+      { threadId },
+      { promptMessageId },
+      { saveStreamDeltas: { chunking: "word", throttleMs: 100 } },
+    );
+    await result.consumeStream();
+  },
+});
 
-const attachmentValidator = v.object({
-  storageId: v.id('_storage'),
-  filename: v.optional(v.string()),
-  mediaType: v.string(),
-  size: v.optional(v.number()),
-})
+export const abortStreamByOrder = mutation({
+  args: { threadId: v.string(), order: v.number() },
+  handler: async (ctx, { threadId, order }) => {
+    await authorizeThreadAccess(ctx, threadId);
+    if (
+      await abortStream(ctx, components.agent, {
+        threadId,
+        order,
+        reason: "Aborting explicitly",
+      })
+    ) {
+      console.log("Aborted stream", threadId, order);
+    } else {
+      console.log("No stream found", threadId, order);
+    }
+  },
+});
 
-async function getUserId(ctx: QueryCtx): Promise<string | null> {
-  const identity = await ctx.auth.getUserIdentity()
-  return identity?.tokenIdentifier ?? null
-}
 
-async function assertOwnership(ctx: QueryCtx, conversationId: Id<'conversations'>) {
-  const userId = await getUserId(ctx)
-  if (!userId) {
-    throw new Error('Not authenticated')
-  }
-  const conversation = await ctx.db.get(conversationId)
-  if (!conversation) {
-    throw new Error('Conversation not found')
-  }
-  if (conversation.userId !== userId) {
-    throw new Error('Not authorized')
-  }
-  return { userId, conversation }
-}
-
-export const create = mutation({
+export const listThreadMessages = query({
   args: {
-    title: v.string(),
+    threadId: v.string(),
+    paginationOpts: paginationOptsValidator,
+    streamArgs: vStreamArgs,
   },
   handler: async (ctx, args) => {
-    const userId = await getUserId(ctx)
-    if (!userId) {
-      return undefined
-    }
+    const { threadId, streamArgs } = args;
+    await authorizeThreadAccess(ctx, threadId);
+    const streams = await syncStreams(ctx, components.agent, {
+      threadId,
+      streamArgs,
+    });
 
-    const conversationId = await ctx.db.insert('conversations', {
-      title: args.title,
-      userId,
-    })
+    const paginated = await listUIMessages(ctx, components.agent, args);
 
-    return conversationId
+    return {
+      ...paginated,
+      streams,
+    };
   },
-})
-
-export const rename = mutation({
-  args: {
-    conversationId: v.id('conversations'),
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await assertOwnership(ctx, args.conversationId)
-    await ctx.db.patch(args.conversationId, { title: args.title })
-  },
-})
-
-export const remove = mutation({
-  args: {
-    conversationId: v.id('conversations'),
-  },
-  handler: async (ctx, args) => {
-    await assertOwnership(ctx, args.conversationId)
-
-    while (true) {
-      const messages = await ctx.db
-        .query('messages')
-        .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId))
-        .take(100)
-
-      if (messages.length === 0) {
-        break
-      }
-
-      for (const message of messages) {
-        for (const attachment of message.attachments ?? []) {
-          await ctx.storage.delete(attachment.storageId)
-        }
-
-        await ctx.db.delete(message._id)
-      }
-    }
-
-    await ctx.db.delete(args.conversationId)
-  },
-})
-
-export const insertMessage = mutation({
-  args: {
-    conversationId: v.id('conversations'),
-    messageId: v.string(),
-    messageData: v.string(),
-    attachments: v.optional(v.array(attachmentValidator)),
-  },
-  handler: async (ctx, args) => {
-    await assertOwnership(ctx, args.conversationId)
-
-    return await ctx.db.insert('messages', {
-      attachments: args.attachments,
-      conversationId: args.conversationId,
-      messageId: args.messageId,
-      messageData: args.messageData,
-    })
-  },
-})
-
-export const generateUploadUrl = mutation({
-  args: {},
-  handler: async (ctx) => {
-    const userId = await getUserId(ctx)
-    if (!userId) {
-      throw new Error('Not authenticated')
-    }
-
-    return await ctx.storage.generateUploadUrl()
-  },
-})
-
-// Queries
-
-export const listByUser = query({
-  args: {},
-  handler: async (ctx) => {
-    const userId = await getUserId(ctx)
-    if (!userId) {
-      return []
-    }
-
-    return await ctx.db
-      .query('conversations')
-      .withIndex('by_userId', (q) => q.eq('userId', userId))
-      .order('desc')
-      .take(50)
-  },
-})
-
-export const get = query({
-  args: {
-    conversationId: v.id('conversations'),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getUserId(ctx)
-    const conversation = await ctx.db.get(args.conversationId)
-
-    if (!conversation) {
-      return null
-    }
-
-    // Only allow owner to view their conversations
-    if (conversation.userId !== userId) {
-      return null
-    }
-
-    return conversation
-  },
-})
-
-export const getMessages = query({
-  args: {
-    conversationId: v.id('conversations'),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getUserId(ctx)
-    const conversation = await ctx.db.get(args.conversationId)
-
-    if (!conversation || conversation.userId !== userId) {
-      return []
-    }
-
-    const messages = await ctx.db
-      .query('messages')
-      .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId))
-      .order('asc')
-      .collect()
-
-    return await Promise.all(
-      messages.map(async (message) => {
-        const parsedMessage = JSON.parse(message.messageData) as {
-          parts?: Array<{
-            type?: string
-            filename?: string
-            mediaType?: string
-            url?: string
-          }>
-        }
-
-        if (!Array.isArray(parsedMessage.parts) || (message.attachments?.length ?? 0) === 0) {
-          return message.messageData
-        }
-
-        let attachmentIndex = 0
-
-        const hydratedParts = await Promise.all(
-          parsedMessage.parts.map(async (part) => {
-            if (part.type !== 'file') {
-              return part
-            }
-
-            const attachment = message.attachments?.[attachmentIndex]
-            attachmentIndex += 1
-
-            if (!attachment) {
-              return part
-            }
-
-            const url = await ctx.storage.getUrl(attachment.storageId)
-            return url ? { ...part, url } : part
-          }),
-        )
-
-        return JSON.stringify({
-          ...parsedMessage,
-          parts: hydratedParts,
-        })
-      }),
-    )
-  },
-})
+});
