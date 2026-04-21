@@ -67,7 +67,7 @@ export function ChatHeader() {
         return
       }
 
-      renameConversation({
+      void renameConversation({
         title: value.title.trim(),
         conversationId: conversationId as any,
       })
@@ -81,7 +81,7 @@ export function ChatHeader() {
       return
     }
 
-    deleteConversation({ conversationId: conversationId as any })
+    void deleteConversation({ conversationId: conversationId as any })
     setIsDeleteDialogOpen(false)
     await navigate({ to: '/' })
   }
@@ -90,7 +90,7 @@ export function ChatHeader() {
     <header className="flex w-full shrink-0 items-center justify-between gap-2 p-2.5 px-4">
       <div className="flex items-center gap-2">
         {isMobile && <SidebarTrigger />}
-        <h1 className="truncate font-heading">{title ?? 'Conversation'}</h1>
+        <h1 className="truncate font-heading">{title}</h1>
       </div>
       <div className="flex items-center gap-2">
         <Button variant="outline" size="icon">

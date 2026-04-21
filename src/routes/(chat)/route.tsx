@@ -28,7 +28,7 @@ export const Route = createFileRoute('/(chat)')({
       throw notFound()
     }
 
-    await context.queryClient.ensureQueryData(
+    void context.queryClient.prefetchQuery(
       convexQuery(api.chat.getMessages, { conversationId: id as never }),
     )
   },
@@ -38,15 +38,15 @@ export const Route = createFileRoute('/(chat)')({
 function RouteComponent() {
   const { id } = useParams({ strict: false })
 
-  const conversationQuery = useQuery({
+  const conversation = useQuery({
     ...convexQuery(api.chat.get, id ? { conversationId: id as never } : 'skip'),
   })
 
-  const messagesQuery = useQuery({
+  const messages = useQuery({
     ...convexQuery(api.chat.getMessages, id ? { conversationId: id as never } : 'skip'),
   })
 
-  const initialMessages = parseStoredMessages(messagesQuery.data)
+  const initialMessages = parseStoredMessages(messages.data)
 
   return (
     <SidebarProvider className="h-svh overflow-hidden">
@@ -55,7 +55,7 @@ function RouteComponent() {
         <Chat
           conversationId={id}
           initialMessages={initialMessages}
-          title={conversationQuery.data?.title}
+          title={conversation.data?.title}
         />
       </SidebarInset>
     </SidebarProvider>
