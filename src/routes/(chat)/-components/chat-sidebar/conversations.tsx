@@ -1,7 +1,6 @@
-import { convexQuery } from '@convex-dev/react-query'
 import { api } from '@convex/_generated/api'
-import { useQuery } from '@tanstack/react-query'
 import { Link, useRouteContext } from '@tanstack/react-router'
+import { useQuery } from 'convex/react'
 
 import {
   SidebarGroup,
@@ -11,40 +10,29 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
-interface ConversationItem {
-  id: string
-  title: string
-  timestamp: number
-}
+const getRelativeTime = (input: number): string => {
+  const deltaSeconds = Math.floor((Date.now() - input) / 1000)
 
-function groupByTimePeriod(items: ConversationItem[]) {
-  const todayStart = new Date()
-  todayStart.setHours(0, 0, 0, 0)
-  const yesterdayStart = new Date(todayStart)
-  yesterdayStart.setDate(yesterdayStart.getDate() - 1)
-  const weekStart = new Date(todayStart)
-  weekStart.setDate(weekStart.getDate() - 7)
+  // Handle future dates or extremely recent events
+  if (deltaSeconds < 30) return 'just now'
 
-  const groups: { label: string; items: ConversationItem[] }[] = [
-    { label: 'Today', items: [] },
-    { label: 'Yesterday', items: [] },
-    { label: 'Previous 7 days', items: [] },
-    { label: 'Older', items: [] },
-  ]
+  const units = [
+    { label: 'y', seconds: 31536000 },
+    { label: 'mo', seconds: 2592000 },
+    { label: 'w', seconds: 604800 },
+    { label: 'd', seconds: 86400 },
+    { label: 'h', seconds: 3600 },
+    { label: 'm', seconds: 60 },
+  ] as const
 
-  for (const item of items) {
-    if (item.timestamp >= todayStart.getTime()) {
-      groups[0].items.push(item)
-    } else if (item.timestamp >= yesterdayStart.getTime()) {
-      groups[1].items.push(item)
-    } else if (item.timestamp >= weekStart.getTime()) {
-      groups[2].items.push(item)
-    } else {
-      groups[3].items.push(item)
+  for (const { label, seconds } of units) {
+    const count = Math.floor(deltaSeconds / seconds)
+    if (count >= 1) {
+      return `${count}${label} ago`
     }
   }
 
-  return groups.filter((g) => g.items.length > 0)
+  return 'just now'
 }
 
 export function Conversations() {
@@ -53,66 +41,44 @@ export function Conversations() {
     select: (s) => s.isAuthenticated,
   })
 
-  // Fetch Convex conversations for authenticated users
-  const { data: convexConversations } = useQuery({
-    ...convexQuery(api.chat.listByUser, isAuthenticated ? {} : 'skip'),
-  })
+  const conversations = useQuery(api.chat.listByUser, isAuthenticated ? {} : 'skip')
 
-  const items: ConversationItem[] = []
-
-  if (convexConversations) {
-    for (const c of convexConversations) {
-      items.push({
-        id: c._id,
-        title: c.title,
-        timestamp: c._creationTime,
-      })
-    }
-  }
-
-  // Sort newest first
-  items.sort((a, b) => b.timestamp - a.timestamp)
-
-  const groups = groupByTimePeriod(items)
-
-  if (groups.length === 0) {
-    return (
-      <SidebarGroup>
-        <SidebarGroupLabel>Conversations</SidebarGroupLabel>
-        <SidebarMenu>
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Conversations</SidebarGroupLabel>
+      <div className="hidden h-8 group-data-[collapsible=icon]:block" />
+      <SidebarMenu>
+        {conversations?.length === 0 && (
           <p className="px-2 py-4 text-center text-xs text-muted-foreground">
             No conversations yet
           </p>
-        </SidebarMenu>
-      </SidebarGroup>
-    )
-  }
+        )}
+        {conversations?.map((conversation) => (
+          <SidebarMenuItem key={conversation._id}>
+            <SidebarMenuButton
+              className="justify-between group-data-[collapsible=icon]:justify-center"
+              tooltip={conversation.title}
+              render={
+                <Link
+                  to="/chat/$id"
+                  params={{ id: conversation._id }}
+                  activeProps={{ 'data-active': true } as Record<string, unknown>}
+                />
+              }
+            >
+              <span className="line-clamp-1 transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:invisible group-data-[collapsible=icon]:opacity-0">
+                {conversation.title}
+              </span>
 
-  return (
-    <>
-      {groups.map((group) => (
-        <SidebarGroup key={group.label}>
-          <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-          <SidebarMenu>
-            {group.items.map((item) => (
-              <SidebarMenuItem key={item.id}>
-                <SidebarMenuButton
-                  tooltip={item.title}
-                  render={
-                    <Link
-                      to="/chat/$id"
-                      params={{ id: item.id }}
-                      activeProps={{ 'data-active': true } as Record<string, unknown>}
-                    />
-                  }
-                >
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-      ))}
-    </>
+              <span className="shrink-0 text-xs text-muted-foreground transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:invisible group-data-[collapsible=icon]:opacity-0">
+                {getRelativeTime(conversation._creationTime)}
+              </span>
+
+              <span className="pointer-events-none absolute inset-x-3 top-1/2 size-2 -translate-y-1/2 rounded-full bg-muted-foreground opacity-0 transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:opacity-100 group-data-[collapsible=icon]:data-[active=true]:opacity-100" />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    </SidebarGroup>
   )
 }
