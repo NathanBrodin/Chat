@@ -57,7 +57,9 @@ export const Conversation = ({
             scrollbarGutter && 'data-has-overflow-y:pe-2.5 data-has-overflow-x:pb-2.5',
           )}
         >
-          <div ref={contentRef}>{children}</div>
+          <div ref={contentRef} className="flex min-h-full flex-col">
+            {children}
+          </div>
         </ScrollAreaPrimitive.Viewport>
         <ScrollBar orientation="vertical" />
         <ScrollBar orientation="horizontal" />
@@ -70,7 +72,7 @@ export const Conversation = ({
 export type ConversationContentProps = ComponentProps<'div'>
 
 export const ConversationContent = ({ className, ...props }: ConversationContentProps) => (
-  <div className={cn('flex flex-col gap-8 p-4 mx-auto max-w-7xl', className)} {...props} />
+  <div className={cn('mx-auto flex w-full max-w-7xl flex-col gap-8 p-4', className)} {...props} />
 )
 
 export type ConversationEmptyStateProps = ComponentProps<'div'> & {
@@ -81,28 +83,21 @@ export type ConversationEmptyStateProps = ComponentProps<'div'> & {
 
 export const ConversationEmptyState = ({
   className,
-  title = 'No messages yet',
-  description = 'Start a conversation to see messages here',
-  icon,
-  children,
+  title = 'Start a conversation',
+  description = 'Type a message below to begin chatting',
   ...props
 }: ConversationEmptyStateProps) => (
   <div
     className={cn(
-      'flex size-full flex-col items-center justify-center gap-3 p-8 text-center',
+      'flex h-full flex-1 size-full flex-col items-center justify-center gap-3 p-8 text-center',
       className,
     )}
     {...props}
   >
-    {children ?? (
-      <>
-        {icon && <div className="text-muted-foreground">{icon}</div>}
-        <div className="space-y-1">
-          <h3 className="text-sm font-medium">{title}</h3>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
-        </div>
-      </>
-    )}
+    <div className="space-y-1">
+      <h3 className="text-sm font-medium">{title}</h3>
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+    </div>
   </div>
 )
 

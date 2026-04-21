@@ -1,5 +1,3 @@
-import { MessageSquare } from 'lucide-react'
-
 import {
   Conversation,
   ConversationContent,
@@ -12,16 +10,13 @@ import { ChatMessage } from './message'
 
 export function ChatConversation() {
   const { messages, status } = useChatContext()
+  const isEmpty = messages.length === 0
 
   return (
-    <Conversation>
-      <ConversationContent>
-        {messages.length === 0 ? (
-          <ConversationEmptyState
-            icon={<MessageSquare className="size-12" />}
-            title="Start a conversation"
-            description="Type a message below to begin chatting"
-          />
+    <Conversation className="min-h-0 flex-1">
+      <ConversationContent className={isEmpty ? 'h-full flex-1' : undefined}>
+        {isEmpty ? (
+          <ConversationEmptyState />
         ) : (
           messages.map((message, index) => (
             <ChatMessage
