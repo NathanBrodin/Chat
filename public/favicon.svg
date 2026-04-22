@@ -1,0 +1,26 @@
+<svg
+    width="200"
+    height="200"
+    viewBox="0 0 200 200"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+>
+    <style>
+    .logo { fill: #262626; }
+    @media (prefers-color-scheme: dark) {
+        .logo { fill: #f5f5f5; }
+    }
+    </style>
+      <g  clipPath="url(#clip0_2868_88)">
+        <path
+          d="M123.344 200C100 200 100 143.969 76.6558 143.969C49.7872 143.969 0 150.205 0 123.338C0 99.9951 56.0242 99.995 56.0242 76.652C56.0242 49.7946 49.7872 0 76.6558 0C100 0 100 56.0313 123.344 56.0313C150.213 56.0313 200 49.7946 200 76.652C200 99.995 143.966 99.9951 143.966 123.338C143.966 150.205 150.213 200 123.344 200Z"
+          class="logo"
+          fill="currentColor"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_2868_88">
+          <rect class="logo" width="200" height="200" fill="currentColor" />
+        </clipPath>
+      </defs>
+</svg>
