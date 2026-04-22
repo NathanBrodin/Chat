@@ -5,7 +5,10 @@ import { v } from 'convex/values'
 import { components, internal } from './_generated/api'
 import { action, internalAction, mutation, query } from './_generated/server'
 import { agent } from './agent'
+import { getAuthUserId } from './auth'
+import { estimateTokens, rateLimiter } from './rateLimiting'
 import { authorizeThreadAccess } from './thread'
+import { getBillingPeriod, MONTHLY_LIMIT_TOKENS, getUsageTotalsForPeriod } from './usage'
 
 export const initiateAsyncStreaming = mutation({
   args: {
@@ -24,6 +27,11 @@ export const initiateAsyncStreaming = mutation({
   },
   handler: async (ctx, { prompt, threadId, attachments }) => {
     await authorizeThreadAccess(ctx, threadId)
+
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      throw new Error('Unauthorized')
+    }
 
     const content = [
       ...(attachments ?? []).map((attachment) =>
@@ -52,6 +60,32 @@ export const initiateAsyncStreaming = mutation({
 
     if (content.length === 0) {
       return
+    }
+
+    await rateLimiter.limit(ctx, 'sendMessage', {
+      key: userId,
+      throws: true,
+    })
+    await rateLimiter.limit(ctx, 'globalSendMessage', { throws: true })
+
+    const estimatedTokenCount = await estimateTokens(ctx, threadId, prompt ?? '')
+
+    await rateLimiter.check(ctx, 'tokenUsagePerUser', {
+      key: userId,
+      count: estimatedTokenCount,
+      reserve: true,
+      throws: true,
+    })
+    await rateLimiter.check(ctx, 'globalTokenUsage', {
+      count: estimatedTokenCount,
+      reserve: true,
+      throws: true,
+    })
+
+    const billingPeriod = getBillingPeriod(Date.now())
+    const currentUsage = await getUsageTotalsForPeriod(ctx, userId, billingPeriod)
+    if (currentUsage.totalTokens + estimatedTokenCount > MONTHLY_LIMIT_TOKENS) {
+      throw new Error('Monthly token usage limit reached. Please try again next month.')
     }
 
     const { messageId } = await agent.saveMessage(ctx, {

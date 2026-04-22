@@ -3,6 +3,7 @@ import type { ChatStatus } from 'ai'
 import type { FormEvent } from 'react'
 
 import { optimisticallySendMessage } from '@convex-dev/agent/react'
+import { isRateLimitError } from '@convex-dev/rate-limiter'
 import { api } from '@convex/_generated/api'
 import { useAction, useMutation } from 'convex/react'
 import { useState } from 'react'
@@ -24,9 +25,20 @@ import {
   PromptInputTools,
   usePromptInputAttachments,
 } from '@/components/ai-elements/prompt-input'
+import { toastManager } from '@/components/ui/toast'
 
 import { useChatContext } from '.'
 import { ChatModels } from './models'
+
+function formatRetryAfter(retryAfter: number) {
+  const seconds = Math.ceil(retryAfter / 1000)
+  if (seconds < 60) {
+    return `${seconds}s`
+  }
+
+  const minutes = Math.ceil(seconds / 60)
+  return `${minutes}m`
+}
 
 export function ChatInput() {
   const [text, setText] = useState<string>('')
@@ -101,18 +113,37 @@ export function ChatInput() {
       }),
     )
 
-    await sendMessage({
-      threadId,
-      prompt: submittedText,
-      attachments: uploadedAttachments,
-    }).catch(() => {
+    try {
+      await sendMessage({
+        threadId,
+        prompt: submittedText,
+        attachments: uploadedAttachments,
+      })
+
+      setText('')
+    } catch (error) {
       if (submittedText.trim()) {
         setText(submittedText)
       }
-      throw new Error('Failed to send message')
-    })
 
-    setText('')
+      if (isRateLimitError(error)) {
+        toastManager.add({
+          type: 'warning',
+          title: 'Rate limit exceeded',
+          description: `${error.data.name} limit reached. Try again in ${formatRetryAfter(error.data.retryAfter)}.`,
+        })
+        return
+      }
+
+      toastManager.add({
+        type: 'error',
+        title: 'Failed to send message',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while sending your message.',
+      })
+    }
   }
 
   function handleStop() {
