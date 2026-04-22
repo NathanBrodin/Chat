@@ -40,6 +40,7 @@ import {
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
 
 import { useChatContext } from '.'
+import { ChatContext } from './context'
 
 const renameConversationSchema = z.object({
   title: z.string().trim().min(1, 'Title is required'),
@@ -92,6 +93,7 @@ export function ChatHeader() {
         <h1 className="truncate font-heading">{threadDetails?.title}</h1>
       </div>
       <div className="flex items-center gap-2">
+        <ChatContext />
         <Button variant="outline" size="icon">
           <GhostIcon />
         </Button>
