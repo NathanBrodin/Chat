@@ -1,4 +1,4 @@
-import type { ChatMessage } from '@/lib/chat/types'
+import type { UIMessage } from '@convex-dev/agent'
 
 import { MessageAttachmentsDisplay } from '../ai-elements/attachments-display'
 import { Message, MessageContent, MessageResponse } from '../ai-elements/message'
@@ -9,7 +9,7 @@ export function ChatMessage({
   isLastMessage,
   isStreaming,
 }: {
-  message: ChatMessage
+  message: UIMessage
   isLastMessage: boolean
   isStreaming: boolean
 }) {

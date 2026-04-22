@@ -1,73 +1,42 @@
-import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
-import { createContext, useContext, useEffect } from 'react'
+import { useUIMessages } from '@convex-dev/agent/react'
+import { api } from '@convex/_generated/api'
+import { createContext, useContext } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
-import type { ChatMessage } from '@/lib/chat/types'
 import type { Model } from '@/lib/models/types'
 
-import { consumePendingMessage } from '@/lib/chat/pending-message'
-
 import { ChatConversation } from './conversation'
-import { ChatError } from './error'
 import { ChatHeader } from './header'
 import { ChatInput } from './input'
 import { defaultModel } from './models'
 
-type ChatContextValue = Omit<ReturnType<typeof useChat<ChatMessage>>, 'setMessages'> & {
-  title?: string
+type ChatValue = ReturnType<typeof useUIMessages<typeof api.chat.listThreadMessages>>
+
+type ChatContextValue = ChatValue & {
+  threadId: string
   model: Model
   setModel: (model: Model) => void
-  conversationId?: string
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null)
 
 type ChatProps = {
-  conversationId?: string
-  initialMessages?: ChatMessage[]
-  title?: string
+  threadId: string
 }
 
-export function Chat({ conversationId, initialMessages, title }: ChatProps) {
+export function Chat({ threadId }: ChatProps) {
   const [model, setModel] = useLocalStorage<Model>('model', defaultModel)
 
-  const chat = useChat<ChatMessage>({
-    id: conversationId,
-    messages: initialMessages,
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-      prepareSendMessagesRequest({ id, messages }) {
-        return {
-          body: {
-            message: messages[messages.length - 1],
-            id: id ?? null,
-            model: model.id,
-          },
-        }
-      },
-    }),
-  })
-
-  useEffect(() => {
-    if (!conversationId) {
-      return
-    }
-
-    const pendingMessage = consumePendingMessage(conversationId)
-
-    if (!pendingMessage) {
-      return
-    }
-
-    void chat.sendMessage(pendingMessage)
-  }, [conversationId, chat])
+  const chat = useUIMessages(
+    api.chat.listThreadMessages,
+    { threadId },
+    { initialNumItems: 10, stream: true },
+  )
 
   return (
-    <ChatContext.Provider value={{ ...chat, title, model, setModel, conversationId }}>
+    <ChatContext.Provider value={{ ...chat, threadId, model, setModel }}>
       <ChatHeader />
       <ChatConversation />
-      <ChatError />
       <ChatInput />
     </ChatContext.Provider>
   )

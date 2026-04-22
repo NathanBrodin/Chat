@@ -62,7 +62,6 @@ export const getCurrentUser = query({
   },
 })
 
-
 export async function getAuthUserId(ctx: QueryCtx | ActionCtx): Promise<string | null> {
   const identity = await ctx.auth.getUserIdentity()
   return identity?.tokenIdentifier ?? null

@@ -9,8 +9,8 @@ import { useChatContext } from '.'
 import { ChatMessage } from './message'
 
 export function ChatConversation() {
-  const { messages, status } = useChatContext()
-  const isEmpty = messages.length === 0
+  const { results } = useChatContext()
+  const isEmpty = results.length === 0
 
   return (
     <Conversation className="min-h-0 flex-1">
@@ -18,12 +18,12 @@ export function ChatConversation() {
         {isEmpty ? (
           <ConversationEmptyState />
         ) : (
-          messages.map((message, index) => (
+          results.map((message, index) => (
             <ChatMessage
               key={message.id}
               message={message}
-              isLastMessage={index === messages.length - 1}
-              isStreaming={status === 'streaming'}
+              isLastMessage={index === results.length - 1}
+              isStreaming={message.status === 'streaming'}
             />
           ))
         )}

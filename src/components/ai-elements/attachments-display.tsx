@@ -1,6 +1,6 @@
-import { memo } from 'react'
+import type { UIMessage } from '@convex-dev/agent'
 
-import type { ChatMessage } from '@/lib/chat/types'
+import { memo } from 'react'
 
 import {
   Attachment,
@@ -84,7 +84,7 @@ export function PromptInputAttachmentsDisplay() {
   )
 }
 
-export function MessageAttachmentsDisplay({ message }: { message: ChatMessage }) {
+export function MessageAttachmentsDisplay({ message }: { message: UIMessage }) {
   const fileParts = message.parts
     .filter((part) => part.type === 'file')
     .map((part, index) => ({

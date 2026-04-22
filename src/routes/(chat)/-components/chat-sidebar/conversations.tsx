@@ -1,6 +1,6 @@
 import { api } from '@convex/_generated/api'
-import { Link, useRouteContext } from '@tanstack/react-router'
-import { useQuery } from 'convex/react'
+import { Link } from '@tanstack/react-router'
+import { usePaginatedQuery } from 'convex/react'
 
 import {
   SidebarGroup,
@@ -36,24 +36,25 @@ const getRelativeTime = (input: number): string => {
 }
 
 export function Conversations() {
-  const isAuthenticated = useRouteContext({
-    from: '/(chat)',
-    select: (s) => s.isAuthenticated,
-  })
+  const { results: conversations, status } = usePaginatedQuery(
+    api.thread.listThreads,
+    {},
+    { initialNumItems: 20 },
+  )
 
-  const conversations = useQuery(api.chat.listByUser, isAuthenticated ? {} : 'skip')
+  const isLoading = status === 'LoadingFirstPage'
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Conversations</SidebarGroupLabel>
       <div className="hidden h-8 group-data-[collapsible=icon]:block" />
       <SidebarMenu>
-        {conversations?.length === 0 && (
+        {!isLoading && conversations.length === 0 && (
           <p className="px-2 py-4 text-center text-xs text-muted-foreground">
             No conversations yet
           </p>
         )}
-        {conversations?.map((conversation) => (
+        {conversations.map((conversation) => (
           <SidebarMenuItem key={conversation._id}>
             <SidebarMenuButton
               className="justify-between group-data-[collapsible=icon]:justify-center"

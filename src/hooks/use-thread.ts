@@ -1,41 +1,42 @@
-import { useMutation } from "convex/react";
-import { useCallback, useEffect, useState } from "react";
-import { api } from "../../convex/_generated/api";
+import { useMutation } from 'convex/react'
+import { useCallback, useEffect, useState } from 'react'
+
+import { api } from '../../convex/_generated/api'
 
 export function useThread(title: string) {
-  const createThread = useMutation(api.thread.createNewThread);
+  const createThread = useMutation(api.thread.createNewThread)
   const [threadId, setThreadId] = useState<string | undefined>(
-    typeof window !== "undefined" ? getThreadIdFromHash() : undefined,
-  );
+    typeof window !== 'undefined' ? getThreadIdFromHash() : undefined,
+  )
 
   // Listen for hash changes
   useEffect(() => {
     function onHashChange() {
-      setThreadId(getThreadIdFromHash());
+      setThreadId(getThreadIdFromHash())
     }
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
-  }, []);
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
 
   const resetThread = useCallback(() => {
     return createThread({
       title,
     }).then((newId) => {
-      window.location.hash = newId;
-      setThreadId(newId);
-    });
-  }, [createThread, title]);
+      window.location.hash = newId
+      setThreadId(newId)
+    })
+  }, [createThread, title])
 
   // On mount or when threadId changes, if no threadId, create one and set hash
   useEffect(() => {
     if (!threadId) {
-      void resetThread();
+      void resetThread()
     }
-  }, [resetThread, threadId]);
+  }, [resetThread, threadId])
 
-  return { threadId, resetThread, setThreadId };
+  return { threadId, resetThread, setThreadId }
 }
 
 function getThreadIdFromHash() {
-  return window.location.hash.replace(/^#/, "") || undefined;
+  return window.location.hash.replace(/^#/, '') || undefined
 }

@@ -1,7 +1,7 @@
 import { api } from '@convex/_generated/api'
 import { useNavigate } from '@tanstack/react-router'
-import { useMutation } from 'convex/react'
-import { GhostIcon, PencilIcon, Settings2Icon, TrashIcon } from 'lucide-react'
+import { useAction, useMutation, useQuery } from 'convex/react'
+import { GhostIcon, PencilIcon, RefreshCcw, Settings2Icon, TrashIcon } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 
@@ -48,40 +48,39 @@ const renameConversationSchema = z.object({
 export function ChatHeader() {
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
-  const { conversationId, messages, title } = useChatContext()
-  const deleteConversation = useMutation(api.chat.remove)
-  const renameConversation = useMutation(api.chat.rename)
+  const { threadId, results } = useChatContext()
+  const deleteConversation = useMutation(api.thread.deleteThread)
+  const regenerateTitle = useAction(api.thread.generateThreadTitle)
+  const renameConversation = useMutation(api.thread.updateThreadTitle)
+
+  const threadDetails = useQuery(api.thread.getThreadDetails, threadId ? { threadId } : 'skip')
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const form = useAppForm({
     defaultValues: {
-      title: title ?? '',
+      title: threadDetails?.title ?? '',
     },
     validators: {
       onSubmit: renameConversationSchema,
     },
     onSubmit: async ({ value }) => {
-      if (!conversationId) {
-        return
-      }
-
       void renameConversation({
         title: value.title.trim(),
-        conversationId: conversationId as any,
+        threadId,
       })
 
       setIsEditDialogOpen(false)
     },
   })
 
-  async function handleDelete() {
-    if (!conversationId) {
-      return
-    }
+  async function handleRegenerate() {
+    await regenerateTitle({ threadId })
+  }
 
-    void deleteConversation({ conversationId: conversationId as any })
+  async function handleDelete() {
+    void deleteConversation({ threadId })
     setIsDeleteDialogOpen(false)
     await navigate({ to: '/' })
   }
@@ -90,7 +89,7 @@ export function ChatHeader() {
     <header className="flex w-full shrink-0 items-center justify-between gap-2 p-2.5 px-4">
       <div className="flex items-center gap-2">
         {isMobile && <SidebarTrigger />}
-        <h1 className="truncate font-heading">{title}</h1>
+        <h1 className="truncate font-heading">{threadDetails?.title}</h1>
       </div>
       <div className="flex items-center gap-2">
         <Button variant="outline" size="icon">
@@ -103,20 +102,21 @@ export function ChatHeader() {
           <MenuPopup align="start" sideOffset={4}>
             <MenuGroup>
               <MenuGroupLabel>Manage conversation</MenuGroupLabel>
-              <ConversationDownload messages={messages} />
-              {conversationId && (
-                <>
-                  <MenuItem onClick={() => setIsEditDialogOpen(true)}>
-                    <PencilIcon aria-hidden="true" />
-                    Rename
-                  </MenuItem>
-                  <MenuSeparator />
-                  <MenuItem onClick={() => setIsDeleteDialogOpen(true)} variant="destructive">
-                    <TrashIcon aria-hidden="true" />
-                    Delete
-                  </MenuItem>
-                </>
-              )}
+              <ConversationDownload messages={results} />
+
+              <MenuItem onClick={handleRegenerate}>
+                <RefreshCcw aria-hidden="true" />
+                Regenerate title
+              </MenuItem>
+              <MenuItem onClick={() => setIsEditDialogOpen(true)}>
+                <PencilIcon aria-hidden="true" />
+                Rename
+              </MenuItem>
+              <MenuSeparator />
+              <MenuItem onClick={() => setIsDeleteDialogOpen(true)} variant="destructive">
+                <TrashIcon aria-hidden="true" />
+                Delete
+              </MenuItem>
             </MenuGroup>
           </MenuPopup>
         </Menu>
