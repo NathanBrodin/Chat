@@ -1,25 +1,69 @@
-import {
-  abortStream,
-  createThread,
-  listUIMessages,
-  syncStreams,
-  vStreamArgs,
-} from '@convex-dev/agent'
+import { abortStream, listUIMessages, storeFile, syncStreams, vStreamArgs } from '@convex-dev/agent'
 import { paginationOptsValidator } from 'convex/server'
 import { v } from 'convex/values'
 
 import { components, internal } from './_generated/api'
-import { internalAction, mutation, query } from './_generated/server'
+import { action, internalAction, mutation, query } from './_generated/server'
 import { agent } from './agent'
 import { authorizeThreadAccess } from './thread'
 
 export const initiateAsyncStreaming = mutation({
-  args: { prompt: v.string(), threadId: v.string() },
-  handler: async (ctx, { prompt, threadId }) => {
+  args: {
+    prompt: v.optional(v.string()),
+    threadId: v.string(),
+    attachments: v.optional(
+      v.array(
+        v.object({
+          fileId: v.string(),
+          filename: v.optional(v.string()),
+          mediaType: v.string(),
+          url: v.string(),
+        }),
+      ),
+    ),
+  },
+  handler: async (ctx, { prompt, threadId, attachments }) => {
     await authorizeThreadAccess(ctx, threadId)
+
+    const content = [
+      ...(attachments ?? []).map((attachment) =>
+        attachment.mediaType.startsWith('image/')
+          ? {
+              type: 'image' as const,
+              image: attachment.url,
+              mediaType: attachment.mediaType,
+            }
+          : {
+              type: 'file' as const,
+              data: attachment.url,
+              filename: attachment.filename,
+              mediaType: attachment.mediaType,
+            },
+      ),
+      ...(prompt && prompt.trim()
+        ? [
+            {
+              type: 'text' as const,
+              text: prompt,
+            },
+          ]
+        : []),
+    ]
+
+    if (content.length === 0) {
+      return
+    }
+
     const { messageId } = await agent.saveMessage(ctx, {
       threadId,
-      prompt,
+      message: {
+        role: 'user',
+        content,
+      },
+      metadata:
+        attachments && attachments.length > 0
+          ? { fileIds: attachments.map((attachment) => attachment.fileId) }
+          : undefined,
       skipEmbeddings: true,
     })
     await ctx.scheduler.runAfter(0, internal.chat.streamAsync, {
@@ -39,6 +83,43 @@ export const streamAsync = internalAction({
       { saveStreamDeltas: { chunking: 'word', throttleMs: 100 } },
     )
     await result.consumeStream()
+  },
+})
+
+export const generateUploadUrl = mutation({
+  args: { threadId: v.string() },
+  handler: async (ctx, { threadId }) => {
+    await authorizeThreadAccess(ctx, threadId)
+    return await ctx.storage.generateUploadUrl()
+  },
+})
+
+export const finalizeUploadedFile = action({
+  args: {
+    threadId: v.string(),
+    storageId: v.id('_storage'),
+    filename: v.optional(v.string()),
+  },
+  handler: async (ctx, { threadId, storageId, filename }) => {
+    await authorizeThreadAccess(ctx, threadId)
+
+    const blob = await ctx.storage.get(storageId)
+    if (!blob) {
+      throw new Error('Uploaded file not found')
+    }
+
+    const {
+      file: { fileId, url, filename: savedFilename },
+    } = await storeFile(ctx, components.agent, blob, { filename })
+
+    await ctx.storage.delete(storageId)
+
+    return {
+      fileId,
+      filename: savedFilename,
+      mediaType: blob.type || 'application/octet-stream',
+      url,
+    }
   },
 })
 
