@@ -16,107 +16,104 @@ import {
 
 import { useChatContext } from '.'
 
-type UsageMetadata = {
-  promptTokens?: number
-  completionTokens?: number
-  totalTokens?: number
-  cost?: number
-}
-
-type ProviderMetadataEntry = {
-  usage?: UsageMetadata
-}
-
-type MessageWithProviderMetadata = {
-  providerMetadata?: Record<string, ProviderMetadataEntry | undefined> | null
+type PartMetadata = {
+  state: string
+  text: string
+  type: string
+  providerMetadata?: {
+    openrouter: {
+      provider: string
+      usage: {
+        completionTokens: number
+        completionTokensDetails: { reasoningTokens: number }
+        cost: number
+        costDetails: {
+          upstreamInferenceCost: number
+        }
+        promptTokens: number
+        promptTokensDetails: {
+          cachedTokens: number
+        }
+        totalTokens: number
+      }
+    }
+  }
 }
 
 function toFiniteNumber(value: unknown) {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0
 }
 
-export function ChatContext() {
-  const { results, model } = useChatContext()
+const fmtPercent = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1, style: 'percent' })
+const fmtCompact = new Intl.NumberFormat('en-US', { notation: 'compact' })
+const fmtUSD = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' })
 
-  let inputTokens = 0
-  let outputTokens = 0
-  let usedTokens = 0
-  let costUSD = 0
-  let inputCostUSD = 0
-  let outputCostUSD = 0
+type UsageStats = {
+  inputTokens: number
+  outputTokens: number
+  usedTokens: number
+  costUSD: number
+  inputCostUSD: number
+  outputCostUSD: number
+}
 
-  for (const message of results) {
-    const providerMetadata = (message as MessageWithProviderMetadata).providerMetadata
+function aggregateUsage(
+  results: typeof useChatContext extends () => { results: infer R } ? R : never,
+): UsageStats {
+  const stats: UsageStats = {
+    inputTokens: 0,
+    outputTokens: 0,
+    usedTokens: 0,
+    costUSD: 0,
+    inputCostUSD: 0,
+    outputCostUSD: 0,
+  }
 
-    if (!providerMetadata || typeof providerMetadata !== 'object') {
-      continue
-    }
+  for (const { parts } of results) {
+    for (const part of parts) {
+      const metadata = (part as PartMetadata).providerMetadata
+      if (!metadata) continue
 
-    for (const provider of Object.values(providerMetadata)) {
-      const usage = provider?.usage
-      if (!usage || typeof usage !== 'object') {
-        continue
-      }
+      for (const { usage } of Object.values(metadata)) {
+        if (!usage) continue
 
-      const promptTokens = toFiniteNumber(usage.promptTokens)
-      const completionTokens = toFiniteNumber(usage.completionTokens)
-      const totalTokens = toFiniteNumber(usage.totalTokens) || promptTokens + completionTokens
-      const cost = toFiniteNumber(usage.cost)
+        const input = toFiniteNumber(usage.promptTokens)
+        const output = toFiniteNumber(usage.completionTokens)
+        const total = toFiniteNumber(usage.totalTokens) || input + output
+        const cost = toFiniteNumber(usage.cost)
 
-      inputTokens += promptTokens
-      outputTokens += completionTokens
-      usedTokens += totalTokens
-      costUSD += cost
+        stats.inputTokens += input
+        stats.outputTokens += output
+        stats.usedTokens += total
+        stats.costUSD += cost
 
-      const totalForSplit = promptTokens + completionTokens
-      if (cost > 0 && totalForSplit > 0) {
-        inputCostUSD += (cost * promptTokens) / totalForSplit
-        outputCostUSD += (cost * completionTokens) / totalForSplit
+        const tokenSum = input + output
+        if (cost > 0 && tokenSum > 0) {
+          stats.inputCostUSD += (cost * input) / tokenSum
+          stats.outputCostUSD += (cost * output) / tokenSum
+        }
       }
     }
   }
 
+  return stats
+}
+
+export function ChatContext() {
+  const { results, model } = useChatContext()
+
+  const { inputTokens, outputTokens, usedTokens, costUSD, inputCostUSD, outputCostUSD } =
+    aggregateUsage(results)
+
   const maxTokens = Math.max(0, model.context_length ?? 0)
-
   const usedPercent = maxTokens > 0 ? Math.min(1, usedTokens / maxTokens) : 0
-  const displayPct = new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 1,
-    style: 'percent',
-  }).format(usedPercent)
-  const used = new Intl.NumberFormat('en-US', {
-    notation: 'compact',
-  }).format(usedTokens)
-  const total = new Intl.NumberFormat('en-US', {
-    notation: 'compact',
-  }).format(maxTokens)
-
-  const usedInputTokens = new Intl.NumberFormat('en-US', {
-    notation: 'compact',
-  }).format(inputTokens)
-
-  const usedOutputTokens = new Intl.NumberFormat('en-US', {
-    notation: 'compact',
-  }).format(outputTokens)
-
-  const inputCost = new Intl.NumberFormat('en-US', {
-    currency: 'USD',
-    style: 'currency',
-  }).format(inputCostUSD)
-
-  const outputCost = new Intl.NumberFormat('en-US', {
-    currency: 'USD',
-    style: 'currency',
-  }).format(outputCostUSD)
-
-  const totalCost = new Intl.NumberFormat('en-US', {
-    currency: 'USD',
-    style: 'currency',
-  }).format(costUSD ?? 0)
 
   return (
     <PreviewCard>
       <PreviewCardTrigger delay={0} render={<Button variant="outline" />}>
-        <span className="text-sm text-muted-foreground tabular-nums">{displayPct}</span>
+        <span className="text-sm text-muted-foreground tabular-nums">
+          {fmtPercent.format(usedPercent)}
+        </span>
         <CircularProgress value={usedPercent * 100} size={24} thickness={2}>
           <CircularProgressIndicator>
             <CircularProgressTrack />
@@ -129,7 +126,9 @@ export function ChatContext() {
           <Progress value={usedPercent * 100}>
             <div className="flex items-center justify-between gap-2">
               <ProgressLabel>Context Limit</ProgressLabel>
-              <ProgressValue>{(_formatted, _value) => `${used} / ${total}`}</ProgressValue>
+              <ProgressValue>
+                {() => `${fmtCompact.format(usedTokens)} / ${fmtCompact.format(maxTokens)}`}
+              </ProgressValue>
             </div>
             <ProgressTrack>
               <ProgressIndicator />
@@ -140,21 +139,21 @@ export function ChatContext() {
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Input</span>
             <span>
-              {usedInputTokens}
-              <span className="ml-2 text-muted-foreground">• {inputCost}</span>
+              {fmtCompact.format(inputTokens)}
+              <span className="ml-2 text-muted-foreground">• {fmtUSD.format(inputCostUSD)}</span>
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Output</span>
             <span>
-              {usedOutputTokens}
-              <span className="ml-2 text-muted-foreground">• {outputCost}</span>
+              {fmtCompact.format(outputTokens)}
+              <span className="ml-2 text-muted-foreground">• {fmtUSD.format(outputCostUSD)}</span>
             </span>
           </div>
         </div>
         <div className="flex w-full items-center justify-between gap-3 bg-secondary p-3">
           <span className="text-muted-foreground">Total cost</span>
-          <span>{totalCost}</span>
+          <span>{fmtUSD.format(costUSD)}</span>
         </div>
       </PreviewCardPopup>
     </PreviewCard>
