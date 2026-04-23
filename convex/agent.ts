@@ -5,7 +5,7 @@ import { components } from './_generated/api'
 import { rateLimiter } from './rateLimiting'
 import { usageHandler as defaultUsageHandler } from './usage'
 
-const openrouter = createOpenRouter({
+export const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 })
 

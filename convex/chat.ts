@@ -4,7 +4,7 @@ import { v } from 'convex/values'
 
 import { components, internal } from './_generated/api'
 import { action, internalAction, mutation, query } from './_generated/server'
-import { agent } from './agent'
+import { agent, openrouter } from './agent'
 import { getAuthUserId } from './auth'
 import { estimateTokens, rateLimiter } from './rateLimiting'
 import { authorizeThreadAccess } from './thread'
@@ -12,6 +12,7 @@ import { getBillingPeriod, MONTHLY_LIMIT_TOKENS, getUsageTotalsForPeriod } from 
 
 export const initiateAsyncStreaming = mutation({
   args: {
+    modelId: v.string(),
     prompt: v.optional(v.string()),
     threadId: v.string(),
     attachments: v.optional(
@@ -25,7 +26,7 @@ export const initiateAsyncStreaming = mutation({
       ),
     ),
   },
-  handler: async (ctx, { prompt, threadId, attachments }) => {
+  handler: async (ctx, { modelId, prompt, threadId, attachments }) => {
     await authorizeThreadAccess(ctx, threadId)
 
     const userId = await getAuthUserId(ctx)
@@ -101,6 +102,7 @@ export const initiateAsyncStreaming = mutation({
       skipEmbeddings: true,
     })
     await ctx.scheduler.runAfter(0, internal.chat.streamAsync, {
+      modelId,
       threadId,
       promptMessageId: messageId,
     })
@@ -108,13 +110,15 @@ export const initiateAsyncStreaming = mutation({
 })
 
 export const streamAsync = internalAction({
-  args: { promptMessageId: v.string(), threadId: v.string() },
-  handler: async (ctx, { promptMessageId, threadId }) => {
+  args: { modelId: v.string(), promptMessageId: v.string(), threadId: v.string() },
+  handler: async (ctx, { modelId, promptMessageId, threadId }) => {
     const result = await agent.streamText(
       ctx,
       { threadId },
-      { promptMessageId },
-      { saveStreamDeltas: { chunking: 'word', throttleMs: 100 } },
+      { model: openrouter.chat(modelId), promptMessageId },
+      {
+        saveStreamDeltas: { chunking: 'word', throttleMs: 100 },
+      },
     )
     await result.consumeStream()
   },

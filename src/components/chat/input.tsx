@@ -42,7 +42,7 @@ function formatRetryAfter(retryAfter: number) {
 
 export function ChatInput() {
   const [text, setText] = useState<string>('')
-  const { threadId, results: messages } = useChatContext()
+  const { threadId, results: messages, model } = useChatContext()
 
   const sendMessage = useMutation(api.chat.initiateAsyncStreaming).withOptimisticUpdate(
     (store, args) => {
@@ -115,6 +115,7 @@ export function ChatInput() {
 
     try {
       await sendMessage({
+        modelId: model.id,
         threadId,
         prompt: submittedText,
         attachments: uploadedAttachments,
