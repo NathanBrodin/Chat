@@ -1,5 +1,3 @@
-'use client'
-
 import type { UIMessage } from 'ai'
 import type { ComponentProps, HTMLAttributes, ReactElement } from 'react'
 
@@ -7,14 +5,41 @@ import { cjk } from '@streamdown/cjk'
 import { code } from '@streamdown/code'
 import { math } from '@streamdown/math'
 import { mermaid } from '@streamdown/mermaid'
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
-import { createContext, memo, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Streamdown } from 'streamdown'
+import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon, TextIcon, SheetIcon } from 'lucide-react'
+import {
+  createContext,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {
+  extractTableDataFromElement,
+  Streamdown,
+  tableDataToCSV,
+  tableDataToMarkdown,
+} from 'streamdown'
 
+import { CopyButton } from '@/components/copy-button/copy-button'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group'
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@/components/ui/menu'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+
+import { Frame } from '../ui/frame'
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage['role']
@@ -270,12 +295,177 @@ export const MessageBranchPage = ({ className, ...props }: MessageBranchPageProp
 export type MessageResponseProps = ComponentProps<typeof Streamdown>
 
 const streamdownPlugins = { cjk, code, math, mermaid }
+const messageResponseStreamdownClassName = 'message-response-streamdown'
+
+const downloadText = (content: string, filename: string, mimeType: string) => {
+  const blob = new Blob([content], { type: mimeType })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+
+  link.href = url
+  link.download = filename
+  document.body.append(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+const getTableMarkdown = (table: HTMLTableElement | null): string => {
+  if (!table) {
+    return ''
+  }
+
+  return tableDataToMarkdown(extractTableDataFromElement(table))
+}
+
+type StreamdownTableProps = ComponentProps<'table'> & { node?: unknown }
+type StreamdownTableSectionProps = ComponentProps<'thead'> & { node?: unknown }
+type StreamdownTableBodyProps = ComponentProps<'tbody'> & { node?: unknown }
+type StreamdownTableRowProps = ComponentProps<'tr'> & { node?: unknown }
+type StreamdownTableHeadProps = ComponentProps<'th'> & { node?: unknown }
+type StreamdownTableCellProps = ComponentProps<'td'> & { node?: unknown }
+type StreamdownTableCaptionProps = ComponentProps<'caption'> & { node?: unknown }
+
+const getDownloadPayload = (
+  table: HTMLTableElement | null,
+  format: 'csv' | 'markdown',
+): { filename: string; mimeType: string; content: string } | null => {
+  if (!table) {
+    return null
+  }
+
+  const data = extractTableDataFromElement(table)
+
+  if (format === 'csv') {
+    return {
+      content: tableDataToCSV(data),
+      filename: 'table.csv',
+      mimeType: 'text/csv',
+    }
+  }
+
+  return {
+    content: tableDataToMarkdown(data),
+    filename: 'table.md',
+    mimeType: 'text/markdown',
+  }
+}
+
+const MessageResponseTable = ({
+  children,
+  className,
+  node: _node,
+  ...props
+}: StreamdownTableProps) => {
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  const getMarkdown = useCallback(() => {
+    const table = wrapperRef.current?.querySelector('table') as HTMLTableElement | null
+
+    return getTableMarkdown(table)
+  }, [])
+
+  const handleDownload = useCallback((format: 'csv' | 'markdown') => {
+    const table = wrapperRef.current?.querySelector('table') as HTMLTableElement | null
+    const payload = getDownloadPayload(table, format)
+
+    if (!payload) {
+      return
+    }
+
+    downloadText(payload.content, payload.filename, payload.mimeType)
+  }, [])
+
+  return (
+    <Frame data-streamdown="table-wrapper" ref={wrapperRef}>
+      <Table variant="card" className={cn('relative', className)} {...props}>
+        <div
+          className="absolute top-0 right-0 z-10 flex items-center gap-1 rounded-md rounded-tr-2xl border bg-background/90 p-1 text-muted-foreground shadow-sm supports-[backdrop-filter]:bg-background/70 supports-[backdrop-filter]:backdrop-blur"
+          data-message-streamdown-table-actions=""
+        >
+          <CopyButton
+            aria-label="Copy table as Markdown"
+            className="text-muted-foreground hover:text-foreground"
+            size="icon-xs"
+            text={getMarkdown}
+            variant="ghost"
+          />
+          <Menu>
+            <MenuTrigger
+              render={
+                <Button
+                  aria-label="Download table"
+                  className="rounded-tr-xl text-muted-foreground hover:text-foreground"
+                  size="icon-xs"
+                  variant="ghost"
+                >
+                  <DownloadIcon />
+                </Button>
+              }
+            />
+            <MenuPopup align="end" sideOffset={6}>
+              <MenuItem onClick={() => handleDownload('markdown')}>
+                <TextIcon />
+                Download Markdown
+              </MenuItem>
+              <MenuItem onClick={() => handleDownload('csv')}>
+                <SheetIcon />
+                Download CSV
+              </MenuItem>
+            </MenuPopup>
+          </Menu>
+        </div>
+        {children}
+      </Table>
+    </Frame>
+  )
+}
+
+const MessageResponseTableHeader = ({ node: _node, ...props }: StreamdownTableSectionProps) => (
+  <TableHeader {...props} />
+)
+
+const MessageResponseTableBody = ({ node: _node, ...props }: StreamdownTableBodyProps) => (
+  <TableBody {...props} />
+)
+
+const MessageResponseTableRow = ({ node: _node, ...props }: StreamdownTableRowProps) => (
+  <TableRow {...props} />
+)
+
+const MessageResponseTableHead = ({ node: _node, ...props }: StreamdownTableHeadProps) => (
+  <TableHead {...props} />
+)
+
+const MessageResponseTableCell = ({ node: _node, ...props }: StreamdownTableCellProps) => (
+  <TableCell {...props} />
+)
+
+const MessageResponseTableCaption = ({ node: _node, ...props }: StreamdownTableCaptionProps) => (
+  <TableCaption {...props} />
+)
+
+const messageResponseComponents: NonNullable<MessageResponseProps['components']> = {
+  caption: MessageResponseTableCaption,
+  table: MessageResponseTable,
+  tbody: MessageResponseTableBody,
+  td: MessageResponseTableCell,
+  th: MessageResponseTableHead,
+  thead: MessageResponseTableHeader,
+  tr: MessageResponseTableRow,
+}
 
 export const MessageResponse = memo(
-  ({ className, ...props }: MessageResponseProps) => (
+  ({ className, components, ...props }: MessageResponseProps) => (
     <Streamdown
-      className={cn('size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0', className)}
+      className={cn(
+        'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
+        messageResponseStreamdownClassName,
+        className,
+      )}
+      components={{ ...messageResponseComponents, ...components }}
       plugins={streamdownPlugins}
+      linkSafety={{ enabled: false }}
       {...props}
     />
   ),

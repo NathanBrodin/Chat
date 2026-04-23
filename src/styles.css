@@ -259,3 +259,26 @@
     }
   }
 }
+
+@layer components {
+  .message-response-streamdown [data-message-streamdown-table-actions] {
+    @apply pointer-events-none opacity-0 transition-opacity;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .message-response-streamdown
+      [data-streamdown='table-wrapper']:hover
+      [data-message-streamdown-table-actions],
+    .message-response-streamdown
+      [data-streamdown='table-wrapper']:focus-within
+      [data-message-streamdown-table-actions] {
+      @apply pointer-events-auto opacity-100;
+    }
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .message-response-streamdown [data-message-streamdown-table-actions] {
+      @apply pointer-events-auto opacity-100;
+    }
+  }
+}
