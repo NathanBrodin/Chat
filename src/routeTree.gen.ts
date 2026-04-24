@@ -15,6 +15,7 @@ import { Route as chatChatIndexRouteImport } from './routes/(chat)/chat/index'
 import { Route as authSignUpIndexRouteImport } from './routes/(auth)/sign-up/index'
 import { Route as authSignInIndexRouteImport } from './routes/(auth)/sign-in/index'
 import { Route as authAccountIndexRouteImport } from './routes/(auth)/account/index'
+import { Route as appPricingIndexRouteImport } from './routes/(app)/pricing/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as chatChatIdIndexRouteImport } from './routes/(chat)/chat/$id/index'
 
@@ -47,6 +48,11 @@ const authAccountIndexRoute = authAccountIndexRouteImport.update({
   path: '/account/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const appPricingIndexRoute = appPricingIndexRouteImport.update({
+  id: '/(app)/pricing/',
+  path: '/pricing/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -61,6 +67,7 @@ const chatChatIdIndexRoute = chatChatIdIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof chatIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/pricing/': typeof appPricingIndexRoute
   '/account/': typeof authAccountIndexRoute
   '/sign-in/': typeof authSignInIndexRoute
   '/sign-up/': typeof authSignUpIndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof chatIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/pricing': typeof appPricingIndexRoute
   '/account': typeof authAccountIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/(chat)': typeof chatRouteRouteWithChildren
   '/(chat)/': typeof chatIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/(app)/pricing/': typeof appPricingIndexRoute
   '/(auth)/account/': typeof authAccountIndexRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
@@ -92,6 +101,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/api/auth/$'
+    | '/pricing/'
     | '/account/'
     | '/sign-in/'
     | '/sign-up/'
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/api/auth/$'
+    | '/pricing'
     | '/account'
     | '/sign-in'
     | '/sign-up'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '/(chat)'
     | '/(chat)/'
     | '/api/auth/$'
+    | '/(app)/pricing/'
     | '/(auth)/account/'
     | '/(auth)/sign-in/'
     | '/(auth)/sign-up/'
@@ -121,6 +133,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   chatRouteRoute: typeof chatRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  appPricingIndexRoute: typeof appPricingIndexRoute
   authAccountIndexRoute: typeof authAccountIndexRoute
   authSignInIndexRoute: typeof authSignInIndexRoute
   authSignUpIndexRoute: typeof authSignUpIndexRoute
@@ -170,6 +183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authAccountIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/pricing/': {
+      id: '/(app)/pricing/'
+      path: '/pricing'
+      fullPath: '/pricing/'
+      preLoaderRoute: typeof appPricingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -206,6 +226,7 @@ const chatRouteRouteWithChildren = chatRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   chatRouteRoute: chatRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  appPricingIndexRoute: appPricingIndexRoute,
   authAccountIndexRoute: authAccountIndexRoute,
   authSignInIndexRoute: authSignInIndexRoute,
   authSignUpIndexRoute: authSignUpIndexRoute,
