@@ -15,7 +15,10 @@ export function getTools(modelId: string) {
 }
 
 export type ChatUIMessage = UIMessage<
-  unknown,
+  {
+    // Milliseconds per reasoning part, keyed by its index in the message.
+    reasoningDurations?: Record<number, number>
+  },
   UIDataTypes,
   InferUITools<typeof baseTools> & {
     web_search: {
@@ -28,6 +31,11 @@ export type ChatUIMessage = UIMessage<
 export type ChatMessagePart = ChatUIMessage["parts"][number]
 
 export type TextMessagePart = Extract<ChatMessagePart, { type: "text" }>
+
+export type ReasoningMessagePart = Extract<
+  ChatMessagePart,
+  { type: "reasoning" }
+>
 
 export type SourceUrlPart = Extract<ChatMessagePart, { type: "source-url" }>
 

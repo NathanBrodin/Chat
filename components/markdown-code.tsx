@@ -1,103 +1,65 @@
 "use client"
 
+import * as React from "react"
+import { type ExtraProps } from "react-markdown"
+
+import { useHighlightedCode } from "@/hooks/use-highlighted-code"
 import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-} from "react"
-import { CheckIcon, CopyIcon } from "lucide-react"
-import { useTheme } from "next-themes"
-import ShikiHighlighter, { rehypeInlineCodeProperty } from "react-shiki"
+  CodeBlock,
+  CodeBlockActions,
+  CodeBlockContent,
+  CodeBlockCopyButton,
+  CodeBlockHeader,
+  CodeBlockLine,
+  CodeBlockTitle,
+} from "@/components/ui/code-block"
 
-import { Button } from "@/components/ui/button"
-
-export { rehypeInlineCodeProperty }
-
-type MarkdownCodeProps = ComponentPropsWithoutRef<"code"> & {
-  inline?: boolean
-}
-
-function CopyButton({ code }: { code: string }) {
-  const [copied, setCopied] = useState(false)
-  const timeoutRef = useRef<number>(0)
-
-  useEffect(() => {
-    return () => window.clearTimeout(timeoutRef.current)
-  }, [])
-
-  const onCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      window.clearTimeout(timeoutRef.current)
-      timeoutRef.current = window.setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // Clipboard may be unavailable in some contexts.
-    }
-  }, [code])
-
-  const Icon = copied ? CheckIcon : CopyIcon
-
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon-xs"
-      aria-label={copied ? "Copied" : "Copy code"}
-      className="absolute top-2 right-2 z-10 bg-transparent text-muted-foreground hover:text-foreground"
-      onClick={onCopy}
-    >
-      <Icon />
-    </Button>
-  )
-}
-
-export function MarkdownCode({
-  className,
+// Fenced code arrives as <pre><code>, so read it from the hast node.
+export function MarkdownPre({
+  node,
   children,
-  inline,
   ...props
-}: MarkdownCodeProps) {
-  const { resolvedTheme } = useTheme()
-  const code = String(children).replace(/\n$/, "")
-  const language = /language-([\w-]+)/.exec(className || "")?.[1]
-  const syntaxTheme =
-    resolvedTheme === "dark" ? "github-dark" : "github-light"
+}: React.ComponentProps<"pre"> & ExtraProps) {
+  const element = node?.children[0]
 
-  if (inline) {
-    return (
-      <code className={className} {...props}>
-        {children}
-      </code>
-    )
+  if (element?.type !== "element" || element.tagName !== "code") {
+    return <pre {...props}>{children}</pre>
   }
 
-  return (
-    <div className="not-typeset relative mt-[1.25em]">
-      {language ? (
-        <span className="absolute top-2 right-10 z-10 flex h-6 items-center font-mono text-xs text-muted-foreground">
-          {language}
-        </span>
-      ) : null}
-      <CopyButton code={code} />
-      <ShikiHighlighter
-        language={language || "text"}
-        theme={syntaxTheme}
-        delay={100}
-        showLanguage={false}
-        className="overflow-hidden rounded-lg bg-[oklch(0.985_0_0)] text-[0.875em] leading-normal dark:bg-muted [&_pre]:bg-[oklch(0.985_0_0)]! dark:[&_pre]:bg-muted!"
-      >
-        {code}
-      </ShikiHighlighter>
-    </div>
-  )
+  const language =
+    /language-([^\s,]+)/.exec(
+      String(element.properties.className ?? "")
+    )?.[1] ?? ""
+  const code = element.children
+    .map((child) => (child.type === "text" ? child.value : ""))
+    .join("")
+    .replace(/\n$/, "")
+
+  return <MarkdownCodeBlock code={code} language={language} />
 }
 
-export function MarkdownPre({ children }: { children?: ReactNode }) {
-  // react-markdown wraps fenced blocks in <pre><code>. Shiki renders its own
-  // <pre>, so unwrap the outer one to avoid nested code blocks.
-  return <>{children}</>
+function MarkdownCodeBlock({
+  code,
+  language,
+}: {
+  code: string
+  language: string
+}) {
+  const lines = useHighlightedCode(code, language)
+
+  return (
+    <CodeBlock className="not-typeset mt-(--typeset-flow)">
+      <CodeBlockHeader>
+        <CodeBlockTitle>{language || "text"}</CodeBlockTitle>
+        <CodeBlockActions>
+          <CodeBlockCopyButton value={code} />
+        </CodeBlockActions>
+      </CodeBlockHeader>
+      <CodeBlockContent>
+        {lines.map((line, index) => (
+          <CodeBlockLine key={index}>{line}</CodeBlockLine>
+        ))}
+      </CodeBlockContent>
+    </CodeBlock>
+  )
 }

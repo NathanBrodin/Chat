@@ -1,33 +1,67 @@
-import { GlobeIcon } from "lucide-react"
-
 import { type WebSearchToolPart } from "@/tools"
+import { StatusIcon } from "@/components/status-icon"
+import { CodeBlock, CodeBlockContent } from "@/components/ui/code-block"
+import {
+  TraceCollapsible,
+  TraceCollapsibleContent,
+  TraceCollapsibleTrigger,
+  TraceIcon,
+  TraceLine,
+  TraceTitle,
+} from "@/components/ui/trace"
 
-export function WebSearchPart({ part }: { part: WebSearchToolPart }) {
-  const query = part.input?.query ? ` for “${part.input.query}”` : ""
+export function WebSearchPart({
+  part,
+  isStreaming,
+}: {
+  part: WebSearchToolPart
+  isStreaming: boolean
+}) {
+  const target = part.input?.query
+    ? `the web for “${part.input.query}”`
+    : "the web"
 
-  switch (part.state) {
-    case "input-streaming":
-    case "input-available":
-      return (
-        <div className="flex items-center gap-2 px-1.5 text-sm text-muted-foreground">
-          <GlobeIcon className="size-4" />
-          Searching the web{query}…
-        </div>
-      )
-    case "output-available":
-      return (
-        <div className="flex items-center gap-2 px-1.5 text-sm text-muted-foreground">
-          <GlobeIcon className="size-4" />
-          Searched the web{query}
-        </div>
-      )
-    case "output-error":
-      return (
-        <div className="px-1.5 text-sm text-destructive">
-          Web search failed: {part.errorText}
-        </div>
-      )
-    default:
-      return null
+  if (part.state === "output-available") {
+    return (
+      <TraceLine>
+        <TraceIcon>
+          <StatusIcon />
+        </TraceIcon>
+        <TraceTitle>Searched {target}</TraceTitle>
+      </TraceLine>
+    )
   }
+
+  if (part.state === "output-error") {
+    return (
+      <TraceCollapsible>
+        <TraceCollapsibleTrigger>
+          <TraceLine status="error">
+            <TraceIcon>
+              <StatusIcon status="error" />
+            </TraceIcon>
+            <TraceTitle>Failed to search {target}</TraceTitle>
+          </TraceLine>
+        </TraceCollapsibleTrigger>
+        <TraceCollapsibleContent>
+          <CodeBlock size="sm" variant="destructive">
+            <CodeBlockContent wrap className="max-h-64">
+              {part.errorText}
+            </CodeBlockContent>
+          </CodeBlock>
+        </TraceCollapsibleContent>
+      </TraceCollapsible>
+    )
+  }
+
+  return (
+    <TraceLine status={isStreaming ? "running" : "error"}>
+      <TraceIcon>
+        <StatusIcon status={isStreaming ? "running" : "error"} />
+      </TraceIcon>
+      <TraceTitle>
+        {isStreaming ? "Searching" : "Failed to search"} {target}
+      </TraceTitle>
+    </TraceLine>
+  )
 }

@@ -1,58 +1,87 @@
-import { GitForkIcon, StarIcon } from "lucide-react"
-
 import { type GithubRepoToolPart } from "@/tools"
-import { safeHttpUrl } from "@/lib/utils"
-import { Spinner } from "@/components/ui/spinner"
+import { StatusIcon } from "@/components/status-icon"
+import { CodeBlock, CodeBlockContent } from "@/components/ui/code-block"
+import {
+  TraceCollapsible,
+  TraceCollapsibleContent,
+  TraceCollapsibleTrigger,
+  TraceDescription,
+  TraceIcon,
+  TraceLine,
+  TraceTitle,
+} from "@/components/ui/trace"
 
 const formatCount = new Intl.NumberFormat("en", {
   notation: "compact",
   maximumFractionDigits: 1,
 }).format
 
-export function GithubRepoPart({ part }: { part: GithubRepoToolPart }) {
-  switch (part.state) {
-    case "input-streaming":
-    case "input-available":
-      return (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Spinner />
-          Looking up {part.input?.repo ?? "repository"}…
-        </div>
-      )
-    case "output-available":
-      if ("error" in part.output) {
-        return (
-          <div className="text-sm text-destructive">{part.output.error}</div>
-        )
-      }
-      return (
-        <a
-          href={safeHttpUrl(part.output.url) ?? "#"}
-          target="_blank"
-          rel="noreferrer"
-          className="flex w-fit items-center gap-3 px-1.5 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <span className="font-medium text-foreground">
-            {part.output.repo}
-          </span>
-          <span className="flex items-center gap-1">
-            <StarIcon className="size-3.5" />
-            {formatCount(part.output.stars)}
-          </span>
-          <span className="flex items-center gap-1">
-            <GitForkIcon className="size-3.5" />
-            {formatCount(part.output.forks)}
-          </span>
-          <span>{part.output.language}</span>
-        </a>
-      )
-    case "output-error":
-      return (
-        <div className="text-sm text-destructive">
-          Repository lookup failed: {part.errorText}
-        </div>
-      )
-    default:
-      return null
+export function GithubRepoPart({
+  part,
+  isStreaming,
+}: {
+  part: GithubRepoToolPart
+  isStreaming: boolean
+}) {
+  const repo = part.input?.repo ?? "repository"
+
+  if (part.state !== "output-available" && part.state !== "output-error") {
+    return (
+      <TraceLine status={isStreaming ? "running" : "error"}>
+        <TraceIcon>
+          <StatusIcon status={isStreaming ? "running" : "error"} />
+        </TraceIcon>
+        <TraceTitle>
+          {isStreaming ? "Looking up" : "Failed to look up"} {repo}
+        </TraceTitle>
+      </TraceLine>
+    )
   }
+
+  // The tool returns { error } instead of throwing, so both read the same.
+  const output =
+    part.state === "output-available" ? part.output : { error: part.errorText }
+
+  if ("error" in output) {
+    return (
+      <TraceCollapsible>
+        <TraceCollapsibleTrigger>
+          <TraceLine status="error">
+            <TraceIcon>
+              <StatusIcon status="error" />
+            </TraceIcon>
+            <TraceTitle>Failed to look up {repo}</TraceTitle>
+          </TraceLine>
+        </TraceCollapsibleTrigger>
+        <TraceCollapsibleContent>
+          <CodeBlock size="sm" variant="destructive">
+            <CodeBlockContent wrap className="max-h-64">
+              {output.error}
+            </CodeBlockContent>
+          </CodeBlock>
+        </TraceCollapsibleContent>
+      </TraceCollapsible>
+    )
+  }
+
+  return (
+    <TraceCollapsible>
+      <TraceCollapsibleTrigger>
+        <TraceLine>
+          <TraceIcon>
+            <StatusIcon />
+          </TraceIcon>
+          <TraceTitle>Looked up {repo}</TraceTitle>
+          <TraceDescription>{formatCount(output.stars)} stars</TraceDescription>
+        </TraceLine>
+      </TraceCollapsibleTrigger>
+      <TraceCollapsibleContent>
+        <CodeBlock size="sm">
+          <CodeBlockContent wrap className="max-h-64">
+            {JSON.stringify(output, null, 2)}
+          </CodeBlockContent>
+        </CodeBlock>
+      </TraceCollapsibleContent>
+    </TraceCollapsible>
+  )
 }

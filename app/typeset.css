@@ -373,6 +373,7 @@
     /* Tables. Separators sit on cells, not tr:last-child: append-safe.
        Bare tables stay real tables (keep their semantics) and wrap to fit. */
     &:where(table) {
+      width: 100%;
       max-width: 100%;
       font-size: 1em;
       line-height: 1.5;
