@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className="relative">
         <ThemeProvider>
           <TooltipProvider>
-            <div className="relative isolate flex min-h-svh flex-col">
+            <div className="relative isolate flex h-svh min-h-0 flex-col overflow-hidden">
               <SiteHeader />
               {children}
             </div>

@@ -22,6 +22,7 @@ const eslintConfig = defineConfig([
       "components/ui/sidebar.tsx",
       "hooks/use-composer-editor.ts",
       "lib/composer-editor.ts",
+      "components/chat/chat-conversation.tsx",
     ],
     rules: {
       "react-hooks/immutability": "off",

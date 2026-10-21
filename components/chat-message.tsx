@@ -15,6 +15,7 @@ import { WebSearchPart } from "@/components/parts/web-search-part"
 import { Bubble, BubbleContent } from "@/components/ui/bubble"
 import { Message, MessageContent } from "@/components/ui/message"
 import { Trace } from "@/components/ui/trace"
+import { ChatCollapsibleMessage } from "@/components/chat/chat-collapsible-message"
 
 type StepPart = Extract<
   ChatMessagePart,
@@ -33,15 +34,21 @@ export function ChatMessage({
   onRetry?: () => void
 }) {
   if (message.role === "user") {
+    const text = message.parts
+      .filter((part) => part.type === "text")
+      .map((part) => part.text)
+      .join("")
     return (
       <Message align="end">
         <MessageContent>
           <Bubble align="end" variant="muted">
             <BubbleContent>
-              {message.parts
-                .filter((part) => part.type === "text")
-                .map((part) => part.text)
-                .join("")}
+              <ChatCollapsibleMessage
+                text={text}
+                side="outgoing"
+                showMoreLabel="Show more"
+                showLessLabel="Show less"
+              />
             </BubbleContent>
           </Bubble>
         </MessageContent>

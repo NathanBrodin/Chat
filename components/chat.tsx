@@ -11,6 +11,8 @@ import { PromptForm } from "@/components/prompt-form"
 import { QuestionCard } from "@/components/question-card"
 import { StatusIcon } from "@/components/status-icon"
 import { Suggestions } from "@/components/suggestions"
+import { ChatConversation } from "@/components/chat/chat-conversation"
+import { useChatScroll } from "@/components/chat/hooks/use-chat-scroll"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Empty,
@@ -20,14 +22,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
-import {
-  MessageScroller,
-  MessageScrollerButton,
-  MessageScrollerContent,
-  MessageScrollerItem,
-  MessageScrollerProvider,
-  MessageScrollerViewport,
-} from "@/components/ui/message-scroller"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
 
 export function Chat({ models }: { models: ChatModel[] }) {
@@ -47,6 +41,8 @@ export function Chat({ models }: { models: ChatModel[] }) {
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
   })
 
+  const scroll = useChatScroll({ itemCount: messages.length })
+
   const resolvedModel = models.some((m) => m.id === model)
     ? model
     : (models[0]?.id ?? "")
@@ -64,10 +60,15 @@ export function Chat({ models }: { models: ChatModel[] }) {
         )
       : undefined
 
+  function handleSend(prompt: string) {
+    scroll.resetScroll()
+    sendMessage({ text: prompt }, { body: { model: resolvedModel } })
+  }
+
   return (
-    <div className="mx-auto flex min-h-0 w-full flex-1 flex-col">
+    <div className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col">
       {messages.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center p-6">
+        <div className="flex min-h-0 flex-1 items-center justify-center p-6">
           <Empty>
             <EmptyHeader>
               <EmptyTitle>What can I help with?</EmptyTitle>
@@ -77,80 +78,66 @@ export function Chat({ models }: { models: ChatModel[] }) {
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Suggestions
-                onSelect={(prompt) =>
-                  sendMessage(
-                    { text: prompt },
-                    { body: { model: resolvedModel } }
-                  )
-                }
-              />
+              <Suggestions onSelect={handleSend} />
             </EmptyContent>
           </Empty>
         </div>
       ) : (
-        <MessageScrollerProvider>
-          <MessageScroller className="flex-1">
-            <MessageScrollerViewport>
-              <MessageScrollerContent className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-6">
-                {messages.map((message) => (
-                  <MessageScrollerItem
-                    key={message.id}
-                    messageId={message.id}
-                    scrollAnchor={message.role === "user"}
-                  >
-                    <ChatMessage
-                      message={message}
-                      isStreaming={isBusy && message.id === lastMessage?.id}
-                      onRetry={
-                        !isBusy && message.id === lastMessage?.id
-                          ? () =>
-                              regenerate({
-                                messageId: message.id,
-                                body: { model: resolvedModel },
-                              })
-                          : undefined
-                      }
-                    />
-                  </MessageScrollerItem>
-                ))}
-                {status === "submitted" && (
-                  <MessageScrollerItem messageId="thinking">
-                    <Message>
-                      <MessageContent>
-                        <Trace>
-                          <TraceLine status="running">
-                            <TraceIcon>
-                              <StatusIcon status="running" />
-                            </TraceIcon>
-                            <TraceTitle>Thinking</TraceTitle>
-                          </TraceLine>
-                        </Trace>
-                      </MessageContent>
-                    </Message>
-                  </MessageScrollerItem>
-                )}
-              </MessageScrollerContent>
-              {pendingQuestion && (
-                <QuestionCard
-                  part={pendingQuestion}
-                  onAnswer={(toolCallId, answer) =>
-                    addToolOutput({
-                      tool: "ask_user",
-                      toolCallId,
-                      output: answer,
-                      options: { body: { model: resolvedModel } },
-                    })
-                  }
-                />
-              )}
-            </MessageScrollerViewport>
-            <MessageScrollerButton />
-          </MessageScroller>
-        </MessageScrollerProvider>
+        <ChatConversation
+          scroll={scroll}
+          label="Conversation"
+          jumpLabel="Jump to latest"
+          contentClassName="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-6"
+        >
+          {messages.map((message) => (
+            <div key={message.id}>
+              <ChatMessage
+                message={message}
+                isStreaming={isBusy && message.id === lastMessage?.id}
+                onRetry={
+                  !isBusy && message.id === lastMessage?.id
+                    ? () =>
+                        regenerate({
+                          messageId: message.id,
+                          body: { model: resolvedModel },
+                        })
+                    : undefined
+                }
+              />
+            </div>
+          ))}
+          {status === "submitted" && (
+            <Message>
+              <MessageContent>
+                <Trace>
+                  <TraceLine status="running">
+                    <TraceIcon>
+                      <StatusIcon status="running" />
+                    </TraceIcon>
+                    <TraceTitle>Thinking</TraceTitle>
+                  </TraceLine>
+                </Trace>
+              </MessageContent>
+            </Message>
+          )}
+          {pendingQuestion && (
+            <QuestionCard
+              part={pendingQuestion}
+              onAnswer={(toolCallId, answer) => {
+                scroll.resetScroll()
+                addToolOutput({
+                  tool: "ask_user",
+                  toolCallId,
+                  output: answer,
+                  options: { body: { model: resolvedModel } },
+                })
+              }}
+            />
+          )}
+        </ChatConversation>
       )}
 
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-2 px-6 pb-6">
+      <div className="mx-auto flex w-full max-w-2xl shrink-0 flex-col gap-2 px-6 pb-6">
         {error && (
           <Alert variant="error">
             <AlertTitle>Request failed</AlertTitle>
@@ -162,9 +149,7 @@ export function Chat({ models }: { models: ChatModel[] }) {
           model={resolvedModel}
           onModelChange={setModel}
           isBusy={isBusy}
-          onSubmit={(text) =>
-            sendMessage({ text }, { body: { model: resolvedModel } })
-          }
+          onSubmit={handleSend}
           onStop={() => stop()}
         />
       </div>
