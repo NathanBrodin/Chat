@@ -5,11 +5,7 @@ import { CheckIcon, CopyIcon, RefreshCcwIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { MessageFooter } from "@/components/ui/message"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipPopup, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function MessageActions({
   text,
@@ -70,9 +66,9 @@ function MessageAction({
       >
         {children}
       </TooltipTrigger>
-      <TooltipContent>
+      <TooltipPopup>
         <p>{label}</p>
-      </TooltipContent>
+      </TooltipPopup>
     </Tooltip>
   )
 }

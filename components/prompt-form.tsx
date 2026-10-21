@@ -5,12 +5,16 @@ import { ArrowUpIcon, SquareIcon } from "lucide-react"
 
 import { type ChatModel } from "@/lib/models"
 import { ModelSelect } from "@/components/model-select"
+import { Button } from "@/components/ui/button"
 import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupTextarea,
-} from "@/components/ui/input-group"
+  Composer,
+  ComposerActionGroup,
+  ComposerActions,
+  ComposerInput,
+  ComposerSubmit,
+  type ComposerValue,
+  getComposerText,
+} from "@/components/ui/composer"
 
 export function PromptForm({
   models,
@@ -27,66 +31,62 @@ export function PromptForm({
   onSubmit: (text: string) => void
   onStop: () => void
 }) {
-  const [input, setInput] = React.useState("")
+  const [value, setValue] = React.useState<ComposerValue>([])
 
-  function handleSubmit(event?: React.FormEvent) {
-    event?.preventDefault()
-    const text = input.trim()
+  function handleSubmit(draft: ComposerValue) {
+    const text = getComposerText(draft).trim()
     if (!text || isBusy) return
     onSubmit(text)
-    setInput("")
+    setValue([])
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <InputGroup>
-        <InputGroupTextarea
-          placeholder="Send a message…"
-          className="p-3.5"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          onKeyDown={(event) => {
-            if (
-              event.key === "Enter" &&
-              !event.shiftKey &&
-              !event.nativeEvent.isComposing
-            ) {
-              event.preventDefault()
-              handleSubmit()
-            }
-          }}
-        />
-        <InputGroupAddon align="block-end">
+    <Composer
+      value={value}
+      onValueChange={setValue}
+      onSubmit={handleSubmit}
+      submitOnEnter="desktop"
+      submitDisabled={isBusy}
+    >
+      <ComposerInput
+        render={
+          <textarea aria-label="Send a message" placeholder="Send a message…" />
+        }
+      />
+      <ComposerActions>
+        <ComposerActionGroup>
           <ModelSelect
             models={models}
             value={model}
             onValueChange={onModelChange}
           />
+        </ComposerActionGroup>
+        <ComposerActionGroup align="end">
           {isBusy ? (
-            <InputGroupButton
+            <Button
               type="button"
               size="icon-sm"
               variant="outline"
               aria-label="Stop generating"
-              className="ml-auto"
               onClick={onStop}
             >
-              <SquareIcon />
-            </InputGroupButton>
+              <SquareIcon aria-hidden="true" />
+            </Button>
           ) : (
-            <InputGroupButton
-              type="submit"
-              size="icon-sm"
-              variant="default"
-              aria-label="Send message"
-              className="ml-auto"
-              disabled={!input.trim()}
+            <ComposerSubmit
+              render={
+                <Button
+                  size="icon-sm"
+                  variant="default"
+                  aria-label="Send message"
+                />
+              }
             >
-              <ArrowUpIcon />
-            </InputGroupButton>
+              <ArrowUpIcon aria-hidden="true" />
+            </ComposerSubmit>
           )}
-        </InputGroupAddon>
-      </InputGroup>
-    </form>
+        </ComposerActionGroup>
+      </ComposerActions>
+    </Composer>
   )
 }

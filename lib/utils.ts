@@ -1,4 +1,9 @@
-export { cn } from "cn"
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs))
+}
 
 // Only allow http(s) URLs to reach an href, so untrusted model/web/tool output
 // can't smuggle a javascript: or data: scheme into a link.

@@ -152,7 +152,7 @@ export function Chat({ models }: { models: ChatModel[] }) {
 
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-2 px-6 pb-6">
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="error">
             <AlertTitle>Request failed</AlertTitle>
             <AlertDescription>{error.message}</AlertDescription>
           </Alert>

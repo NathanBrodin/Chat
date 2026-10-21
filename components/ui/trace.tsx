@@ -1,9 +1,9 @@
 import * as React from "react"
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 
 import {
   Collapsible,
-  CollapsibleContent,
+  CollapsiblePanel,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { ChevronRightIcon } from "lucide-react"
@@ -129,9 +129,9 @@ function TraceCollapsibleContent({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof CollapsibleContent>) {
+}: React.ComponentProps<typeof CollapsiblePanel>) {
   return (
-    <CollapsibleContent
+    <CollapsiblePanel
       data-slot="trace-collapsible-content"
       className="h-(--collapsible-panel-height) min-w-0 overflow-hidden transition-[height] duration-200 data-ending-style:h-0 data-starting-style:h-0"
       {...props}
@@ -145,7 +145,7 @@ function TraceCollapsibleContent({
       >
         {children}
       </div>
-    </CollapsibleContent>
+    </CollapsiblePanel>
   )
 }
 

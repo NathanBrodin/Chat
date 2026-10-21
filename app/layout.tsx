@@ -1,12 +1,11 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist_Mono } from "next/font/google"
+import "cal-sans"
 
 import "./globals.css"
 import { SiteHeader } from "@/components/site-header"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-
-const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -22,17 +21,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(
-        "antialiased",
-        fontMono.variable,
-        "font-sans",
-        fontSans.variable
-      )}
+      className={cn("antialiased", "font-sans", fontMono.variable)}
     >
-      <body>
+      <body className="relative">
         <ThemeProvider>
           <TooltipProvider>
-            <div className="flex h-svh flex-col">
+            <div className="relative isolate flex min-h-svh flex-col">
               <SiteHeader />
               {children}
             </div>

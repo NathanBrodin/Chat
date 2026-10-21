@@ -5,9 +5,9 @@ import * as React from "react"
 import { type ChatModel } from "@/lib/models"
 import {
   Select,
-  SelectContent,
   SelectGroup,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -37,7 +37,7 @@ export function ModelSelect({
       <SelectTrigger aria-label="Model" className="bg-background">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent alignItemWithTrigger={false}>
+      <SelectPopup alignItemWithTrigger={false}>
         <SelectGroup>
           {items.map((item) => (
             <SelectItem key={item.value} value={item.value}>
@@ -45,7 +45,7 @@ export function ModelSelect({
             </SelectItem>
           ))}
         </SelectGroup>
-      </SelectContent>
+      </SelectPopup>
     </Select>
   )
 }
