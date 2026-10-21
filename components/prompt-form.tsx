@@ -3,7 +3,7 @@
 import * as React from "react"
 import { ArrowUpIcon, SquareIcon } from "lucide-react"
 
-import { type GatewayModel } from "@/lib/models"
+import { type ChatModel } from "@/lib/models"
 import { ModelSelect } from "@/components/model-select"
 import {
   InputGroup,
@@ -20,7 +20,7 @@ export function PromptForm({
   onSubmit,
   onStop,
 }: {
-  models: GatewayModel[]
+  models: ChatModel[]
   model: string
   onModelChange: (model: string) => void
   isBusy: boolean

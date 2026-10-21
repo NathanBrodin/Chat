@@ -4,7 +4,7 @@ import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { lastAssistantMessageIsCompleteWithToolCalls } from "ai"
 
-import { type GatewayModel } from "@/lib/models"
+import { type ChatModel } from "@/lib/models"
 import { type ChatUIMessage } from "@/tools"
 import { ChatMessage } from "@/components/chat-message"
 import { PromptForm } from "@/components/prompt-form"
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/message-scroller"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
 
-export function Chat({ models }: { models: GatewayModel[] }) {
+export function Chat({ models }: { models: ChatModel[] }) {
   const [model, setModel] = React.useState(models[0]?.id ?? "")
 
   const {
@@ -72,8 +72,8 @@ export function Chat({ models }: { models: GatewayModel[] }) {
             <EmptyHeader>
               <EmptyTitle>What can I help with?</EmptyTitle>
               <EmptyDescription>
-                Pick a model and start chatting. Responses stream through the
-                Vercel AI Gateway.
+                Pick a model and start chatting. Responses stream through
+                OpenRouter.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>

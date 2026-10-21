@@ -1,12 +1,7 @@
-import { anthropic } from "@ai-sdk/anthropic"
-import { openai } from "@ai-sdk/openai"
+import { openrouter } from "@openrouter/ai-sdk-provider"
 
-export function getWebSearch(modelId: string) {
-  if (modelId.startsWith("openai/")) {
-    return openai.tools.webSearch()
-  }
-  if (modelId.startsWith("anthropic/")) {
-    return anthropic.tools.webSearch_20260209()
-  }
-  return undefined
+// OpenRouter exposes web search as a server tool that works with any model,
+// so unlike provider-native search there is nothing model-specific to pick.
+export function getWebSearch() {
+  return openrouter.tools.webSearch({})
 }

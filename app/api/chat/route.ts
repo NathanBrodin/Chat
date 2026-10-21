@@ -6,6 +6,7 @@ import {
   toUIMessageStream,
   validateUIMessages,
 } from "ai"
+import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 
 import { DEFAULT_MODEL, isModelAllowed } from "@/lib/models"
 import { getTools, type ChatUIMessage } from "@/tools"
@@ -14,9 +15,13 @@ export const maxDuration = 30
 
 const MAX_OUTPUT_TOKENS = 8192
 
-// This endpoint is public and spends your AI Gateway credits on every request.
+const openrouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY,
+})
+
+// This endpoint is public and spends your OpenRouter credits on every request.
 // Before exposing it to real traffic, add a rate limit (e.g. Vercel Firewall /
-// WAF or @upstash/ratelimit), authentication, and an AI Gateway spend limit.
+// WAF or @upstash/ratelimit), authentication, and an OpenRouter spend limit.
 // See the README "Security" section.
 export async function POST(req: Request) {
   let body: unknown
@@ -36,7 +41,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const tools = getTools(modelId)
+  const tools = getTools()
 
   // Validate the shape of every message and tool part before trusting it.
   let messages: ChatUIMessage[]
@@ -51,7 +56,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: modelId,
+    model: openrouter(modelId),
     messages: await convertToModelMessages(messages),
     tools,
     stopWhen: isStepCount(5),

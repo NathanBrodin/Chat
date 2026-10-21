@@ -9,9 +9,8 @@ const baseTools = {
   ask_user: askUser,
 }
 
-export function getTools(modelId: string) {
-  const webSearch = getWebSearch(modelId)
-  return webSearch ? { ...baseTools, web_search: webSearch } : baseTools
+export function getTools() {
+  return { ...baseTools, web_search: getWebSearch() }
 }
 
 export type ChatUIMessage = UIMessage<
