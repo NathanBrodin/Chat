@@ -34,6 +34,7 @@ export function PromptForm({
 
   return (
     <Composer
+      layout="adaptive"
       value={value}
       onValueChange={setValue}
       onSubmit={handleSubmit}
@@ -42,7 +43,7 @@ export function PromptForm({
     >
       <ComposerInput
         render={
-          <textarea aria-label="Send a message" placeholder="Send a message…" />
+          <textarea aria-label="Ask anything" placeholder="Ask anything..." />
         }
       />
       <ComposerActions>
