@@ -4,7 +4,6 @@ import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { lastAssistantMessageIsCompleteWithToolCalls } from "ai"
 
-import { type ChatModel } from "@/lib/models"
 import { type ChatUIMessage } from "@/tools"
 import { ChatMessage } from "@/components/chat-message"
 import { PromptForm } from "@/components/prompt-form"
@@ -24,9 +23,7 @@ import {
 import { Message, MessageContent } from "@/components/ui/message"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
 
-export function Chat({ models }: { models: ChatModel[] }) {
-  const [model, setModel] = React.useState(models[0]?.id ?? "")
-
+export function Chat() {
   const {
     messages,
     sendMessage,
@@ -43,10 +40,6 @@ export function Chat({ models }: { models: ChatModel[] }) {
 
   const scroll = useChatScroll({ itemCount: messages.length })
 
-  const resolvedModel = models.some((m) => m.id === model)
-    ? model
-    : (models[0]?.id ?? "")
-
   const isBusy = status === "submitted" || status === "streaming"
 
   const lastMessage = messages.at(-1)
@@ -62,7 +55,7 @@ export function Chat({ models }: { models: ChatModel[] }) {
 
   function handleSend(prompt: string) {
     scroll.resetScroll()
-    sendMessage({ text: prompt }, { body: { model: resolvedModel } })
+    sendMessage({ text: prompt })
   }
 
   return (
@@ -73,8 +66,7 @@ export function Chat({ models }: { models: ChatModel[] }) {
             <EmptyHeader>
               <EmptyTitle>What can I help with?</EmptyTitle>
               <EmptyDescription>
-                Pick a model and start chatting. Responses stream through
-                OpenRouter.
+                Start chatting. Responses stream through OpenRouter.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
@@ -99,7 +91,6 @@ export function Chat({ models }: { models: ChatModel[] }) {
                     ? () =>
                         regenerate({
                           messageId: message.id,
-                          body: { model: resolvedModel },
                         })
                     : undefined
                 }
@@ -129,7 +120,6 @@ export function Chat({ models }: { models: ChatModel[] }) {
                   tool: "ask_user",
                   toolCallId,
                   output: answer,
-                  options: { body: { model: resolvedModel } },
                 })
               }}
             />
@@ -145,9 +135,6 @@ export function Chat({ models }: { models: ChatModel[] }) {
           </Alert>
         )}
         <PromptForm
-          models={models}
-          model={resolvedModel}
-          onModelChange={setModel}
           isBusy={isBusy}
           onSubmit={handleSend}
           onStop={() => stop()}

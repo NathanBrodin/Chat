@@ -1,12 +1,9 @@
-import {
-  CircleAlertIcon,
-  CircleCheckIcon,
-  LoaderCircleIcon,
-} from "lucide-react"
+import { CircleAlertIcon, CircleCheckIcon } from "lucide-react"
+import { Spinner } from "./ui/spinner"
 
 export function StatusIcon({ status }: { status?: "running" | "error" }) {
   if (status === "running") {
-    return <LoaderCircleIcon className="animate-spin" />
+    return <Spinner />
   }
 
   if (status === "error") {

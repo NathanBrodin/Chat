@@ -3,8 +3,6 @@
 import * as React from "react"
 import { ArrowUpIcon, SquareIcon } from "lucide-react"
 
-import { type ChatModel } from "@/lib/models"
-import { ModelSelect } from "@/components/model-select"
 import { Button } from "@/components/ui/button"
 import {
   Composer,
@@ -17,16 +15,10 @@ import {
 } from "@/components/ui/composer"
 
 export function PromptForm({
-  models,
-  model,
-  onModelChange,
   isBusy,
   onSubmit,
   onStop,
 }: {
-  models: ChatModel[]
-  model: string
-  onModelChange: (model: string) => void
   isBusy: boolean
   onSubmit: (text: string) => void
   onStop: () => void
@@ -54,13 +46,6 @@ export function PromptForm({
         }
       />
       <ComposerActions>
-        <ComposerActionGroup>
-          <ModelSelect
-            models={models}
-            value={model}
-            onValueChange={onModelChange}
-          />
-        </ComposerActionGroup>
         <ComposerActionGroup align="end">
           {isBusy ? (
             <Button

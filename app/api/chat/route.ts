@@ -8,11 +8,11 @@ import {
 } from "ai"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 
-import { DEFAULT_MODEL, isModelAllowed } from "@/lib/models"
 import { getTools, type ChatUIMessage } from "@/tools"
 
 export const maxDuration = 30
 
+const MODEL_ID = "minimax/minimax-m3.1-flash:free"
 const MAX_OUTPUT_TOKENS = 8192
 
 const openrouter = createOpenRouter({
@@ -31,16 +31,6 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid JSON body." }, { status: 400 })
   }
 
-  const model = (body as { model?: unknown })?.model
-  const modelId = typeof model === "string" ? model : DEFAULT_MODEL
-
-  if (!isModelAllowed(modelId)) {
-    return Response.json(
-      { error: `Model ${modelId} is not available.` },
-      { status: 400 }
-    )
-  }
-
   const tools = getTools()
 
   // Validate the shape of every message and tool part before trusting it.
@@ -56,7 +46,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openrouter(modelId),
+    model: openrouter(MODEL_ID),
     messages: await convertToModelMessages(messages),
     tools,
     stopWhen: isStepCount(5),

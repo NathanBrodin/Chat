@@ -48,7 +48,7 @@ pnpm dev
 | ------------------ | -------- | -------------------------------------------- |
 | `OPENROUTER_API_KEY` | Yes      | OpenRouter API key. Get one at [openrouter.ai/keys](https://openrouter.ai/keys). |
 
-The model list lives in [lib/models.ts](lib/models.ts) — the first entry is the default model.
+The model is hardcoded to `minimax/minimax-m3.1-flash:free` in [app/api/chat/route.ts](app/api/chat/route.ts).
 
 ## Security
 
@@ -58,7 +58,7 @@ The `/api/chat` route is **public and unauthenticated** — every request spends
 - **Cap spend.** Set an [OpenRouter spend limit](https://openrouter.ai/settings/limits) as a backstop.
 - **Add auth** if the chatbot isn't meant to be public.
 
-The route already validates the request body, restricts models to [lib/models.ts](lib/models.ts), caps output tokens and step count, and aborts generation on client disconnect — but those bound a single request, not overall volume.
+The route already validates the request body, caps output tokens and step count, and aborts generation on client disconnect — but those bound a single request, not overall volume.
 
 ## How it works
 
