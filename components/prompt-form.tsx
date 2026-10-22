@@ -1,8 +1,5 @@
 "use client"
 
-import * as React from "react"
-import { ArrowUpIcon, SquareIcon } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
   Composer,
@@ -13,17 +10,23 @@ import {
   type ComposerValue,
   getComposerText,
 } from "@/components/ui/composer"
+import { Persona } from "@/components/persona"
+import { type ChatResponseState } from "@/components/chat/hooks/use-chat-response-state"
+import { ArrowUpIcon, SquareIcon } from "lucide-react"
+import { useState } from "react"
 
 export function PromptForm({
   isBusy,
+  responseState,
   onSubmit,
   onStop,
 }: {
   isBusy: boolean
+  responseState: ChatResponseState
   onSubmit: (text: string) => void
   onStop: () => void
 }) {
-  const [value, setValue] = React.useState<ComposerValue>([])
+  const [value, setValue] = useState<ComposerValue>([])
 
   function handleSubmit(draft: ComposerValue) {
     const text = getComposerText(draft).trim()
@@ -41,12 +44,11 @@ export function PromptForm({
       submitOnEnter="desktop"
       submitDisabled={isBusy}
     >
-      <ComposerInput
-        render={
-          <textarea aria-label="Ask anything" placeholder="Ask anything..." />
-        }
-      />
+      <ComposerInput aria-label="Ask anything" placeholder="Ask anything..." />
       <ComposerActions>
+        <ComposerActionGroup>
+          <Persona state={responseState} className="size-7" variant="glint" />
+        </ComposerActionGroup>
         <ComposerActionGroup align="end">
           {isBusy ? (
             <Button

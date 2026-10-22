@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { useChat } from "@ai-sdk/react"
 import { lastAssistantMessageIsCompleteWithToolCalls } from "ai"
 
@@ -11,15 +10,11 @@ import { QuestionCard } from "@/components/question-card"
 import { StatusIcon } from "@/components/status-icon"
 import { Suggestions } from "@/components/suggestions"
 import { ChatConversation } from "@/components/chat/chat-conversation"
+import { useChatResponseState } from "@/components/chat/hooks/use-chat-response-state"
 import { useChatScroll } from "@/components/chat/hooks/use-chat-scroll"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Dazzle } from "@/components/dazzle"
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-} from "@/components/ui/empty"
+import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
 
@@ -41,6 +36,7 @@ export function Chat() {
   const scroll = useChatScroll({ itemCount: messages.length })
 
   const isBusy = status === "submitted" || status === "streaming"
+  const responseState = useChatResponseState(status, messages)
 
   const lastMessage = messages.at(-1)
   const pendingQuestion =
@@ -133,6 +129,7 @@ export function Chat() {
         )}
         <PromptForm
           isBusy={isBusy}
+          responseState={responseState}
           onSubmit={handleSend}
           onStop={() => stop()}
         />

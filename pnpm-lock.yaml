@@ -20,6 +20,9 @@ importers:
       '@openrouter/ai-sdk-provider':
         specifier: ^3.1.0
         version: 3.1.0(ai@7.0.118(zod@4.6.5))(zod@4.6.5)
+      '@rive-app/react-webgl2':
+        specifier: ^4.37.0
+        version: 4.37.0(react@19.3.0)
       '@shadcn/react':
         specifier: ^0.3.1
         version: 0.3.1(@types/react@19.3.0)(react@19.3.0)
@@ -689,6 +692,14 @@ packages:
     peerDependencies:
       ai: ^7.0.0
       zod: ^3.25.76 || ^4.1.8
+
+  '@rive-app/react-webgl2@4.37.0':
+    resolution: {integrity: sha512-+twr/lYc1PzrBuio/Gi3maIq1rFJHsQH+ZEffpvO6gGw6o2u0YhLFq6WTZzmmArAJnuxTJovRHhloqIS5pgKow==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0
+
+  '@rive-app/webgl2@2.45.0':
+    resolution: {integrity: sha512-uoPFjIeKMISabc9lPE5rXMEWCsnh3IZ4NErwmD0ag8wvM+8zDklcgr7P5C6u7ULnfzH5MkCw/hi00Kg1HhJe9g==}
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -4105,6 +4116,13 @@ snapshots:
     dependencies:
       ai: 7.0.118(zod@4.6.5)
       zod: 4.6.5
+
+  '@rive-app/react-webgl2@4.37.0(react@19.3.0)':
+    dependencies:
+      '@rive-app/webgl2': 2.45.0
+      react: 19.3.0
+
+  '@rive-app/webgl2@2.45.0': {}
 
   '@rtsao/scc@1.1.0': {}
 
