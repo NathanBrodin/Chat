@@ -40,7 +40,7 @@ export function ChatConversation({
     >
       <ScrollAreaPrimitive.Root
         inert={inactive}
-        className="size-full min-h-0 touch-auto before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-6 before:bg-linear-to-b before:from-popover before:to-transparent before:opacity-0 before:content-[''] after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:z-10 after:h-6 after:bg-linear-to-t after:from-popover after:to-transparent after:opacity-0 after:content-[''] data-overflow-y-end:after:opacity-100 data-overflow-y-start:before:opacity-100"
+        className="size-full min-h-0 touch-auto"
       >
         <ScrollAreaPrimitive.Viewport
           ref={scroll.viewportRef}
@@ -49,7 +49,7 @@ export function ChatConversation({
           aria-live={live}
           aria-relevant="additions text"
           data-slot="scroll-area-viewport"
-          className="h-full rounded-[inherit] outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset data-has-overflow-y:overscroll-y-contain data-has-overflow-x:overscroll-x-contain"
+          className="h-full rounded-[inherit] outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset data-has-overflow-y:overscroll-y-contain data-has-overflow-x:overscroll-x-contain mask-t-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-start)))] mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] mask-l-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-start)))] mask-r-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-end)))] [--fade-size:1.5rem]"
           onScroll={scroll.onScroll}
         >
           <ScrollAreaPrimitive.Content
