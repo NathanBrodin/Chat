@@ -2,7 +2,6 @@ import { Geist_Mono } from "next/font/google"
 import "cal-sans"
 
 import "./globals.css"
-import { SiteHeader } from "@/components/site-header"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
@@ -27,7 +26,6 @@ export default function RootLayout({
         <ThemeProvider>
           <TooltipProvider>
             <div className="relative isolate flex h-svh min-h-0 flex-col overflow-hidden">
-              <SiteHeader />
               {children}
             </div>
           </TooltipProvider>

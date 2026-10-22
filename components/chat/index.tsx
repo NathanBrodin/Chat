@@ -17,6 +17,7 @@ import { Dazzle } from "@/components/dazzle"
 import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
+import { ChatHeader } from "@/components/chat/header"
 
 export function Chat() {
   const {
@@ -56,6 +57,7 @@ export function Chat() {
 
   return (
     <div className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col">
+      <ChatHeader messages={messages} />
       {messages.length === 0 ? (
         <div className="flex min-h-0 flex-1 items-center justify-center p-6">
           <Empty className="gap-0">

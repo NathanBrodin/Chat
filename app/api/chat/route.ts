@@ -12,7 +12,7 @@ import { getTools, type ChatUIMessage } from "@/tools"
 
 export const maxDuration = 30
 
-const MODEL_ID = "minimax/minimax-m3.1-flash:free"
+const MODEL_ID = "~z-ai/glm-flash-latest"
 const MAX_OUTPUT_TOKENS = 8192
 
 const openrouter = createOpenRouter({
@@ -68,6 +68,10 @@ export async function POST(req: Request) {
       sendSources: true,
       // The AI SDK does not time reasoning, so time each block here.
       messageMetadata: ({ part }) => {
+        if (part.type === "finish") {
+          return { usage: part.totalUsage }
+        }
+
         if (part.type === "reasoning-start") {
           reasoningStarts.set(part.id, {
             index: reasoningCount++,
