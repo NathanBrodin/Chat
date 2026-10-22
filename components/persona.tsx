@@ -64,42 +64,39 @@ interface PersonaProps {
 // The state machine name is always 'default' for Elements AI visuals
 const stateMachine = "default"
 
+// Vendored copies of Vercel's Elements AI visuals (public/rive/), so the app
+// no longer depends on Vercel's hosting. They can be edited in the Rive
+// editor and re-exported in place.
 const sources = {
   command: {
     dynamicColor: true,
     hasModel: true,
-    source:
-      "https://ejiidnob33g9ap1r.public.blob.vercel-storage.com/command-2.0.riv",
+    source: "/rive/command.riv",
   },
   glint: {
     dynamicColor: true,
     hasModel: true,
-    source:
-      "https://ejiidnob33g9ap1r.public.blob.vercel-storage.com/glint-2.0.riv",
+    source: "/rive/glint.riv",
   },
   halo: {
     dynamicColor: true,
     hasModel: true,
-    source:
-      "https://ejiidnob33g9ap1r.public.blob.vercel-storage.com/halo-2.0.riv",
+    source: "/rive/halo.riv",
   },
   mana: {
     dynamicColor: false,
     hasModel: true,
-    source:
-      "https://ejiidnob33g9ap1r.public.blob.vercel-storage.com/mana-2.0.riv",
+    source: "/rive/mana.riv",
   },
   obsidian: {
     dynamicColor: true,
     hasModel: true,
-    source:
-      "https://ejiidnob33g9ap1r.public.blob.vercel-storage.com/obsidian-2.0.riv",
+    source: "/rive/obsidian.riv",
   },
   opal: {
     dynamicColor: false,
     hasModel: false,
-    source:
-      "https://ejiidnob33g9ap1r.public.blob.vercel-storage.com/orb-1.2.riv",
+    source: "/rive/opal.riv",
   },
 }
 
