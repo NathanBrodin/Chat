@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { type ReasoningMessagePart } from "@/tools"
-import { StatusIcon } from "@/components/status-icon"
+import { StatusIcon } from "@/components/chat/status-icon"
 import {
   TraceCollapsible,
   TraceCollapsibleContent,

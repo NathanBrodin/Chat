@@ -1,5 +1,5 @@
 import { type AskUserToolPart } from "@/tools"
-import { StatusIcon } from "@/components/status-icon"
+import { StatusIcon } from "@/components/chat/status-icon"
 import {
   TraceCollapsible,
   TraceCollapsibleContent,

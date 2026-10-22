@@ -63,27 +63,27 @@ The route already validates the request body, caps output tokens and step count,
 ## How it works
 
 - [app/api/chat/route.ts](app/api/chat/route.ts) streams responses with `streamText`
-- [components/chat.tsx](components/chat.tsx) renders the conversation with `useChat` and shadcn chat primitives.
+- [components/chat/](components/chat) renders the conversation with `useChat` and shadcn chat primitives, entry at [components/chat/index.tsx](components/chat/index.tsx).
 - [tools/](tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [tools/index.ts](tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and provider-native web search.
 
 ## Tool parts
 
-Assistant messages are a list of typed parts. [components/chat-message.tsx](components/chat-message.tsx) switches on `part.type` and delegates each one to a component in [components/parts/](components/parts):
+Assistant messages are a list of typed parts. [components/chat/chat-message.tsx](components/chat/chat-message.tsx) switches on `part.type` and delegates each one to a component in [components/chat/parts/](components/chat/parts):
 
 | Part type          | Component                                                          | Renders                                                                                                                                       |
 | ------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`             | [text-part.tsx](components/parts/text-part.tsx)                   | Markdown via react-markdown and shadcn/typeset.                                                                                                |
-| `tool-github_repo` | [github-repo-part.tsx](components/parts/github-repo-part.tsx)     | A spinner while the lookup runs, then a linked stat line (stars, forks, language).                                                             |
-| `tool-web_search`  | [web-search-part.tsx](components/parts/web-search-part.tsx)       | A "Searching the web…" status while the search runs, then a persistent "Searched the web" line per search.                                     |
-| `tool-ask_user`    | [ask-user-part.tsx](components/parts/ask-user-part.tsx)           | The answered questions inline. Pending questions render in [question-card.tsx](components/question-card.tsx), pinned to the scroller bottom.   |
-| `source-url`       | [sources-part.tsx](components/parts/sources-part.tsx)             | Web search citations, deduped into a "Searched N websites" drawer once the message finishes streaming.                                         |
+| `text`             | [text-part.tsx](components/chat/parts/text-part.tsx)                   | Markdown via react-markdown and shadcn/typeset.                                                                                                |
+| `tool-github_repo` | [github-repo-part.tsx](components/chat/parts/github-repo-part.tsx)     | A spinner while the lookup runs, then a linked stat line (stars, forks, language).                                                             |
+| `tool-web_search`  | [web-search-part.tsx](components/chat/parts/web-search-part.tsx)       | A "Searching the web…" status while the search runs, then a persistent "Searched the web" line per search.                                     |
+| `tool-ask_user`    | [ask-user-part.tsx](components/chat/parts/ask-user-part.tsx)           | The answered questions inline. Pending questions render in [question-card.tsx](components/chat/question-card.tsx), pinned to the scroller bottom.   |
+| `source-url`       | [sources-part.tsx](components/chat/parts/sources-part.tsx)             | Web search citations, deduped into a "Searched N websites" drawer once the message finishes streaming.                                         |
 
 Tool parts move through states as the stream progresses — `input-streaming` → `input-available` → `output-available` (or `output-error`) — and each component switches on `part.state` to show progress, results, and failures.
 
 ### Adding your own tool
 
 1. Create `tools/<name>.ts` (the filename is the model-facing tool name) exporting a `tool()` with a `description`, an `inputSchema`, and an `execute` function (omit `execute` for tools the user answers in the UI, like `ask_user`), then register it in [tools/index.ts](tools/index.ts).
-2. Add a part component in [components/parts/](components/parts) and a `case "tool-<name>"` in [chat-message.tsx](components/chat-message.tsx).
+2. Add a part component in [components/chat/parts/](components/chat/parts) and a `case "tool-<name>"` in [chat-message.tsx](components/chat/chat-message.tsx).
 
 Message types are inferred from the tool definitions via `InferUITools`, so `part.input` and `part.output` are fully typed in your part component — renaming a tool field is a build error, not a silent `undefined`.
 

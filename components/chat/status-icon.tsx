@@ -1,5 +1,5 @@
 import { CircleAlertIcon, CircleCheckIcon } from "lucide-react"
-import { Spinner } from "./ui/spinner"
+import { Spinner } from "@/components/ui/spinner"
 
 export function StatusIcon({ status }: { status?: "running" | "error" }) {
   if (status === "running") {

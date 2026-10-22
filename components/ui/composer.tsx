@@ -24,7 +24,7 @@ import {
   useComposerInputLayout,
   useComposerItem,
   useComposerSuggestionsContext,
-} from "@/lib/composer-editor";
+} from "@/lib/composer/editor";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -510,5 +510,5 @@ export {
   getComposerText,
   useComposerContext,
   useComposerFilter,
-} from "@/lib/composer-editor";
+} from "@/lib/composer/editor";
 export type { ComposerPopupProps, ComposerTokenVariant };

@@ -1,5 +1,5 @@
 import { type GithubRepoToolPart } from "@/tools"
-import { StatusIcon } from "@/components/status-icon"
+import { StatusIcon } from "@/components/chat/status-icon"
 import { CodeBlock, CodeBlockContent } from "@/components/ui/code-block"
 import {
   TraceCollapsible,

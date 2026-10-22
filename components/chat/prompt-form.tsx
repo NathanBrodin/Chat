@@ -10,7 +10,7 @@ import {
   type ComposerValue,
   getComposerText,
 } from "@/components/ui/composer"
-import { Persona } from "@/components/persona"
+import { Persona } from "@/components/chat/persona"
 import { type ChatResponseState } from "@/components/chat/hooks/use-chat-response-state"
 import { ArrowUpIcon, SquareIcon } from "lucide-react"
 import { useState } from "react"

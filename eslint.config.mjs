@@ -21,7 +21,7 @@ const eslintConfig = defineConfig([
     files: [
       "components/ui/sidebar.tsx",
       "hooks/use-composer-editor.ts",
-      "lib/composer-editor.ts",
+      "lib/composer/editor.ts",
       "components/chat/chat-conversation.tsx",
     ],
     rules: {

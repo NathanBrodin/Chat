@@ -3,7 +3,7 @@
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
-import { MarkdownPre } from "@/components/markdown-code"
+import { MarkdownPre } from "@/components/chat/markdown-code"
 import { type TextMessagePart } from "@/tools"
 
 export function TextPart({ part }: { part: TextMessagePart }) {

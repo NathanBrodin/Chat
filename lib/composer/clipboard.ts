@@ -1,4 +1,4 @@
-import type { ComposerPart, ComposerValue } from "./composer-document";
+import type { ComposerPart, ComposerValue } from "./document";
 
 export const COMPOSER_CLIPBOARD_TYPE = "application/x-coss-composer";
 
