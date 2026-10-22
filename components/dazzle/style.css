@@ -11,8 +11,8 @@
 }
 
 .dazzle {
-  --dazzle-shadow: #c6c6c6;
-  --dazzle-glare: white;
+  --dazzle-shadow: var(--muted-foreground);
+  --dazzle-glare: var(--background);
 
   --dazzle-min: 16;
   --dazzle-max: 20;
@@ -58,11 +58,6 @@
     --dazzle-hover 0.2s ease,
     --dazzle-pos 1.5s ease 0.25s;
   animation: dazzle-load 1.9s ease 0.1s backwards;
-}
-
-.dark .dazzle {
-  --dazzle-shadow: #494949;
-  --dazzle-glare: hsl(0 0% 100% / 0.75);
 }
 
 .dazzle:hover {
