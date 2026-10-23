@@ -1,14 +1,8 @@
 # chatbot-template
 
-A minimal chatbot template built with Next.js, the [AI SDK](https://ai-sdk.dev), [coss UI](https://coss.com/ui), [coss chat](https://coss.com/ui/chat) and [OpenRouter](https://openrouter.ai).
+A minimal chatbot template built with TanStack [Start](https://tanstack.com/start/latest), the [AI SDK](https://ai-sdk.dev), [coss UI](https://coss.com/ui), [coss chat](https://coss.com/ui/chat) and [OpenRouter](https://openrouter.ai).
 
-Forked from [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-template), with the UI migrated to coss.
-
-<p>
-  <a href="https://github.com/NathanBrodin/chatbot-template/stargazers"><img src="https://shieldcn.dev/github/stars/NathanBrodin/chatbot-template.svg?variant=secondary&size=xs" alt="GitHub stars" /></a>
-  <a href="https://github.com/NathanBrodin/chatbot-template/forks"><img src="https://shieldcn.dev/github/forks/NathanBrodin/chatbot-template.svg?variant=secondary&size=xs" alt="GitHub forks" /></a>
-  <a href="https://github.com/NathanBrodin/chatbot-template/blob/main/LICENSE"><img src="https://shieldcn.dev/github/license/NathanBrodin/chatbot-template.svg?variant=secondary&size=xs" alt="License" /></a>
-</p>
+Forked from [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-template), with the UI migrated to coss and the framework migrated from Next.js to TanStack Start using [cove](https://github.com/mugnavo/cove).
 
 ## Features
 
@@ -17,36 +11,56 @@ Forked from [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-te
 - Web search via OpenRouter's web search server tool
 - Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
 - Per-IP rate limiting on `/api/chat` with Upstash Redis + `@upstash/ratelimit`
+- Better Auth starter (email + GitHub/Google OAuth) with login/signup pages, persisted with Drizzle ORM + PostgreSQL
 
 ## Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FNathanBrodin%2Fchatbot-template&project-name=chatbot-template&repository-name=chatbot-template)
+The [vite config](./vite.config.ts) uses [Nitro](https://nitro.build/) by default, which supports many [deployment presets](https://nitro.build/deploy) like Netlify, Vercel, Node.js, and more. Refer to the [TanStack Start hosting docs](https://tanstack.com/start/latest/docs/framework/react/guide/hosting) for more information.
 
 Set the following in your hosting provider's environment variables:
 
 - `OPENROUTER_API_KEY`, create one at [openrouter.ai/keys](https://openrouter.ai/keys).
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, create a Redis database at [console.upstash.com](https://console.upstash.com), then copy the REST URL and REST token from the database details (or use the Vercel Upstash integration, which sets them automatically).
+- `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `VITE_BASE_URL` — see [`.env.schema`](./.env.schema), which is the source of truth for every variable.
 
 ## Local development
 
+#### Prerequisites
+
+- [Node.js](https://nodejs.org/en/download) >= 24
+- [pnpm](https://pnpm.io/installation) >= 12
+- [Vite Plus](https://viteplus.dev/guide/#install-vp) (`vp`)
+
+#### Setup
+
 ```bash
-pnpm install
+vp install
 ```
 
-Then add your keys to `.env.local`:
+Then create a `.env.local` file with your values, based on [`.env.schema`](./.env.schema), then validate them:
 
-```bash
-cp .env.example .env.local
-# then set OPENROUTER_API_KEY, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
+```sh
+vpr env:load
 ```
 
 Create an OpenRouter key at [openrouter.ai/keys](https://openrouter.ai/keys) and a Redis database at [console.upstash.com](https://console.upstash.com).
 
+Generate the initial migration with drizzle-kit, then apply to your database:
+
+```sh
+vpr db generate
+vpr db migrate
+```
+
+https://orm.drizzle.team/docs/migrations
+
 Start the dev server:
 
 ```bash
-pnpm dev
+vpr dev
 ```
+
+The development server should now be running at [http://localhost:3000](http://localhost:3000).
 
 ## Configuration
 
@@ -55,14 +69,21 @@ pnpm dev
 | `OPENROUTER_API_KEY`       | Yes      | OpenRouter API key. Get one at [openrouter.ai/keys](https://openrouter.ai/keys). |
 | `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL for rate limiting. From your database details.            |
 | `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token for rate limiting. From your database details.          |
+| `DATABASE_URL`             | Yes      | PostgreSQL connection URL. Run `docker compose up -d` for the local database.    |
+| `BETTER_AUTH_SECRET`       | Yes      | Better Auth signing secret. Generate one with `vpr auth:secret`.                 |
+| `VITE_BASE_URL`            | Yes      | Public origin used by the browser and Better Auth.                               |
 
-The model is hardcoded to `~z-ai/glm-flash-latest` in [app/api/chat/route.ts](app/api/chat/route.ts).
+[Varlock](https://varlock.dev/) keeps the environment-variable contract in `.env.schema` and generates types from it. Put local values, including secrets, in the uncommitted `.env.local`, then run `vpr env:load` to validate them.
+
+In application code, `import { ENV } from "varlock/env"` instead of reading `process.env` directly.
+
+The model is hardcoded to `~z-ai/glm-flash-latest` in [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts).
 
 ### Rate limit
 
 `/api/chat` is rate-limited per client IP with [`@upstash/ratelimit`](https://github.com/upstash/ratelimit-js) backed by Upstash Redis (`Redis.fromEnv()`).
 
-Current windows, in [app/api/chat/route.ts](app/api/chat/route.ts):
+Current windows, in [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts):
 
 ```ts
 Ratelimit.slidingWindow(5, "30s") // burst: 5 requests per 30 seconds
@@ -77,38 +98,63 @@ The `/api/chat` route is **public and unauthenticated**: every allowed request s
 
 - **Rate limit is per-IP, not global.** One IP is capped at 50 requests/day with the default windows, but N IPs (botnet, rotating proxies) get N× the budget.
 - **Cap spend.** Keep an [OpenRouter spend limit](https://openrouter.ai/settings/limits) as a backstop.
-- **Add auth or WAF** if abuse appears: require login for heavy use, and/or add [Vercel Firewall / WAF](https://vercel.com/docs/security/vercel-waf) rules in front of `/api/chat`.
+- **Add auth or WAF** if abuse appears: require login for heavy use, and/or add firewall rules from your hosting provider in front of `/api/chat`.
 - Requests without an `x-forwarded-for` header share one fallback bucket, so they throttle each other — expected on local dev, suspicious in production logs.
 
 The route already validates the request body, caps output tokens and step count, and aborts generation on client disconnect — but those bound a single request, not overall volume.
 
 ## How it works
 
-- [app/api/chat/route.ts](app/api/chat/route.ts) rate-limits by IP with Upstash, then streams responses with `streamText`
-- [components/chat/](components/chat) renders the conversation with `useChat` and coss chat primitives, entry at [components/chat/index.tsx](components/chat/index.tsx).
-- [tools/](tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [tools/index.ts](tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and provider-native web search.
+- [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts) rate-limits by IP with Upstash, then streams responses with `streamText` behind a TanStack Start API route (server handlers)
+- [src/components/chat/](src/components/chat) renders the conversation with `useChat` and coss chat primitives, entry at [src/components/chat/index.tsx](src/components/chat/index.tsx), served by the [`/` route](src/routes/index.tsx).
+- [src/tools/](src/tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [src/tools/index.ts](src/tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and provider-native web search.
 
 ## Tool parts
 
-Assistant messages are a list of typed parts. [components/chat/chat-message.tsx](components/chat/chat-message.tsx) switches on `part.type` and delegates each one to a component in [components/chat/parts/](components/chat/parts):
+Assistant messages are a list of typed parts. [src/components/chat/chat-message.tsx](src/components/chat/chat-message.tsx) switches on `part.type` and delegates each one to a component in [src/components/chat/parts/](src/components/chat/parts):
 
-| Part type          | Component                                                          | Renders                                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`             | [text-part.tsx](components/chat/parts/text-part.tsx)               | Markdown via react-markdown and coss typeset.                                                                                                     |
-| `tool-github_repo` | [github-repo-part.tsx](components/chat/parts/github-repo-part.tsx) | A spinner while the lookup runs, then a linked stat line (stars, forks, language).                                                                |
-| `tool-web_search`  | [web-search-part.tsx](components/chat/parts/web-search-part.tsx)   | A "Searching the web…" status while the search runs, then a persistent "Searched the web" line per search.                                        |
-| `tool-ask_user`    | [ask-user-part.tsx](components/chat/parts/ask-user-part.tsx)       | The answered questions inline. Pending questions render in [question-card.tsx](components/chat/question-card.tsx), pinned to the scroller bottom. |
-| `source-url`       | [sources-part.tsx](components/chat/parts/sources-part.tsx)         | Web search citations, deduped into a "Searched N websites" drawer once the message finishes streaming.                                            |
+| Part type          | Component                                                              | Renders                                                                                                                                               |
+| ------------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`             | [text-part.tsx](src/components/chat/parts/text-part.tsx)               | Markdown via react-markdown and coss typeset.                                                                                                         |
+| `tool-github_repo` | [github-repo-part.tsx](src/components/chat/parts/github-repo-part.tsx) | A spinner while the lookup runs, then a linked stat line (stars, forks, language).                                                                    |
+| `tool-web_search`  | [web-search-part.tsx](src/components/chat/parts/web-search-part.tsx)   | A "Searching the web…" status while the search runs, then a persistent "Searched the web" line per search.                                            |
+| `tool-ask_user`    | [ask-user-part.tsx](src/components/chat/parts/ask-user-part.tsx)       | The answered questions inline. Pending questions render in [question-card.tsx](src/components/chat/question-card.tsx), pinned to the scroller bottom. |
+| `source-url`       | [sources-part.tsx](src/components/chat/parts/sources-part.tsx)         | Web search citations, deduped into a "Searched N websites" drawer once the message finishes streaming.                                                |
 
 Tool parts move through states as the stream progresses — `input-streaming` → `input-available` → `output-available` (or `output-error`) — and each component switches on `part.state` to show progress, results, and failures.
 
 ### Adding your own tool
 
-1. Create `tools/<name>.ts` (the filename is the model-facing tool name) exporting a `tool()` with a `description`, an `inputSchema`, and an `execute` function (omit `execute` for tools the user answers in the UI, like `ask_user`), then register it in [tools/index.ts](tools/index.ts).
-2. Add a part component in [components/chat/parts/](components/chat/parts) and a `case "tool-<name>"` in [chat-message.tsx](components/chat/chat-message.tsx).
+1. Create `src/tools/<name>.ts` (the filename is the model-facing tool name) exporting a `tool()` with a `description`, an `inputSchema`, and an `execute` function (omit `execute` for tools the user answers in the UI, like `ask_user`), then register it in [src/tools/index.ts](src/tools/index.ts).
+2. Add a part component in [src/components/chat/parts/](src/components/chat/parts) and a `case "tool-<name>"` in [chat-message.tsx](src/components/chat/chat-message.tsx).
 
 Message types are inferred from the tool definitions via `InferUITools`, so `part.input` and `part.output` are fully typed in your part component — renaming a tool field is a build error, not a silent `undefined`.
 
+## Logging
+
+[evlog](https://www.evlog.dev/) is wired into the app through Nitro and emits one structured event per request. Add a [drain](https://www.evlog.dev/integrate/adapters/overview) when production needs logs sent to your chosen provider.
+
+## Scripts
+
+Check [package.json](./package.json) for the full list of available scripts.
+
+- **`auth:generate`** - Regenerate the [auth db schema](./src/lib/db/schema/auth.schema.ts) if you've made changes to your Better Auth [config](./src/lib/auth/auth.ts).
+- **`db`** - Run [drizzle-kit](https://orm.drizzle.team/docs/kit-overview) commands. (e.g. `vpr db generate`, `vpr db studio`)
+- **`ui`** - The shadcn/ui CLI. (e.g. `vpr ui add button`)
+- **`format`**, **`lint`** - Run Oxfmt and Oxlint, or both via `vpr check`.
+- **`deps`** - Selectively upgrade dependencies via taze. Dependency versions are pinned, so run `vpr deps` to selectively upgrade packages.
+
+#### Utilities
+
+- [`auth/middleware.ts`](./src/lib/auth/middleware.ts) - Sample middleware for enforcing authentication on server functions & API routes.
+- [`theme-toggle.tsx`](./src/components/theme-toggle.tsx), [`theme-provider.tsx`](./src/components/theme-provider.tsx) - A theme toggle and provider for toggling between light and dark mode (press `d` anywhere outside a text field to toggle).
+
+## Issue watchlist
+
+- [Devtools releases](https://github.com/TanStack/devtools/releases) - TanStack Devtools is in alpha and may still have breaking changes.
+- [Nitro v3 beta](https://nitro.build/blog/v3-beta) - The app is configured with Nitro v3 beta by default.
+- [Drizzle ORM v1 RC](https://orm.drizzle.team/docs/relations-v1-v2) - Drizzle ORM v1 is in RC with relations v2.
+
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Code in this template is public domain via [Unlicense](./LICENSE). Feel free to remove or replace for your own project.
