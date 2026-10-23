@@ -7,23 +7,48 @@ import {
   validateUIMessages,
 } from "ai"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
 
 import { getTools, type ChatUIMessage } from "@/tools"
 
+import { NextRequest } from "next/server"
+
+// Allow streaming responses up to 30 seconds
 export const maxDuration = 30
 
-const MODEL_ID = "~z-ai/glm-flash-latest"
-const MAX_OUTPUT_TOKENS = 8192
+const burst = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, "30s"),
+  prefix: "chat:burst",
+  analytics: true,
+})
+
+const daily = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(50, "24h"),
+  prefix: "chat:daily",
+  analytics: true,
+})
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 })
 
-// This endpoint is public and spends your OpenRouter credits on every request.
-// Before exposing it to real traffic, add a rate limit (e.g. Vercel Firewall /
-// WAF or @upstash/ratelimit), authentication, and an OpenRouter spend limit.
-// See the README "Security" section.
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "ip"
+
+  const { success: burstOk } = await burst.limit(ip)
+  if (!burstOk) {
+    return Response.json({ error: "Ratelimited" }, { status: 429 })
+  }
+
+  const { success: dailyOk } = await daily.limit(ip)
+  if (!dailyOk) {
+    return Response.json({ error: "Ratelimited" }, { status: 429 })
+  }
+
   let body: unknown
   try {
     body = await req.json()
@@ -46,11 +71,11 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openrouter(MODEL_ID),
+    model: openrouter("~z-ai/glm-flash-latest"),
+    maxOutputTokens: 8192,
     messages: await convertToModelMessages(messages),
     tools,
     stopWhen: isStepCount(5),
-    maxOutputTokens: MAX_OUTPUT_TOKENS,
     abortSignal: req.signal,
   })
 

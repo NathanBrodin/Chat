@@ -19,6 +19,8 @@
     "@openrouter/ai-sdk-provider": "^3.1.0",
     "@rive-app/react-webgl2": "^4.37.0",
     "@shadcn/react": "^0.3.1",
+    "@upstash/ratelimit": "^2.2.0",
+    "@upstash/redis": "^1.39.0",
     "ai": "^7.0.118",
     "cal-sans": "^2.1.1",
     "class-variance-authority": "^0.7.1",

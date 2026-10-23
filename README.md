@@ -16,12 +16,16 @@ Forked from [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-te
 - Tool calling example
 - Web search via OpenRouter's web search server tool
 - Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
+- Per-IP rate limiting on `/api/chat` with Upstash Redis + `@upstash/ratelimit`
 
 ## Deploy
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FNathanBrodin%2Fchatbot-template&project-name=chatbot-template&repository-name=chatbot-template)
 
-Set `OPENROUTER_API_KEY` in your hosting provider's environment variables (create one at [openrouter.ai/keys](https://openrouter.ai/keys)).
+Set the following in your hosting provider's environment variables:
+
+- `OPENROUTER_API_KEY`, create one at [openrouter.ai/keys](https://openrouter.ai/keys).
+- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, create a Redis database at [console.upstash.com](https://console.upstash.com), then copy the REST URL and REST token from the database details (or use the Vercel Upstash integration, which sets them automatically).
 
 ## Local development
 
@@ -29,14 +33,14 @@ Set `OPENROUTER_API_KEY` in your hosting provider's environment variables (creat
 pnpm install
 ```
 
-Then add your OpenRouter API key to `.env.local`:
+Then add your keys to `.env.local`:
 
 ```bash
 cp .env.example .env.local
-# then set OPENROUTER_API_KEY=...
+# then set OPENROUTER_API_KEY, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
 ```
 
-Create a key at [openrouter.ai/keys](https://openrouter.ai/keys).
+Create an OpenRouter key at [openrouter.ai/keys](https://openrouter.ai/keys) and a Redis database at [console.upstash.com](https://console.upstash.com).
 
 Start the dev server:
 
@@ -46,25 +50,41 @@ pnpm dev
 
 ## Configuration
 
-| Env var              | Required | Description                                                                      |
-| -------------------- | -------- | -------------------------------------------------------------------------------- |
-| `OPENROUTER_API_KEY` | Yes      | OpenRouter API key. Get one at [openrouter.ai/keys](https://openrouter.ai/keys). |
+| Env var                    | Required | Description                                                                      |
+| -------------------------- | -------- | -------------------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY`       | Yes      | OpenRouter API key. Get one at [openrouter.ai/keys](https://openrouter.ai/keys). |
+| `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL for rate limiting. From your database details.            |
+| `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token for rate limiting. From your database details.          |
 
-The model is hardcoded to `minimax/minimax-m3.1-flash:free` in [app/api/chat/route.ts](app/api/chat/route.ts).
+The model is hardcoded to `~z-ai/glm-flash-latest` in [app/api/chat/route.ts](app/api/chat/route.ts).
+
+### Rate limit
+
+`/api/chat` is rate-limited per client IP with [`@upstash/ratelimit`](https://github.com/upstash/ratelimit-js) backed by Upstash Redis (`Redis.fromEnv()`).
+
+Current windows, in [app/api/chat/route.ts](app/api/chat/route.ts):
+
+```ts
+Ratelimit.slidingWindow(5, "30s") // burst: 5 requests per 30 seconds
+Ratelimit.slidingWindow(50, "24h") // daily: 50 requests per day
+```
+
+Both limits are keyed by the first IP in the `x-forwarded-for` header (requests without the header share a single fallback bucket). Exceeding either returns `429` with `{ "error": "Ratelimited" }`. Tune the numbers there to match your budget — see the Security section below.
 
 ## Security
 
-The `/api/chat` route is **public and unauthenticated** — every request spends your OpenRouter credits. That's fine for a personal demo, but before putting it in front of real traffic you should:
+The `/api/chat` route is **public and unauthenticated**: every allowed request spends your OpenRouter credits. It is rate-limited (see Configuration above).
 
-- **Rate limit it.** Add [Vercel Firewall / WAF](https://vercel.com/docs/security/vercel-waf) rules or [`@upstash/ratelimit`](https://github.com/upstash/ratelimit-js) so a single client can't drain your credits (denial-of-wallet).
-- **Cap spend.** Set an [OpenRouter spend limit](https://openrouter.ai/settings/limits) as a backstop.
-- **Add auth** if the chatbot isn't meant to be public.
+- **Rate limit is per-IP, not global.** One IP is capped at 50 requests/day with the default windows, but N IPs (botnet, rotating proxies) get N× the budget.
+- **Cap spend.** Keep an [OpenRouter spend limit](https://openrouter.ai/settings/limits) as a backstop.
+- **Add auth or WAF** if abuse appears: require login for heavy use, and/or add [Vercel Firewall / WAF](https://vercel.com/docs/security/vercel-waf) rules in front of `/api/chat`.
+- Requests without an `x-forwarded-for` header share one fallback bucket, so they throttle each other — expected on local dev, suspicious in production logs.
 
 The route already validates the request body, caps output tokens and step count, and aborts generation on client disconnect — but those bound a single request, not overall volume.
 
 ## How it works
 
-- [app/api/chat/route.ts](app/api/chat/route.ts) streams responses with `streamText`
+- [app/api/chat/route.ts](app/api/chat/route.ts) rate-limits by IP with Upstash, then streams responses with `streamText`
 - [components/chat/](components/chat) renders the conversation with `useChat` and coss chat primitives, entry at [components/chat/index.tsx](components/chat/index.tsx).
 - [tools/](tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [tools/index.ts](tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and provider-native web search.
 
