@@ -13,6 +13,7 @@ import {
 import { createAILogger, createEvlogIntegration } from "evlog/ai"
 import { ENV } from "varlock/env"
 
+import { chatErrors } from "@/lib/errors/chat.ts"
 import { useLogger } from "@/lib/logger.server.ts"
 import { getTools, type ChatUIMessage } from "@/tools/index.ts"
 
@@ -38,23 +39,32 @@ export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const log = useLogger()
         const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "ip"
 
-        const { success: burstOk } = await burst.limit(ip)
-        if (!burstOk) {
-          return Response.json({ error: "Ratelimited" }, { status: 429 })
+        const burstResult = await burst.limit(ip)
+        if (!burstResult.success) {
+          throw chatErrors.RATE_LIMITED_BURST({
+            retryAfter: Math.max(1, Math.ceil((burstResult.reset - Date.now()) / 1000)),
+            internal: { limit: burstResult.limit, remaining: burstResult.remaining },
+          })
         }
 
-        const { success: dailyOk } = await daily.limit(ip)
-        if (!dailyOk) {
-          return Response.json({ error: "Ratelimited" }, { status: 429 })
+        const dailyResult = await daily.limit(ip)
+        if (!dailyResult.success) {
+          throw chatErrors.RATE_LIMITED_DAILY({
+            retryAfter: Math.max(1, Math.ceil((dailyResult.reset - Date.now()) / 1000)),
+            internal: { limit: dailyResult.limit, remaining: dailyResult.remaining },
+          })
         }
 
         let body: unknown
         try {
           body = await request.json()
-        } catch {
-          return Response.json({ error: "Invalid JSON body." }, { status: 400 })
+        } catch (err) {
+          throw chatErrors.INVALID_JSON({
+            cause: err instanceof Error ? err : undefined,
+          })
         }
 
         const tools = getTools()
@@ -67,11 +77,13 @@ export const Route = createFileRoute("/api/chat")({
             tools: tools as Parameters<typeof validateUIMessages>[0]["tools"],
           })
           messages = validated
-        } catch {
-          return Response.json({ error: "Invalid messages." }, { status: 400 })
+        } catch (err) {
+          throw chatErrors.INVALID_MESSAGES({
+            cause: err instanceof Error ? err : undefined,
+          })
         }
 
-        const log = useLogger()
+        log.set({ chat: { messageCount: messages.length } })
         const ai = createAILogger(log)
 
         const result = streamText({
@@ -121,7 +133,12 @@ export const Route = createFileRoute("/api/chat")({
                 reasoningDurations: { [start.index]: Date.now() - start.time },
               }
             },
-            onError: () => "Something went wrong. Please try again.",
+            onError: (err) => {
+              const streamError = chatErrors.STREAM_FAILED({
+                cause: err instanceof Error ? err : undefined,
+              })
+              return JSON.stringify(streamError.toJSON())
+            },
           }),
         })
       },

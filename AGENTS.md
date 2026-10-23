@@ -20,6 +20,14 @@
 - Handle edge cases in proportion to their likelihood and impact. Avoid adding complexity for contrived, extremely unlikely, low-impact scenarios outside normal supported use, while preserving applicable security and data-integrity requirements.
 - Add concise comments only for non-obvious intent, unusual edge cases, and important constraints. Briefly explain why, not what.
 
+## Logging & errors
+
+- One wide event per server request, owned by Nitro. Add domain context with `log.set({ ... })` from `src/lib/logger.server.ts`; don't scatter `log.info()` calls and never `emit()` in request work.
+- At server boundaries, throw structured errors: `createError({ code, message, status, why, fix, link })` or a catalog factory from `src/lib/errors/`. Never `throw new Error(...)` or `Response.json({ error })`. Put private diagnostics in `internal: { ... }`, never in client-visible fields.
+- On the client, read errors with `parseError()` (or the feature adapter, e.g. `parseChatError()`), branch on `code`, and render `why` / `fix` in the UI.
+- Don't mutate the logger after the response completes (no `log.set()`/`log.error()` in stream callbacks); on Nitro v3 the event has already emitted.
+- Details: [.agents/observability.md](.agents/observability.md).
+
 ## Topic-specific Guidelines
 
 - [Data flow](.agents/data-flow.md) - TanStack Start/Router + Query data loading, cache behavior, mutations, and server boundaries

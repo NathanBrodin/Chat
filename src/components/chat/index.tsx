@@ -11,14 +11,16 @@ import { QuestionCard } from "@/components/chat/question-card"
 import { StatusIcon } from "@/components/chat/status-icon"
 import { Suggestions } from "@/components/chat/suggestions"
 import { Dazzle } from "@/components/dazzle"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
+import { parseChatError } from "@/lib/errors/parse-chat-error.ts"
 import { type ChatUIMessage } from "@/tools"
 
 export function Chat() {
-  const { messages, sendMessage, regenerate, status, stop, error, addToolOutput } =
+  const { messages, sendMessage, regenerate, status, stop, error, clearError, addToolOutput } =
     useChat<ChatUIMessage>({
       // Resume the conversation automatically once the user has answered the
       // ask_user questionnaire.
@@ -44,6 +46,21 @@ export function Chat() {
     scroll.resetScroll()
     sendMessage({ text: prompt })
   }
+
+  // The transport surfaces HTTP failures as APICallError carrying the raw
+  // response body, so unwrap with parseChatError and branch on stable codes,
+  // never on user-facing messages.
+  const parsedError = error ? parseChatError(error) : null
+  const errorTitle =
+    parsedError?.code === "chat.RATE_LIMITED_BURST" ||
+    parsedError?.code === "chat.RATE_LIMITED_DAILY"
+      ? "Slow down — rate limited"
+      : parsedError?.code === "chat.INVALID_JSON" ||
+          parsedError?.code === "chat.INVALID_MESSAGES"
+        ? "Couldn't process that"
+        : parsedError?.code === "chat.STREAM_FAILED"
+          ? "Response interrupted"
+          : "Request failed"
 
   return (
     <div className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col">
@@ -113,10 +130,24 @@ export function Chat() {
       )}
 
       <div className="mx-auto flex w-full max-w-2xl shrink-0 flex-col gap-2 px-6 pb-6">
-        {error && (
+        {parsedError && (
           <Alert variant="error">
-            <AlertTitle>Request failed</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
+            <AlertTitle>{errorTitle}</AlertTitle>
+            <AlertDescription>
+              <span>{parsedError.message}</span>
+              {parsedError.why && <span>{parsedError.why}</span>}
+              {parsedError.fix && <span className="font-medium">{parsedError.fix}</span>}
+              {parsedError.link && (
+                <a className="underline" href={parsedError.link}>
+                  Learn more
+                </a>
+              )}
+            </AlertDescription>
+            <AlertAction>
+              <Button variant="ghost" size="xs" onClick={() => clearError()}>
+                Dismiss
+              </Button>
+            </AlertAction>
           </Alert>
         )}
         <PromptForm

@@ -1,5 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start"
-import { setResponseStatus } from "@tanstack/react-start/server"
+import { createError } from "evlog"
 
 import { _getUser } from "@/lib/auth/functions.ts"
 
@@ -17,8 +17,14 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const user = await _getUser()
 
   if (!user) {
-    setResponseStatus(401)
-    throw new Error("Unauthorized")
+    throw createError({
+      code: "auth/unauthenticated",
+      message: "Please log in to continue",
+      status: 401,
+      why: "No valid session for this server request",
+      fix: "Sign in to your account",
+      link: "/login",
+    })
   }
 
   return next({ context: { user } })
@@ -40,8 +46,14 @@ export const freshAuthMiddleware = createMiddleware().server(async ({ next }) =>
   })
 
   if (!user) {
-    setResponseStatus(401)
-    throw new Error("Unauthorized")
+    throw createError({
+      code: "auth/unauthenticated",
+      message: "Please log in to continue",
+      status: 401,
+      why: "No fresh session for this sensitive operation",
+      fix: "Sign in to your account",
+      link: "/login",
+    })
   }
 
   return next({ context: { user } })
