@@ -10,8 +10,10 @@ import {
   toUIMessageStream,
   validateUIMessages,
 } from "ai"
+import { createAILogger, createEvlogIntegration } from "evlog/ai"
 import { ENV } from "varlock/env"
 
+import { useLogger } from "@/lib/logger.server.ts"
 import { getTools, type ChatUIMessage } from "@/tools/index.ts"
 
 const burst = new Ratelimit({
@@ -69,13 +71,19 @@ export const Route = createFileRoute("/api/chat")({
           return Response.json({ error: "Invalid messages." }, { status: 400 })
         }
 
+        const log = useLogger()
+        const ai = createAILogger(log)
+
         const result = streamText({
-          model: openrouter("~z-ai/glm-flash-latest"),
+          model: ai.wrap(openrouter("~z-ai/glm-flash-latest")),
           maxOutputTokens: 8192,
           messages: await convertToModelMessages(messages),
           tools,
           stopWhen: isStepCount(5),
           abortSignal: request.signal,
+          telemetry: {
+            integrations: [createEvlogIntegration(ai)],
+          },
         })
 
         // A reply after ask_user continues the last message, so count its parts.
