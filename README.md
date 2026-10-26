@@ -11,7 +11,7 @@ Forked from [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-te
 - Web search via OpenRouter's web search server tool
 - Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
 - Per-IP rate limiting on `/api/chat` with Upstash Redis + `@upstash/ratelimit`
-- Better Auth starter (email + GitHub/Google OAuth) with login/signup pages, persisted with Drizzle ORM + PostgreSQL
+- Better Auth starter (email + GitHub/Google OAuth) with login/signup pages, persisted with Drizzle ORM + Neon PostgreSQL
 
 ## Deploy
 
@@ -21,7 +21,7 @@ Set the following in your hosting provider's environment variables:
 
 - `OPENROUTER_API_KEY`, create one at [openrouter.ai/keys](https://openrouter.ai/keys).
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, create a Redis database at [console.upstash.com](https://console.upstash.com), then copy the REST URL and REST token from the database details (or use the Vercel Upstash integration, which sets them automatically).
-- `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `VITE_BASE_URL` — see [`.env.schema`](./.env.schema), which is the source of truth for every variable.
+- `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `VITE_BASE_URL` — see [`.env.schema`](./.env.schema), which is the source of truth for every variable. Use your Neon project's pooled connection string for `DATABASE_URL`.
 
 ## Local development
 
@@ -37,7 +37,7 @@ Set the following in your hosting provider's environment variables:
 vp install
 ```
 
-Then create a `.env.local` file with your values, based on [`.env.schema`](./.env.schema), then validate them:
+Create a [Neon](https://neon.tech) project, then create a `.env.local` file with your values based on [`.env.schema`](./.env.schema). Copy the pooled connection string into `DATABASE_URL`, then validate the environment:
 
 ```sh
 vpr env:load
@@ -45,7 +45,7 @@ vpr env:load
 
 Create an OpenRouter key at [openrouter.ai/keys](https://openrouter.ai/keys) and a Redis database at [console.upstash.com](https://console.upstash.com).
 
-Generate the initial migration with drizzle-kit, then apply to your database:
+Generate the initial migration with drizzle-kit, then apply it to your Neon database:
 
 ```sh
 vpr db generate
@@ -64,14 +64,14 @@ The development server should now be running at [http://localhost:3000](http://l
 
 ## Configuration
 
-| Env var                    | Required | Description                                                                      |
-| -------------------------- | -------- | -------------------------------------------------------------------------------- |
-| `OPENROUTER_API_KEY`       | Yes      | OpenRouter API key. Get one at [openrouter.ai/keys](https://openrouter.ai/keys). |
-| `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL for rate limiting. From your database details.            |
-| `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token for rate limiting. From your database details.          |
-| `DATABASE_URL`             | Yes      | PostgreSQL connection URL. Run `docker compose up -d` for the local database.    |
-| `BETTER_AUTH_SECRET`       | Yes      | Better Auth signing secret. Generate one with `vpr auth:secret`.                 |
-| `VITE_BASE_URL`            | Yes      | Public origin used by the browser and Better Auth.                               |
+| Env var                    | Required | Description                                                                                  |
+| -------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY`       | Yes      | OpenRouter API key. Get one at [openrouter.ai/keys](https://openrouter.ai/keys).             |
+| `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL for rate limiting. From your database details.                        |
+| `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token for rate limiting. From your database details.                      |
+| `DATABASE_URL`             | Yes      | Neon PostgreSQL connection URL (pooled). Create a project at [neon.tech](https://neon.tech). |
+| `BETTER_AUTH_SECRET`       | Yes      | Better Auth signing secret. Generate one with `vpr auth:secret`.                             |
+| `VITE_BASE_URL`            | Yes      | Public origin used by the browser and Better Auth.                                           |
 
 [Varlock](https://varlock.dev/) keeps the environment-variable contract in `.env.schema` and generates types from it. Put local values, including secrets, in the uncommitted `.env.local`, then run `vpr env:load` to validate them.
 
