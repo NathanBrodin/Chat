@@ -63,13 +63,30 @@ export function listConversations() {
       title: conversation.title,
       country: conversation.country,
       city: conversation.city,
+      usage: conversation.usage,
       createdAt: conversation.createdAt,
     })
     .from(conversation)
     .orderBy(desc(conversation.createdAt))
 }
 
+export type ConversationSummary = Awaited<ReturnType<typeof listConversations>>[number]
+
 export async function getConversation(id: string) {
   const rows = await db.select().from(conversation).where(eq(conversation.id, id)).limit(1)
-  return rows[0] ?? null
+  const row = rows[0]
+
+  if (!row) {
+    return null
+  }
+
+  // Older rows were saved before response message IDs were generated, which
+  // collides React keys. Derive stable ids so they can be resumed safely.
+  return {
+    ...row,
+    messages: row.messages.map((message, index) => ({
+      ...message,
+      id: message.id || `${row.id}-${index}`,
+    })),
+  }
 }

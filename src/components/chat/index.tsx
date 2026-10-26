@@ -19,9 +19,19 @@ import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
 import { parseChatError } from "@/lib/errors/parse-chat-error"
 import { type ChatUIMessage } from "@/tools"
 
-export function Chat() {
+export function Chat({
+  id,
+  initialMessages,
+  title,
+}: {
+  id?: string
+  initialMessages?: ChatUIMessage[]
+  title?: string
+} = {}) {
   const { messages, sendMessage, regenerate, status, stop, error, clearError, addToolOutput } =
     useChat<ChatUIMessage>({
+      id,
+      messages: initialMessages,
       // Resume the conversation automatically once the user has answered the
       // ask_user questionnaire.
       sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
@@ -63,7 +73,7 @@ export function Chat() {
 
   return (
     <div className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col">
-      <ChatHeader messages={messages} />
+      <ChatHeader messages={messages} title={title} />
       {messages.length === 0 ? (
         <div className="flex min-h-0 flex-1 items-center justify-center p-6">
           <Empty className="gap-0">
@@ -128,7 +138,7 @@ export function Chat() {
         </ChatConversation>
       )}
 
-      <div className="mx-auto flex w-full max-w-2xl shrink-0 flex-col gap-2 px-6 pb-6">
+      <div className="mx-auto flex w-full max-w-2xl shrink-0 flex-col gap-2 px-6 pb-2">
         {parsedError && (
           <Alert variant="error">
             <AlertTitle>{errorTitle}</AlertTitle>
@@ -155,6 +165,9 @@ export function Chat() {
           onSubmit={handleSend}
           onStop={() => stop()}
         />
+        <p className="text-center text-xs text-muted-foreground">
+          All conversations are public. Do not share personal information.
+        </p>
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
+  generateId,
   isStepCount,
   streamText,
   toUIMessageStream,
@@ -90,6 +91,8 @@ export const Route = createFileRoute("/api/chat")({
           stream: toUIMessageStream({
             stream: result.stream,
             originalMessages: messages,
+            // Without this the persisted assistant message has an empty id.
+            generateMessageId: generateId,
             sendSources: true,
             // The AI SDK does not time reasoning, so time each block here.
             messageMetadata: ({ part }) => {

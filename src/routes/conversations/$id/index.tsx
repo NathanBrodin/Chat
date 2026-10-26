@@ -1,11 +1,15 @@
 import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 
-import { ChatMessage } from "@/components/chat/chat-message"
-import { TooltipProvider } from "@/components/ui/tooltip"
+import { Chat } from "@/components/chat"
 import { conversationQueryOptions } from "@/lib/chat/queries"
 
 export const Route = createFileRoute("/conversations/$id/")({
+  loader: async ({ context, params }) => {
+    // Hovering a sidebar item preloads this route, so the conversation is warm
+    // before the click lands.
+    await context.queryClient.query(conversationQueryOptions(params.id))
+  },
   component: ConversationPage,
 })
 
@@ -26,23 +30,11 @@ function ConversationPage() {
   }
 
   return (
-    <TooltipProvider>
-      <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col gap-6 px-6 py-8">
-        <div className="flex flex-col gap-4">
-          <Link
-            to="/conversations"
-            className="w-fit text-sm text-muted-foreground hover:text-foreground"
-          >
-            ← Conversations
-          </Link>
-          <h1 className="text-lg font-semibold">{query.data.title}</h1>
-        </div>
-        <div className="flex flex-col gap-6">
-          {query.data.messages.map((message) => (
-            <ChatMessage key={message.id} message={message} />
-          ))}
-        </div>
-      </div>
-    </TooltipProvider>
+    <Chat
+      key={query.data.id}
+      id={query.data.id}
+      initialMessages={query.data.messages}
+      title={query.data.title}
+    />
   )
 }

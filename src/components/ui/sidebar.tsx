@@ -1,12 +1,11 @@
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
+import { useHotkey } from "@tanstack/react-hotkeys"
 import { cva, type VariantProps } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
 import * as React from "react"
 
-import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui//scroll-area"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetDescription, SheetHeader, SheetPopup, SheetTitle } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -14,15 +13,12 @@ import { Tooltip, TooltipPopup, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 
-const SIDEBAR_COOKIE_NAME: string = "sidebar_state"
-const SIDEBAR_COOKIE_MAX_AGE: number = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH: string = "16rem"
 const SIDEBAR_WIDTH_MOBILE: string = "18rem"
 const SIDEBAR_WIDTH_ICON: string = "3rem"
-const SIDEBAR_KEYBOARD_SHORTCUT: string = "b"
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-lg p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pe-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:shrink-0 [&>svg:not([class*='size-'])]:size-4",
+  "peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-lg p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pe-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-inset active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[popup-open]:bg-sidebar-accent data-[popup-open]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:shrink-0 [&>svg:not([class*='size-'])]:size-4",
   {
     defaultVariants: {
       size: "default",
@@ -93,14 +89,6 @@ export function SidebarProvider({
       } else {
         _setOpen(openState)
       }
-
-      // This sets the cookie to keep the sidebar state.
-      await cookieStore.set({
-        expires: Date.now() + SIDEBAR_COOKIE_MAX_AGE * 1000,
-        name: SIDEBAR_COOKIE_NAME,
-        path: "/",
-        value: String(openState),
-      })
     },
     [setOpenProp, open],
   )
@@ -110,21 +98,15 @@ export function SidebarProvider({
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
   }, [isMobile, setOpen])
 
-  // Adds a keyboard shortcut to toggle the sidebar.
-  React.useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
-        toggleSidebar()
-      }
-    }
+  useHotkey("Mod+B", async (event) => {
+    event.preventDefault()
+    await toggleSidebar()
+  })
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [toggleSidebar])
+  React.useLayoutEffect(() => {
+    document.documentElement.dataset.sidebarOpen = String(open)
+  }, [open])
 
-  // We add a state so that we can do data-state="expanded" or "collapsed".
-  // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed"
 
   const contextValue = React.useMemo<SidebarContextProps>(
@@ -144,7 +126,7 @@ export function SidebarProvider({
     <SidebarContext.Provider value={contextValue}>
       <div
         className={cn(
-          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
+          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar max-md:flex-col",
           className,
         )}
         data-slot="sidebar-wrapper"
@@ -165,8 +147,8 @@ export function SidebarProvider({
 
 export function Sidebar({
   side = "left",
-  variant = "sidebar",
-  collapsible = "offcanvas",
+  variant = "inset",
+  collapsible = "icon",
   className,
   children,
   ...props
@@ -179,7 +161,7 @@ export function Sidebar({
 
   if (collapsible === "none") {
     return (
-      <div
+      <aside
         className={cn(
           "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground",
           className,
@@ -188,7 +170,7 @@ export function Sidebar({
         {...props}
       >
         {children}
-      </div>
+      </aside>
     )
   }
 
@@ -232,21 +214,18 @@ export function Sidebar({
           "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
-          variant === "floating" || variant === "inset"
-            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
+          "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
         )}
         data-slot="sidebar-gap"
       />
-      <div
+      <aside
         className={cn(
           "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
           side === "left"
-            ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
-            : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-          // Adjust the padding for floating and inset variants.
+            ? "left-0 group-data-[collapsible=offcanvas]:-left-(--sidebar-width)"
+            : "right-0 group-data-[collapsible=offcanvas]:-right-(--sidebar-width)",
           variant === "floating" || variant === "inset"
-            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(0)))]"
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className,
         )}
@@ -260,7 +239,7 @@ export function Sidebar({
         >
           {children}
         </div>
-      </div>
+      </aside>
     </div>
   )
 }
@@ -269,25 +248,22 @@ export function SidebarTrigger({
   className,
   onClick,
   ...props
-}: React.ComponentProps<typeof Button>): React.ReactElement {
+}: React.ComponentProps<typeof SidebarMenuButton>): React.ReactElement {
   const { toggleSidebar } = useSidebar()
 
   return (
-    <Button
-      className={cn("size-7", className)}
+    <SidebarMenuButton
+      className={cn("size-8", className)}
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
         onClick?.(event)
         toggleSidebar()
       }}
-      size="icon"
-      variant="ghost"
       {...props}
     >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+      <SidebarIcon />
+    </SidebarMenuButton>
   )
 }
 
@@ -299,7 +275,6 @@ export function SidebarRail({
 
   return (
     <button
-      aria-label="Toggle Sidebar"
       className={cn(
         "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",
@@ -322,18 +297,20 @@ export function SidebarRail({
 
 export function SidebarInset({
   className,
+  children,
   ...props
 }: React.ComponentProps<"main">): React.ReactElement {
   return (
     <main
       className={cn(
-        "relative flex w-full flex-1 flex-col bg-background",
-        "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ms-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm/5 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ms-2",
+        "relative flex min-h-0 w-full min-w-0 flex-1 flex-col border-sidebar-border bg-background shadow-lg/5 not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:shadow-[0_1px_--theme(--color-black/4%)] md:mx-2 md:my-2 md:ml-0 md:rounded-2xl md:border md:before:rounded-[calc(var(--radius-2xl)-1px)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
         className,
       )}
       data-slot="sidebar-inset"
       {...props}
-    />
+    >
+      {children}
+    </main>
   )
 }
 
@@ -357,7 +334,7 @@ export function SidebarHeader({
 }: React.ComponentProps<"div">): React.ReactElement {
   return (
     <div
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("flex flex-col gap-2 px-2 py-2 sm:px-0", className)}
       data-sidebar="header"
       data-slot="sidebar-header"
       {...props}
@@ -371,7 +348,7 @@ export function SidebarFooter({
 }: React.ComponentProps<"div">): React.ReactElement {
   return (
     <div
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("flex flex-col gap-2 px-2 py-2 sm:px-0", className)}
       data-sidebar="footer"
       data-slot="sidebar-footer"
       {...props}
@@ -398,10 +375,10 @@ export function SidebarContent({
   ...props
 }: React.ComponentProps<"div">): React.ReactElement {
   return (
-    <ScrollArea className="min-h-0 flex-1" fill overscrollContain scrollFade>
+    <ScrollArea className="**:data-[slot=scroll-area-scrollbar]:hidden" scrollFade>
       <div
         className={cn(
-          "flex h-full flex-col gap-2 group-data-[collapsible=icon]:overflow-hidden",
+          "flex min-h-0 flex-1 flex-col gap-0 overflow-auto px-2 group-data-[collapsible=icon]:overflow-hidden sm:px-0",
           className,
         )}
         data-sidebar="content"
@@ -418,7 +395,7 @@ export function SidebarGroup({
 }: React.ComponentProps<"div">): React.ReactElement {
   return (
     <div
-      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+      className={cn("relative flex w-full min-w-0 flex-col px-2 py-2 sm:px-0", className)}
       data-sidebar="group"
       data-slot="sidebar-group"
       {...props}
@@ -716,4 +693,36 @@ export function SidebarMenuSubButton({
     props: mergeProps<"a">(defaultProps, props),
     render,
   })
+}
+
+export function SidebarIcon(props: React.ComponentPropsWithoutRef<"svg">) {
+  return (
+    // Icon designed by @ncdai
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" {...props}>
+      <rect
+        x="2"
+        y="3"
+        width="20"
+        height="18"
+        rx="4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/*
+        The fill width follows `data-sidebar-open` on <html>, like the sidebar
+        panel, so the first paint matches the persisted state. The widths are
+        px on purpose: viewBox units, not spacing-scale values.
+      */}
+      <rect
+        x="5"
+        y="6"
+        rx="1"
+        height="12"
+        fill="currentColor"
+        className="w-(--fill-width) transition-[width] duration-300 [--fill-width:6px] in-data-[sidebar-open=false]:[--fill-width:2px]"
+      />
+    </svg>
+  )
 }

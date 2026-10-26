@@ -2,12 +2,8 @@ import { Button } from "@/components/ui/button"
 import { CircularProgress } from "@/components/ui/circular-progress"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/preview-card"
 import { Progress } from "@/components/ui/progress"
+import { CONTEXT_LIMIT } from "@/lib/chat/context-usage"
 import type { ChatUIMessage } from "@/tools"
-
-// Context window of the model hardcoded in src/routes/api/chat/route.ts
-// (glm-flash: 128k). The AI SDK does not send it, so keep it in sync
-// with the model.
-const CONTEXT_LIMIT = 131_072
 
 function formatTokens(value: number) {
   if (value < 1000) {
