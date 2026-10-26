@@ -96,7 +96,7 @@ function ConversationItem({
         isActive={isActive}
         tooltip={conversation.title}
         render={<Link to="/conversations/$id" params={{ id: conversation.id }} />}
-        className="h-auto py-1.5"
+        className="flex h-auto flex-row items-start py-1.5"
       >
         <div className="flex min-w-0 flex-1 flex-col gap-0.5 group-data-[collapsible=icon]:hidden">
           <span className="truncate text-sm font-medium">{conversation.title}</span>

@@ -334,7 +334,7 @@ export function SidebarHeader({
 }: React.ComponentProps<"div">): React.ReactElement {
   return (
     <div
-      className={cn("flex flex-col gap-2 px-2 py-2 sm:px-0", className)}
+      className={cn("flex flex-col gap-2 px-2 py-3 sm:px-0", className)}
       data-sidebar="header"
       data-slot="sidebar-header"
       {...props}

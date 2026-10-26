@@ -9,6 +9,8 @@ import { evlogErrorHandler } from "evlog/nitro/v3"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { ToastProvider } from "@/components/ui/toast"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { getRootHead } from "@/lib/site"
 
 import appCss from "@/styles.css?url"
 
@@ -16,34 +18,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   server: {
     middleware: [createMiddleware().server(evlogErrorHandler)],
   },
-  head: () => ({
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        // scaffold:title
-        title: "Chat",
-      },
-      {
-        name: "description",
-        // scaffold:description
-        content:
-          "A chatbot template built using shadcn/ui, shadcn/react and shadcn/typeset, powered by OpenRouter.",
-      },
-    ],
-    links: [
-      {
-        rel: "icon",
-        href: "/favicon.ico",
-      },
-      { rel: "stylesheet", href: appCss },
-    ],
-  }),
+  head: () => {
+    const rootHead = getRootHead()
+
+    return {
+      ...rootHead,
+      links: [
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+        ...rootHead.links,
+      ],
+    }
+  },
   shellComponent: RootDocument,
 })
 
@@ -56,7 +44,9 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+          </ToastProvider>
         </ThemeProvider>
 
         <TanStackDevtools
