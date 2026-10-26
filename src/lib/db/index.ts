@@ -3,8 +3,8 @@ import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import { ENV } from "varlock/env"
 
-import { authRelations } from "@/lib/db/schema/auth.schema.ts"
-import { relations } from "@/lib/db/schema/relations.ts"
+import { authRelations } from "@/lib/db/schema/auth.schema"
+import { relations } from "@/lib/db/schema/relations"
 
 const client = postgres(ENV.DATABASE_URL)
 

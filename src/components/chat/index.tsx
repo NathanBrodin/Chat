@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
-import { parseChatError } from "@/lib/errors/parse-chat-error.ts"
+import { parseChatError } from "@/lib/errors/parse-chat-error"
 import { type ChatUIMessage } from "@/tools"
 
 export function Chat() {
@@ -55,8 +55,7 @@ export function Chat() {
     parsedError?.code === "chat.RATE_LIMITED_BURST" ||
     parsedError?.code === "chat.RATE_LIMITED_DAILY"
       ? "Slow down — rate limited"
-      : parsedError?.code === "chat.INVALID_JSON" ||
-          parsedError?.code === "chat.INVALID_MESSAGES"
+      : parsedError?.code === "chat.INVALID_JSON" || parsedError?.code === "chat.INVALID_MESSAGES"
         ? "Couldn't process that"
         : parsedError?.code === "chat.STREAM_FAILED"
           ? "Response interrupted"

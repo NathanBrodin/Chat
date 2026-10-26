@@ -2,12 +2,12 @@ import { useMutation } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { LoaderCircleIcon } from "lucide-react"
 
-import { SocialSignInButtons } from "@/components/sign-in-social-buttons.tsx"
-import { Button } from "@/components/ui/button.tsx"
-import { Input } from "@/components/ui/input.tsx"
-import { Label } from "@/components/ui/label.tsx"
-import { toastManager } from "@/components/ui/toast.tsx"
-import { authClient } from "@/lib/auth/auth-client.ts"
+import { SocialSignInButtons } from "@/components/sign-in-social-buttons"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { toastManager } from "@/components/ui/toast"
+import { authClient } from "@/lib/auth/auth-client"
 
 export const Route = createFileRoute("/_guest/login/")({
   component: LoginForm,

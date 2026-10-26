@@ -7,8 +7,8 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { createMiddleware } from "@tanstack/react-start"
 import { evlogErrorHandler } from "evlog/nitro/v3"
 
-import { ThemeProvider } from "@/components/theme-provider.tsx"
-import { ToastProvider } from "@/components/ui/toast.tsx"
+import { ThemeProvider } from "@/components/theme-provider"
+import { ToastProvider } from "@/components/ui/toast"
 
 import appCss from "@/styles.css?url"
 

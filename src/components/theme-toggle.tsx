@@ -1,13 +1,13 @@
 import { SunIcon, MoonIcon } from "lucide-react"
 
-import { useTheme } from "@/components/theme-provider.tsx"
-import { Button } from "@/components/ui/button.tsx"
+import { useTheme } from "@/components/theme-provider"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/menu.tsx"
+} from "@/components/ui/menu"
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()

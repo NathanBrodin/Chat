@@ -4,8 +4,8 @@ import { betterAuth } from "better-auth/minimal"
 import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { ENV } from "varlock/env"
 
-import { db } from "@/lib/db/index.ts"
-import * as schema from "@/lib/db/schema/index.ts"
+import { db } from "@/lib/db/index"
+import * as schema from "@/lib/db/schema/index"
 
 export const auth = betterAuth({
   baseURL: ENV.VITE_BASE_URL,

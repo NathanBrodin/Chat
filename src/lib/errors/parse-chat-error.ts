@@ -11,8 +11,7 @@ import { parseError } from "evlog"
  * anything else (network failures, aborts, plain messages).
  */
 export function parseChatError(error: unknown) {
-  const record =
-    error && typeof error === "object" ? (error as Record<string, unknown>) : undefined
+  const record = error && typeof error === "object" ? (error as Record<string, unknown>) : undefined
 
   const text =
     typeof record?.responseBody === "string"

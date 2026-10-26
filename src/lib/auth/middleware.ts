@@ -1,7 +1,7 @@
 import { createMiddleware } from "@tanstack/react-start"
 import { createError } from "evlog"
 
-import { _getUser } from "@/lib/auth/functions.ts"
+import { _getUser } from "@/lib/auth/functions"
 
 // https://tanstack.com/start/latest/docs/framework/react/guide/middleware
 

@@ -1,9 +1,9 @@
 import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons"
 import { useMutation } from "@tanstack/react-query"
 
-import { Button } from "@/components/ui/button.tsx"
-import { toastManager } from "@/components/ui/toast.tsx"
-import { authClient } from "@/lib/auth/auth-client.ts"
+import { Button } from "@/components/ui/button"
+import { toastManager } from "@/components/ui/toast"
+import { authClient } from "@/lib/auth/auth-client"
 
 interface SocialLoginButtonProps {
   provider: string

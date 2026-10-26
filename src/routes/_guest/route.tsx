@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { GalleryVerticalEndIcon } from "lucide-react"
 
-import { authQueryOptions } from "@/lib/auth/queries.ts"
+import { authQueryOptions } from "@/lib/auth/queries"
 
 export const Route = createFileRoute("/_guest")({
   component: RouteComponent,

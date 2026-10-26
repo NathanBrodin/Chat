@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
-import { authQueryOptions } from "@/lib/auth/queries.ts"
+import { authQueryOptions } from "@/lib/auth/queries"
 
 /**
  * This is the _auth layout, which enables 'protected routes'
