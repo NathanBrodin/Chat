@@ -1,7 +1,5 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { createFileRoute } from "@tanstack/react-router"
-import { Ratelimit } from "@upstash/ratelimit"
-import { Redis } from "@upstash/redis"
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
@@ -13,23 +11,13 @@ import {
 import { createAILogger, createEvlogIntegration } from "evlog/ai"
 import { ENV } from "varlock/env"
 
-import { chatErrors } from "@/lib/errors/chat.ts"
-import { useLogger } from "@/lib/logger.server.ts"
-import { getTools, type ChatUIMessage } from "@/tools/index.ts"
-
-const burst = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(5, "30s"),
-  prefix: "chat:burst",
-  analytics: true,
-})
-
-const daily = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(50, "24h"),
-  prefix: "chat:daily",
-  analytics: true,
-})
+import { isValidChatId } from "@/lib/chat/chat-id"
+import { getLocation } from "@/lib/chat/geolocation"
+import { checkChatRateLimit } from "@/lib/chat/rate-limit"
+import { saveConversation } from "@/lib/chat/store"
+import { chatErrors } from "@/lib/errors/chat"
+import { useLogger } from "@/lib/logger.server"
+import { getTools, type ChatUIMessage } from "@/tools/index"
 
 const openrouter = createOpenRouter({
   apiKey: ENV.OPENROUTER_API_KEY,
@@ -40,23 +28,8 @@ export const Route = createFileRoute("/api/chat")({
     handlers: {
       POST: async ({ request }) => {
         const log = useLogger()
-        const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "ip"
 
-        const burstResult = await burst.limit(ip)
-        if (!burstResult.success) {
-          throw chatErrors.RATE_LIMITED_BURST({
-            retryAfter: Math.max(1, Math.ceil((burstResult.reset - Date.now()) / 1000)),
-            internal: { limit: burstResult.limit, remaining: burstResult.remaining },
-          })
-        }
-
-        const dailyResult = await daily.limit(ip)
-        if (!dailyResult.success) {
-          throw chatErrors.RATE_LIMITED_DAILY({
-            retryAfter: Math.max(1, Math.ceil((dailyResult.reset - Date.now()) / 1000)),
-            internal: { limit: dailyResult.limit, remaining: dailyResult.remaining },
-          })
-        }
+        await checkChatRateLimit(request)
 
         let body: unknown
         try {
@@ -65,6 +38,11 @@ export const Route = createFileRoute("/api/chat")({
           throw chatErrors.INVALID_JSON({
             cause: err instanceof Error ? err : undefined,
           })
+        }
+
+        const id = (body as { id?: unknown })?.id
+        if (typeof id !== "string" || !isValidChatId(id)) {
+          throw chatErrors.INVALID_CHAT_ID()
         }
 
         const tools = getTools()
@@ -83,7 +61,9 @@ export const Route = createFileRoute("/api/chat")({
           })
         }
 
-        log.set({ chat: { messageCount: messages.length } })
+        const location = getLocation(request)
+
+        log.set({ chat: { id, messageCount: messages.length } })
         const ai = createAILogger(log)
 
         const result = streamText({
@@ -109,6 +89,7 @@ export const Route = createFileRoute("/api/chat")({
         return createUIMessageStreamResponse({
           stream: toUIMessageStream({
             stream: result.stream,
+            originalMessages: messages,
             sendSources: true,
             // The AI SDK does not time reasoning, so time each block here.
             messageMetadata: ({ part }) => {
@@ -138,6 +119,18 @@ export const Route = createFileRoute("/api/chat")({
                 cause: err instanceof Error ? err : undefined,
               })
               return JSON.stringify(streamError.toJSON())
+            },
+            onEnd: async ({ messages: updatedMessages, outcome }) => {
+              if (outcome.status !== "completed") {
+                return
+              }
+
+              try {
+                await saveConversation({ id, messages: updatedMessages, location })
+              } catch {
+                // Best-effort: a persistence failure must not corrupt the stream.
+                // No logging here — the request event has already emitted.
+              }
             },
           }),
         })

@@ -27,6 +27,12 @@ export const chatErrors = defineErrorCatalog("chat", {
     why: "Message history failed AI SDK validation",
     fix: "Reload the page and start a new conversation",
   },
+  INVALID_CHAT_ID: {
+    status: 400,
+    message: "Invalid chat request",
+    why: "The chat identifier is missing or malformed",
+    fix: "Reload the page and try again",
+  },
   STREAM_FAILED: {
     status: 500,
     message: "Chat response failed",
