@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 
 import { Chat } from "@/components/chat"
+import { Sidebar, SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -8,8 +9,11 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   return (
-    <div className="relative isolate flex h-svh min-h-0 flex-col overflow-hidden">
-      <Chat />
-    </div>
+    <SidebarProvider className="h-svh overflow-hidden" defaultOpen={false}>
+      <Sidebar variant="inset" collapsible="offcanvas" />
+      <SidebarInset className="isolate overflow-hidden md:ml-2">
+        <Chat />
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
