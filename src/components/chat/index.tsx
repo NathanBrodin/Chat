@@ -5,7 +5,6 @@ import { ChatConversation } from "@/components/chat/chat-conversation"
 import { ChatMessage } from "@/components/chat/chat-message"
 import { ChatHeader } from "@/components/chat/header"
 import { useChatResponseState } from "@/components/chat/hooks/use-chat-response-state"
-import { useChatScroll } from "@/components/chat/hooks/use-chat-scroll"
 import { PromptForm } from "@/components/chat/prompt-form"
 import { QuestionCard } from "@/components/chat/question-card"
 import { StatusIcon } from "@/components/chat/status-icon"
@@ -15,6 +14,7 @@ import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
+import { MessageScrollerItem } from "@/components/ui/message-scroller"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
 import { parseChatError } from "@/lib/errors/parse-chat-error"
 import { type ChatUIMessage } from "@/tools"
@@ -37,8 +37,6 @@ export function Chat({
       sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     })
 
-  const scroll = useChatScroll({ itemCount: messages.length })
-
   const isBusy = status === "submitted" || status === "streaming"
   const responseState = useChatResponseState(status, messages)
 
@@ -53,7 +51,6 @@ export function Chat({
       : undefined
 
   function handleSend(prompt: string) {
-    scroll.resetScroll()
     sendMessage({ text: prompt })
   }
 
@@ -87,13 +84,16 @@ export function Chat({
         </div>
       ) : (
         <ChatConversation
-          scroll={scroll}
           label="Conversation"
-          jumpLabel="Jump to latest"
+          busy={isBusy}
           contentClassName="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-6"
         >
           {messages.map((message) => (
-            <div key={message.id}>
+            <MessageScrollerItem
+              key={message.id}
+              messageId={message.id}
+              scrollAnchor={message.role === "user"}
+            >
               <ChatMessage
                 message={message}
                 isStreaming={isBusy && message.id === lastMessage?.id}
@@ -106,34 +106,37 @@ export function Chat({
                     : undefined
                 }
               />
-            </div>
+            </MessageScrollerItem>
           ))}
           {status === "submitted" && (
-            <Message>
-              <MessageContent>
-                <Trace>
-                  <TraceLine status="running">
-                    <TraceIcon>
-                      <StatusIcon status="running" />
-                    </TraceIcon>
-                    <TraceTitle>Thinking</TraceTitle>
-                  </TraceLine>
-                </Trace>
-              </MessageContent>
-            </Message>
+            <MessageScrollerItem messageId="thinking">
+              <Message>
+                <MessageContent>
+                  <Trace>
+                    <TraceLine status="running">
+                      <TraceIcon>
+                        <StatusIcon status="running" />
+                      </TraceIcon>
+                      <TraceTitle>Thinking</TraceTitle>
+                    </TraceLine>
+                  </Trace>
+                </MessageContent>
+              </Message>
+            </MessageScrollerItem>
           )}
           {pendingQuestion && (
-            <QuestionCard
-              part={pendingQuestion}
-              onAnswer={(toolCallId, answer) => {
-                scroll.resetScroll()
-                addToolOutput({
-                  tool: "ask_user",
-                  toolCallId,
-                  output: answer,
-                })
-              }}
-            />
+            <MessageScrollerItem messageId="pending-question">
+              <QuestionCard
+                part={pendingQuestion}
+                onAnswer={(toolCallId, answer) => {
+                  addToolOutput({
+                    tool: "ask_user",
+                    toolCallId,
+                    output: answer,
+                  })
+                }}
+              />
+            </MessageScrollerItem>
           )}
         </ChatConversation>
       )}
