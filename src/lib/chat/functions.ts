@@ -1,3 +1,4 @@
+import { notFound } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
 import { isValidChatId } from "@/lib/chat/chat-id"
@@ -10,9 +11,11 @@ export const $listConversations = createServerFn({ method: "GET" }).handler(asyn
 export const $getConversation = createServerFn({ method: "GET", strict: { output: false } })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    if (!isValidChatId(data.id)) {
-      return null
+    const conversation = isValidChatId(data.id) ? await getConversation(data.id) : null
+
+    if (!conversation) {
+      throw notFound()
     }
 
-    return getConversation(data.id)
+    return conversation
   })
