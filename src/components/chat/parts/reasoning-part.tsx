@@ -1,5 +1,3 @@
-import * as React from "react"
-
 import { StatusIcon } from "@/components/chat/status-icon"
 import {
   TraceCollapsible,
@@ -21,7 +19,6 @@ export function ReasoningPart({
   isStreaming: boolean
   duration?: number
 }) {
-  const [open, setOpen] = React.useState<boolean>()
   const running = isStreaming && part.state === "streaming"
   const status = running ? "running" : undefined
 
@@ -41,9 +38,8 @@ export function ReasoningPart({
     return line
   }
 
-  // Open while the model thinks, then close, unless the person toggled it.
   return (
-    <TraceCollapsible open={open ?? running} onOpenChange={setOpen}>
+    <TraceCollapsible>
       <TraceCollapsibleTrigger>{line}</TraceCollapsibleTrigger>
       <TraceCollapsibleContent className="whitespace-pre-wrap">{part.text}</TraceCollapsibleContent>
     </TraceCollapsible>
