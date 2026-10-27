@@ -1,5 +1,5 @@
 import { Autocomplete as AutocompletePrimitive } from "@base-ui/react/autocomplete"
-import type { ComponentProps, FormEvent, KeyboardEvent, RefObject } from "react"
+import type { ComponentProps, KeyboardEvent, RefObject, SubmitEvent } from "react"
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { COMPOSER_CLIPBOARD_TYPE, parseComposerClipboard } from "@/lib/composer/clipboard"
@@ -138,7 +138,9 @@ export function useComposerEditor({
     !submitDisabled &&
     (allowEmpty || Boolean(getComposerText(value).trim()))
   const onQueryChangeRef = useRef(onQueryChange)
-  onQueryChangeRef.current = onQueryChange
+  useEffect(() => {
+    onQueryChangeRef.current = onQueryChange
+  }, [onQueryChange])
   const queryCharacter = query?.character
   const queryText = query?.text
   const queryKey = query?.key
@@ -166,8 +168,10 @@ export function useComposerEditor({
     if (
       query &&
       (disabled || readOnly || !triggers.some((item) => item.character === query.character))
-    )
+    ) {
+      // oxlint-disable-next-line react/set-state-in-effect -- owner props changed
       setQuery(null)
+    }
   }, [disabled, readOnly, query, triggers])
 
   useEffect(() => {
@@ -206,6 +210,7 @@ export function useComposerEditor({
   }, [])
 
   // Check each commit, including edits the controlled owner rejects without changing value.
+  // oxlint-disable-next-line react/exhaustive-deps -- reconcile after every commit
   useLayoutEffect(() => {
     const input = inputRef.current
     if (!input || composing.current) return
@@ -258,7 +263,9 @@ export function useComposerEditor({
     )
   }
 
-  queryAction.current = updateQuery
+  useEffect(() => {
+    queryAction.current = updateQuery
+  })
 
   const dismissSuggestions = (): void => {
     dismissedQuery.current = query?.key ?? null
@@ -370,7 +377,7 @@ export function useComposerEditor({
     lastSelection.current = readSelection(input)
   }
 
-  historyAction.current = (direction) => {
+  const handleHistory = (direction: "undo" | "redo"): void => {
     const input = inputRef.current
     if (!input || input instanceof HTMLTextAreaElement || disabled || readOnly || composing.current)
       return
@@ -393,6 +400,10 @@ export function useComposerEditor({
     dismissSuggestions()
   }
 
+  useEffect(() => {
+    historyAction.current = handleHistory
+  })
+
   const performSubmit = (): void => {
     if (!canSubmit || composing.current) return
     dismissSuggestions()
@@ -411,6 +422,7 @@ export function useComposerEditor({
       event.defaultPrevented ||
       composing.current ||
       event.nativeEvent.isComposing ||
+      // oxlint-disable-next-line typescript/no-deprecated -- IME guard where isComposing lags
       event.nativeEvent.keyCode === 229
     )
       return
@@ -461,7 +473,7 @@ export function useComposerEditor({
       forceReconcile((revision) => revision + 1)
     },
     formProps: {
-      onSubmit: (event: FormEvent<HTMLFormElement>) => {
+      onSubmit: (event: SubmitEvent<HTMLFormElement>) => {
         if (event.defaultPrevented || event.target !== event.currentTarget) return
         event.preventDefault()
         performSubmit()
@@ -600,6 +612,7 @@ export function useComposerEditor({
           caretRangeFromPoint?: (x: number, y: number) => Range | null
         }
         const position = documentWithCaret.caretPositionFromPoint?.(event.clientX, event.clientY)
+        // oxlint-disable-next-line typescript/no-deprecated -- WebKit fallback
         const range = documentWithCaret.caretRangeFromPoint?.(event.clientX, event.clientY)
         const node = position?.offsetNode ?? range?.startContainer
         const offset = position?.offset ?? range?.startOffset

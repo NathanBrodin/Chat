@@ -7,6 +7,15 @@ const redact = {
   paths: [...(auditRedactPreset.paths ?? []), "cookies"],
 } satisfies RedactConfig
 
+// Nitro's built-in ignored warning codes, plus vendor "use client" directives.
+const ignoredWarningCodes = new Set([
+  "EVAL",
+  "CIRCULAR_DEPENDENCY",
+  "THIS_IS_UNDEFINED",
+  "EMPTY_BUNDLE",
+  "MODULE_LEVEL_DIRECTIVE",
+])
+
 export default defineConfig({
   experimental: {
     asyncContext: true,
@@ -17,6 +26,16 @@ export default defineConfig({
       redact,
     }),
   ],
+
+  rolldownConfig: {
+    onLog(level, log, defaultHandler) {
+      if (level === "warn" && ignoredWarningCodes.has(log.code ?? "")) return
+      defaultHandler(level, log)
+    },
+  },
+
+  // Shiki's Emscripten onig.wasm can't be parsed; highlighting uses the JS engine.
+  wasm: { silent: true },
 
   /**
    * TODO(security): Review production security headers before deployment.

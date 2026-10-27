@@ -6,9 +6,17 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite"
 import { varlockVitePlugin } from "@varlock/vite-integration"
 import viteReact from "@vitejs/plugin-react"
 import { nitro } from "nitro/vite"
-import { defineConfig, lazyPlugins } from "vite-plus"
+import { type BuildEnvironmentOptions, defineConfig, lazyPlugins } from "vite-plus"
 
 import { version } from "./package.json"
+
+type OnLog = NonNullable<NonNullable<BuildEnvironmentOptions["rolldownOptions"]>["onLog"]>
+
+// Vendor "use client" directives are meaningless for Tanstack.
+const ignoreDependencyDirectives: OnLog = (level, log, defaultHandler) => {
+  if (level === "warn" && log.code === "MODULE_LEVEL_DIRECTIVE") return
+  defaultHandler(level, log)
+}
 
 // https://viteplus.dev/config/
 export default defineConfig(() => ({
@@ -133,6 +141,28 @@ export default defineConfig(() => ({
   },
   server: {
     port: 3000,
+  },
+  environments: {
+    client: {
+      build: {
+        rolldownOptions: {
+          output: {
+            codeSplitting: {
+              groups: [
+                // Keep the heavy Rive runtime and AI SDK out of the route chunk.
+                { name: "rive", test: /node_modules[\\/]@rive-app[\\/]/ },
+                { name: "ai-sdk", test: /node_modules[\\/](?:ai|@ai-sdk)[\\/]/ },
+              ],
+            },
+          },
+        },
+      },
+    },
+    ssr: {
+      build: {
+        rolldownOptions: { onLog: ignoreDependencyDirectives },
+      },
+    },
   },
   plugins: lazyPlugins(() => [
     devtools({

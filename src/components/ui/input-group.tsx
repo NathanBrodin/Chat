@@ -53,6 +53,7 @@ export function InputGroupAddon({
       className={cn(inputGroupAddonVariants({ align }), className)}
       data-align={align}
       data-slot="input-group-addon"
+      role="presentation"
       onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
         const target = e.target as Element
         if (!e.currentTarget.contains(target)) return

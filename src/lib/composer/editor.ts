@@ -98,7 +98,9 @@ function ComposerEditorProvider({
   })
   const reset = () => editor.reset(defaultValue)
   const resetRef = useRef(reset)
-  resetRef.current = reset
+  useEffect(() => {
+    resetRef.current = reset
+  })
   useEffect(() => {
     const form = editor.rootRef.current?.closest("form")
     if (!form) return
@@ -193,6 +195,7 @@ function ComposerSuggestions({
       !open ||
       event.defaultPrevented ||
       event.nativeEvent.isComposing ||
+      // oxlint-disable-next-line typescript/no-deprecated -- legacy IME guard
       event.nativeEvent.keyCode === 229
     )
       return
@@ -340,7 +343,7 @@ function useComposerInputLayout() {
   useLayoutEffect(() => {
     for (const host of editor?.tokenHosts ?? []) {
       const fallback = host.previousElementSibling
-      if (fallback instanceof HTMLElement) fallback.hidden = true
+      if (fallback instanceof HTMLElement) fallback.setAttribute("hidden", "")
     }
   }, [editor?.tokenHosts])
   useLayoutEffect(() => {

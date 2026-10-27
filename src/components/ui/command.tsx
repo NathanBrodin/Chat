@@ -104,6 +104,8 @@ export function Command({
   )
 }
 
+// Command palettes focus their input on open, so autofocus is intentional.
+/* oxlint-disable jsx-a11y/no-autofocus */
 export function CommandInput({
   className,
   placeholder,
@@ -125,6 +127,7 @@ export function CommandInput({
     </div>
   )
 }
+/* oxlint-enable jsx-a11y/no-autofocus */
 
 export function CommandList({
   className,
