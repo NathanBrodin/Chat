@@ -149,8 +149,7 @@ export default defineConfig(() => ({
           output: {
             codeSplitting: {
               groups: [
-                // Keep the heavy Rive runtime and AI SDK out of the route chunk.
-                { name: "rive", test: /node_modules[\\/]@rive-app[\\/]/ },
+                // Keep the heavy AI SDK out of the route chunk.
                 { name: "ai-sdk", test: /node_modules[\\/](?:ai|@ai-sdk)[\\/]/ },
               ],
             },

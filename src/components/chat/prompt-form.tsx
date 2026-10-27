@@ -1,8 +1,8 @@
+import { ClientOnly } from "@tanstack/react-router"
 import { ArrowUpIcon, SquareIcon } from "lucide-react"
-import { useState } from "react"
+import { lazy, Suspense, useState } from "react"
 
 import { type ChatResponseState } from "@/components/chat/hooks/use-chat-response-state"
-import { Persona } from "@/components/chat/persona"
 import { Button } from "@/components/ui/button"
 import {
   Composer,
@@ -13,6 +13,10 @@ import {
   type ComposerValue,
   getComposerText,
 } from "@/components/ui/composer"
+
+const Persona = lazy(() =>
+  import("@/components/chat/persona").then((module) => ({ default: module.Persona })),
+)
 
 export function PromptForm({
   isBusy,
@@ -46,7 +50,11 @@ export function PromptForm({
       <ComposerInput aria-label="Ask anything" placeholder="Ask anything..." />
       <ComposerActions>
         <ComposerActionGroup>
-          <Persona state={responseState} className="size-7" variant="glint" />
+          <ClientOnly fallback={<div className="size-7 shrink-0" />}>
+            <Suspense fallback={<div className="size-7 shrink-0" />}>
+              <Persona state={responseState} className="size-7" variant="glint" />
+            </Suspense>
+          </ClientOnly>
         </ComposerActionGroup>
         <ComposerActionGroup align="end">
           {isBusy ? (
