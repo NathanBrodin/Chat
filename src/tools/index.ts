@@ -2,11 +2,13 @@ import { type InferUITools, type LanguageModelUsage, type UIDataTypes, type UIMe
 
 import { askUser } from "./ask_user"
 import { githubRepo } from "./github_repo"
+import { webFetch } from "./web_fetch"
 import { getWebSearch } from "./web_search"
 
 const baseTools = {
   github_repo: githubRepo,
   ask_user: askUser,
+  web_fetch: webFetch,
 }
 
 export function getTools() {
@@ -42,3 +44,5 @@ export type GithubRepoToolPart = Extract<ChatMessagePart, { type: "tool-github_r
 export type AskUserToolPart = Extract<ChatMessagePart, { type: "tool-ask_user" }>
 
 export type WebSearchToolPart = Extract<ChatMessagePart, { type: "tool-web_search" }>
+
+export type WebFetchToolPart = Extract<ChatMessagePart, { type: "tool-web_fetch" }>

@@ -120,6 +120,12 @@ export default defineConfig(() => ({
   define: {
     __APP_VERSION__: JSON.stringify(version),
   },
+  optimizeDeps: {
+    // The web fetch tool is server-only, but the dev dependency scanner follows
+    // its imports from the chat route. linkedom and defuddle are Node-only and
+    // their browser builds do not expose the same exports.
+    exclude: ["@ai-sdk/tool-web-fetch", "linkedom", "@acemir/cssom", "defuddle"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),

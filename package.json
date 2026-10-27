@@ -30,7 +30,8 @@
     "intent": "vpx @tanstack/intent@latest"
   },
   "dependencies": {
-    "@ai-sdk/react": "4.0.121",
+    "@ai-sdk/react": "4.0.158",
+    "@ai-sdk/tool-web-fetch": "1.0.4",
     "@base-ui/react": "1.9.0",
     "@better-auth/drizzle-adapter": "1.7.12",
     "@daypicker/react": "10.0.2",
@@ -47,7 +48,7 @@
     "@upstash/ratelimit": "2.2.0",
     "@upstash/redis": "1.39.0",
     "@varlock/vite-integration": "1.5.4",
-    "ai": "7.0.118",
+    "ai": "7.0.154",
     "better-auth": "1.7.12",
     "cal-sans": "2.1.1",
     "class-variance-authority": "0.7.1",

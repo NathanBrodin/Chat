@@ -5,6 +5,7 @@ import { GithubRepoPart } from "@/components/chat/parts/github-repo-part"
 import { ReasoningPart } from "@/components/chat/parts/reasoning-part"
 import { SourcesPart } from "@/components/chat/parts/sources-part"
 import { TextPart } from "@/components/chat/parts/text-part"
+import { WebFetchPart } from "@/components/chat/parts/web-fetch-part"
 import { WebSearchPart } from "@/components/chat/parts/web-search-part"
 import { Bubble, BubbleContent } from "@/components/ui/bubble"
 import { Message, MessageContent } from "@/components/ui/message"
@@ -14,7 +15,7 @@ import { type ChatMessagePart, type ChatUIMessage, type TextMessagePart } from "
 type StepPart = Extract<
   ChatMessagePart,
   {
-    type: "reasoning" | "tool-github_repo" | "tool-ask_user" | "tool-web_search"
+    type: "reasoning" | "tool-github_repo" | "tool-ask_user" | "tool-web_search" | "tool-web_fetch"
   }
 >
 
@@ -83,6 +84,10 @@ export function ChatMessage({
                     return (
                       <WebSearchPart key={part.toolCallId} part={part} isStreaming={isStreaming} />
                     )
+                  case "tool-web_fetch":
+                    return (
+                      <WebFetchPart key={part.toolCallId} part={part} isStreaming={isStreaming} />
+                    )
                 }
               })}
             </Trace>
@@ -128,7 +133,10 @@ function isStepPart(part: ChatMessagePart): part is StepPart {
   }
 
   return (
-    part.type === "reasoning" || part.type === "tool-github_repo" || part.type === "tool-web_search"
+    part.type === "reasoning" ||
+    part.type === "tool-github_repo" ||
+    part.type === "tool-web_search" ||
+    part.type === "tool-web_fetch"
   )
 }
 

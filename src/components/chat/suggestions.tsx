@@ -11,6 +11,10 @@ const suggestions = [
     prompt: "Search the web for the latest Next.js release and summarize what's new.",
   },
   {
+    label: "Read a page",
+    prompt: "Read https://ai-sdk.dev/docs/introduction and summarize the key points.",
+  },
+  {
     label: "Look up a repo",
     prompt: "What are the GitHub stats for vercel/next.js?",
   },

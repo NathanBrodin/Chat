@@ -3,7 +3,8 @@ allowBuilds:
 
 # https://pnpm.io/settings#minimumreleaseage
 # https://pnpm.io/supply-chain-security#delay-dependency-updates
-minimumReleaseAge: 1440
+# This is a small side project, so installs are not delayed.
+minimumReleaseAge: 0
 
 # Save exact versions to package.json instead of broad ranges
 savePrefix: ""

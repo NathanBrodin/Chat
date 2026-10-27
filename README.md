@@ -9,6 +9,7 @@ Forked from [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-te
 - Streaming chat with markdown rendering and shadcn/typeset
 - Tool calling example
 - Web search via OpenRouter's web search server tool
+- Web fetch via the AI SDK's first-party web fetch tool, with HTML-to-markdown conversion and SSRF protections
 - Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
 - Per-IP rate limiting on `/api/chat` with Upstash Redis + `@upstash/ratelimit`
 - Better Auth starter (email + GitHub/Google OAuth) with login/signup pages, persisted with Drizzle ORM + Neon PostgreSQL
@@ -100,6 +101,7 @@ The `/api/chat` route is **public and unauthenticated**: every allowed request s
 - **Cap spend.** Keep an [OpenRouter spend limit](https://openrouter.ai/settings/limits) as a backstop.
 - **Add auth or WAF** if abuse appears: require login for heavy use, and/or add firewall rules from your hosting provider in front of `/api/chat`.
 - Requests without an `x-forwarded-for` header share one fallback bucket, so they throttle each other — expected on local dev, suspicious in production logs.
+- **Web fetch can request any public URL.** It blocks localhost, private, reserved, and cloud metadata addresses, including redirects and DNS-resolved addresses, and caps response size. Fetched content is untrusted and can contain prompt injections; set `requireUrlInUserMessage: true` in [src/tools/web_fetch.ts](src/tools/web_fetch.ts) so the model can only fetch URLs that appear in user messages.
 
 The route already validates the request body, caps output tokens and step count, and aborts generation on client disconnect — but those bound a single request, not overall volume.
 
@@ -107,7 +109,7 @@ The route already validates the request body, caps output tokens and step count,
 
 - [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts) rate-limits by IP with Upstash, then streams responses with `streamText` behind a TanStack Start API route (server handlers)
 - [src/components/chat/](src/components/chat) renders the conversation with `useChat` and coss chat primitives, entry at [src/components/chat/index.tsx](src/components/chat/index.tsx), served by the [`/` route](src/routes/index.tsx).
-- [src/tools/](src/tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [src/tools/index.ts](src/tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and provider-native web search.
+- [src/tools/](src/tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [src/tools/index.ts](src/tools/index.ts): a server-executed GitHub repo lookup, web fetch, the interactive `ask_user` questionnaire, and provider-native web search.
 
 ## Tool parts
 
@@ -118,6 +120,7 @@ Assistant messages are a list of typed parts. [src/components/chat/chat-message.
 | `text`             | [text-part.tsx](src/components/chat/parts/text-part.tsx)               | Markdown via react-markdown and coss typeset.                                                                                                         |
 | `tool-github_repo` | [github-repo-part.tsx](src/components/chat/parts/github-repo-part.tsx) | A spinner while the lookup runs, then a linked stat line (stars, forks, language).                                                                    |
 | `tool-web_search`  | [web-search-part.tsx](src/components/chat/parts/web-search-part.tsx)   | A "Searching the web…" status while the search runs, then a persistent "Searched the web" line per search.                                            |
+| `tool-web_fetch`   | [web-fetch-part.tsx](src/components/chat/parts/web-fetch-part.tsx)     | A "Reading…" status while the page loads, then a collapsible summary with a markdown preview and an external link.                                    |
 | `tool-ask_user`    | [ask-user-part.tsx](src/components/chat/parts/ask-user-part.tsx)       | The answered questions inline. Pending questions render in [question-card.tsx](src/components/chat/question-card.tsx), pinned to the scroller bottom. |
 | `source-url`       | [sources-part.tsx](src/components/chat/parts/sources-part.tsx)         | Web search citations, deduped into a "Searched N websites" drawer once the message finishes streaming.                                                |
 
