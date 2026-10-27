@@ -65,6 +65,7 @@ export function SidebarProvider({
   defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
+  toggleable = true,
   className,
   style,
   children,
@@ -73,9 +74,11 @@ export function SidebarProvider({
   defaultOpen?: boolean
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  /** When false, the sidebar cannot be opened or closed. */
+  toggleable?: boolean
 }): React.ReactElement {
   const isMobile = useMediaQuery("max-md")
-  const [openMobile, setOpenMobile] = React.useState(false)
+  const [openMobile, _setOpenMobile] = React.useState(false)
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -83,6 +86,8 @@ export function SidebarProvider({
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     async (value: boolean | ((value: boolean) => boolean)) => {
+      if (!toggleable) return
+
       const openState = typeof value === "function" ? value(open) : value
       if (setOpenProp) {
         setOpenProp(openState)
@@ -90,18 +95,29 @@ export function SidebarProvider({
         _setOpen(openState)
       }
     },
-    [setOpenProp, open],
+    [setOpenProp, open, toggleable],
+  )
+  const setOpenMobile = React.useCallback(
+    (value: boolean | ((value: boolean) => boolean)) => {
+      if (!toggleable) return
+      _setOpenMobile(value)
+    },
+    [toggleable],
   )
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
-  }, [isMobile, setOpen])
+  }, [isMobile, setOpen, setOpenMobile])
 
-  useHotkey("Mod+B", async (event) => {
-    event.preventDefault()
-    await toggleSidebar()
-  })
+  useHotkey(
+    "Mod+B",
+    async (event) => {
+      event.preventDefault()
+      await toggleSidebar()
+    },
+    { enabled: toggleable },
+  )
 
   React.useLayoutEffect(() => {
     document.documentElement.dataset.sidebarOpen = String(open)
@@ -119,7 +135,7 @@ export function SidebarProvider({
       state,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, toggleSidebar],
+    [state, open, setOpen, setOpenMobile, isMobile, openMobile, toggleSidebar],
   )
 
   return (
@@ -129,6 +145,7 @@ export function SidebarProvider({
           "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar max-md:flex-col",
           className,
         )}
+        data-sidebar-open={open}
         data-slot="sidebar-wrapper"
         style={
           {
@@ -711,9 +728,9 @@ export function SidebarIcon(props: React.ComponentPropsWithoutRef<"svg">) {
         strokeLinejoin="round"
       />
       {/*
-        The fill width follows `data-sidebar-open` on <html>, like the sidebar
-        panel, so the first paint matches the persisted state. The widths are
-        px on purpose: viewBox units, not spacing-scale values.
+        The fill width follows `data-sidebar-open` from the sidebar provider,
+        so the first paint matches the persisted state. The widths are px on
+        purpose: viewBox units, not spacing-scale values.
       */}
       <rect
         x="5"

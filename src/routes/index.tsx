@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   return (
-    <SidebarProvider className="h-svh overflow-hidden" defaultOpen={false}>
+    <SidebarProvider className="h-svh overflow-hidden" defaultOpen={false} toggleable={false}>
       <Sidebar variant="inset" collapsible="offcanvas" />
       <SidebarInset className="isolate overflow-hidden md:ml-2">
         <Chat />
