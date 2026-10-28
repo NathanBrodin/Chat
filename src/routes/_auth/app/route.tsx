@@ -10,6 +10,7 @@ function AppLayout() {
   return (
     <main
       id="main-content"
+      tabIndex={-1}
       className="flex min-h-svh flex-col items-center justify-center gap-6 p-6"
     >
       <div className="flex w-full max-w-md flex-col gap-6">

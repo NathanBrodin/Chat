@@ -13,7 +13,7 @@ function HomePage() {
   return (
     <SidebarProvider className="h-svh overflow-hidden" defaultOpen={false} toggleable={false}>
       <Sidebar variant="inset" collapsible="offcanvas" />
-      <SidebarInset id="main-content" className="isolate overflow-hidden md:ml-2">
+      <SidebarInset id="main-content" tabIndex={-1} className="isolate overflow-hidden md:ml-2">
         <Chat />
       </SidebarInset>
     </SidebarProvider>

@@ -43,9 +43,5 @@ export const Route = createFileRoute("/_auth")({
      * for simpler centralized revalidation via TanStack Query.
      */
   },
-  head: () => ({
-    ...buildNoindexHead({ title: "Account | Nathan's AI" }),
-    links: [],
-    scripts: [],
-  }),
+  head: () => buildNoindexHead({ title: "Account | Nathan's AI" }),
 })

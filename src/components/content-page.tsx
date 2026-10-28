@@ -28,6 +28,7 @@ export function ContentPage({
     <div className="min-h-svh bg-background">
       <main
         id="main-content"
+        tabIndex={-1}
         className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-6 py-12 md:gap-12 md:px-8 md:py-20"
       >
         <header className="flex flex-col gap-4">

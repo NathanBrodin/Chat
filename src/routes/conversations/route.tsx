@@ -16,11 +16,7 @@ export const Route = createFileRoute("/conversations")({
       context.queryClient.query(sidebarOpenQueryOptions()),
     ])
   },
-  head: () => ({
-    ...buildNoindexHead({ title: "Conversations | Nathan's AI" }),
-    links: [],
-    scripts: [],
-  }),
+  head: () => buildNoindexHead({ title: "Conversations | Nathan's AI" }),
   component: RouteComponent,
 })
 

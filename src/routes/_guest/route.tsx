@@ -27,17 +27,14 @@ export const Route = createFileRoute("/_guest")({
       redirectUrl: REDIRECT_URL,
     }
   },
-  head: () => ({
-    ...buildNoindexHead({ title: "Account | Nathan's AI", follow: true }),
-    links: [],
-    scripts: [],
-  }),
+  head: () => buildNoindexHead({ title: "Account | Nathan's AI", follow: true }),
 })
 
 function RouteComponent() {
   return (
     <main
       id="main-content"
+      tabIndex={-1}
       className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10"
     >
       <div className="flex w-full max-w-sm flex-col gap-8">

@@ -8,6 +8,7 @@ export function DefaultNotFound() {
   return (
     <main
       id="main-content"
+      tabIndex={-1}
       className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 text-center"
     >
       <title>Page not found | Nathan&apos;s AI</title>
