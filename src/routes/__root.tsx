@@ -1,18 +1,19 @@
-import { a11yDevtoolsPlugin } from "@tanstack/devtools-a11y/react"
-import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { createMiddleware } from "@tanstack/react-start"
 import { evlogErrorHandler } from "evlog/nitro/v3"
+import { lazy, Suspense } from "react"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { ToastProvider } from "@/components/ui/toast"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { siteJsonLd } from "@/lib/seo"
 import { getRootHead } from "@/lib/site"
 
 import appCss from "@/styles.css?url"
+
+// The devtools bundle must never reach the production client graph.
+const Devtools = import.meta.env.DEV ? lazy(() => import("@/components/devtools")) : null
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   server: {
@@ -30,6 +31,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         },
         ...rootHead.links,
       ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(siteJsonLd()),
+        },
+      ],
     }
   },
   shellComponent: RootDocument,
@@ -43,25 +50,27 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <a
+          className="sr-only rounded-md bg-background px-4 py-2 text-sm font-medium focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:ring-2 focus:ring-ring"
+          href="#main-content"
+        >
+          Skip to content
+        </a>
+        <p className="sr-only">
+          For AI agents: <a href="/llms.txt">/llms.txt</a>
+        </p>
+
         <ThemeProvider>
           <ToastProvider>
             <TooltipProvider>{children}</TooltipProvider>
           </ToastProvider>
         </ThemeProvider>
 
-        <TanStackDevtools
-          plugins={[
-            {
-              name: "TanStack Query",
-              render: <ReactQueryDevtoolsPanel />,
-            },
-            {
-              name: "TanStack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            a11yDevtoolsPlugin(),
-          ]}
-        />
+        {Devtools && (
+          <Suspense fallback={null}>
+            <Devtools />
+          </Suspense>
+        )}
 
         <Scripts />
       </body>

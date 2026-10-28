@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import { SidebarMenuButton } from "@/components/ui/sidebar"
 import { githubStarsQueryOptions } from "@/lib/github/queries"
-import { site } from "@/lib/site"
+import { siteConfig } from "@/lib/site"
 
 const compactNumber = new Intl.NumberFormat("en-US", {
   notation: "compact",
@@ -23,7 +23,7 @@ export function GithubStarsButton() {
       render={
         <a
           aria-label={label}
-          href={`https://github.com/${site.githubRepo}`}
+          href={`https://github.com/${siteConfig.githubRepo}`}
           target="_blank"
           rel="noopener noreferrer"
         />

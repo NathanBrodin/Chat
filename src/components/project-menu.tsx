@@ -10,7 +10,7 @@ import {
   MenuLinkItem,
 } from "@/components/ui/menu"
 import { SidebarMenuButton } from "@/components/ui/sidebar"
-import { site } from "@/lib/site"
+import { siteConfig } from "@/lib/site"
 
 export function ProjectMenu() {
   return (
@@ -21,7 +21,7 @@ export function ProjectMenu() {
         <EllipsisIcon aria-hidden="true" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64" side="right" sideOffset={8}>
-        <p className="px-2 py-1.5 text-xs text-muted-foreground">{site.description}</p>
+        <p className="px-2 py-1.5 text-xs text-muted-foreground">{siteConfig.description}</p>
         <DropdownMenuSeparator />
         <div className="flex min-h-8 items-center gap-2 rounded-sm px-2 py-1 text-base sm:min-h-7 sm:text-sm">
           <SunMoonIcon aria-hidden="true" className="size-4 shrink-0 opacity-80" />
@@ -33,14 +33,19 @@ export function ProjectMenu() {
         <DropdownMenuSeparator />
         <MenuLinkItem
           closeOnClick
-          href={`https://github.com/${site.githubRepo}`}
+          href={`https://github.com/${siteConfig.githubRepo}`}
           rel="noopener noreferrer"
           target="_blank"
         >
           <SiGithub aria-hidden="true" />
           GitHub
         </MenuLinkItem>
-        <MenuLinkItem closeOnClick href={site.authorUrl} rel="noopener noreferrer" target="_blank">
+        <MenuLinkItem
+          closeOnClick
+          href={siteConfig.authorUrl}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
           <ArrowUpRightIcon aria-hidden="true" />
           Portfolio
         </MenuLinkItem>
