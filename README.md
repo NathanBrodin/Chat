@@ -1,18 +1,28 @@
-# chatbot-template
+<a href="https://chat.brodin.dev">
+  <img alt="Nathan's AI demo" src="./.github/nathan-s-ai.gif" align="center">
+  <h1 align="center">Nathan's AI</h1>
+</a>
 
-A minimal chatbot template built with TanStack [Start](https://tanstack.com/start/latest), the [AI SDK](https://ai-sdk.dev), [coss UI](https://coss.com/ui), [coss chat](https://coss.com/ui/chat) and [OpenRouter](https://openrouter.ai).
+<p align="center">
+It’s my portfolio, reimagined as a chat conversation, answered by AI.
+</p>
 
-Forked from [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-template), with the UI migrated to coss and the framework migrated from Next.js to TanStack Start using [cove](https://github.com/mugnavo/cove).
+<p align="center">
+  <a href="https://github.com/NathanBrodin/Chat/stargazers"><img src="https://shieldcn.dev/github/stars/NathanBrodin/Chat.svg?variant=secondary&size=xs" alt="GitHub stars" /></a>
+  <a href="https://github.com/NathanBrodin/Chat/forks"><img src="https://shieldcn.dev/github/forks/NathanBrodin/Chat.svg?variant=secondary&size=xs" alt="GitHub forks" /></a>
+  <a href="https://github.com/NathanBrodin/Chat/blob/main/LICENSE"><img src="https://shieldcn.dev/github/license/NathanBrodin/Chat.svg?variant=secondary&size=xs" alt="License" /></a>
+</p>
 
 ## Features
 
 - Streaming chat with markdown rendering and shadcn/typeset
-- Tool calling example
+- Tool calling
 - Web search via OpenRouter's web search server tool
 - Web fetch via the AI SDK's first-party web fetch tool, with HTML-to-markdown conversion and SSRF protections
 - Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
 - Per-IP rate limiting on `/api/chat` with Upstash Redis + `@upstash/ratelimit`
-- Better Auth starter (email + GitHub/Google OAuth) with login/signup pages, persisted with Drizzle ORM + Neon PostgreSQL
+- Drizzle ORM + Neon PostgreSQL chat persistence
+- Title animation from [@jh3yy](https://x.com/jh3yy/status/1849062440773820747)
 
 ## Deploy
 
@@ -63,16 +73,10 @@ vpr dev
 
 The development server should now be running at [http://localhost:3000](http://localhost:3000).
 
-## Configuration
+That's it, you are all set!
+If you run into any problems or have any questions, please hesitate to ask me.
 
-| Env var                    | Required | Description                                                                                  |
-| -------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `OPENROUTER_API_KEY`       | Yes      | OpenRouter API key. Get one at [openrouter.ai/keys](https://openrouter.ai/keys).             |
-| `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL for rate limiting. From your database details.                        |
-| `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token for rate limiting. From your database details.                      |
-| `DATABASE_URL`             | Yes      | Neon PostgreSQL connection URL (pooled). Create a project at [neon.tech](https://neon.tech). |
-| `BETTER_AUTH_SECRET`       | Yes      | Better Auth signing secret. Generate one with `vpr auth:secret`.                             |
-| `VITE_BASE_URL`            | Yes      | Public origin used by the browser and Better Auth.                                           |
+## Configuration
 
 [Varlock](https://varlock.dev/) keeps the environment-variable contract in `.env.schema` and generates types from it. Put local values, including secrets, in the uncommitted `.env.local`, then run `vpr env:load` to validate them.
 
@@ -160,4 +164,4 @@ Check [package.json](./package.json) for the full list of available scripts.
 
 ## License
 
-Code in this template is public domain via [Unlicense](./LICENSE). Feel free to remove or replace for your own project.
+MIT, see [LICENSE](./LICENSE).

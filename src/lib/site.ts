@@ -1,14 +1,14 @@
 export const site = {
   url: "https://chat.brodin.dev",
   name: "Nathan's AI",
-  description: "A minimal AI chat template built with TanStack Start and OpenRouter.",
+  description: "It’s my portfolio, reimagined as a chat conversation, answered by AI.",
   author: "Nathan Brodin",
   authorUrl: "https://brodin.dev",
   twitterHandle: "@nathan_brodin",
   twitterUrl: "https://x.com/nathan_brodin",
   githubHandle: "NathanBrodin",
   githubUrl: "https://github.com/NathanBrodin",
-  githubRepo: "NathanBrodin/chatbot-template",
+  githubRepo: "NathanBrodin/Chat",
   linkedinHandle: "nathan-brodin",
   linkedinUrl: "https://linkedin.com/in/nathan-brodin",
 } as const

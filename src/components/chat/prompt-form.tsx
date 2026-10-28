@@ -47,7 +47,7 @@ export function PromptForm({
       submitOnEnter="desktop"
       submitDisabled={isBusy}
     >
-      <ComposerInput aria-label="Ask anything" placeholder="Ask anything..." />
+      <ComposerInput aria-label="Ask me anything" placeholder="Ask me anything..." />
       <ComposerActions>
         <ComposerActionGroup>
           <ClientOnly fallback={<div className="size-7 shrink-0" />}>
