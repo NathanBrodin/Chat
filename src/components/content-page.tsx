@@ -1,0 +1,72 @@
+import { Link } from "@tanstack/react-router"
+import { ArrowLeftIcon } from "lucide-react"
+import type { ReactNode } from "react"
+
+import { SiteLinks } from "@/components/site-links"
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "long",
+  timeZone: "UTC",
+})
+
+type ContentPageProps = {
+  readonly eyebrow: string
+  readonly title: string
+  readonly description: string
+  readonly lastUpdated?: string
+  readonly children: ReactNode
+}
+
+export function ContentPage({
+  eyebrow,
+  title,
+  description,
+  lastUpdated,
+  children,
+}: ContentPageProps) {
+  return (
+    <div className="min-h-svh bg-background">
+      <main
+        id="main-content"
+        className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-6 py-12 md:gap-12 md:px-8 md:py-20"
+      >
+        <header className="flex flex-col gap-4">
+          <Link
+            to="/"
+            className="inline-flex w-fit items-center gap-2 rounded-sm text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            <ArrowLeftIcon className="size-4" aria-hidden="true" />
+            Back to chat
+          </Link>
+
+          <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
+            {eyebrow}
+          </p>
+
+          <h1 className="font-heading text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+            {title}
+          </h1>
+
+          <p className="max-w-2xl text-lg leading-relaxed text-pretty text-muted-foreground">
+            {description}
+          </p>
+
+          {lastUpdated ? (
+            <p className="text-sm text-muted-foreground">
+              Last updated{" "}
+              <time dateTime={lastUpdated}>
+                {dateFormatter.format(new Date(`${lastUpdated}T00:00:00Z`))}
+              </time>
+            </p>
+          ) : null}
+        </header>
+
+        <article className="typeset max-w-[68ch]">{children}</article>
+
+        <footer className="border-t border-border pt-8">
+          <SiteLinks />
+        </footer>
+      </main>
+    </div>
+  )
+}

@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as GuestRouteRouteImport } from './routes/_guest/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AboutDotmdRouteImport } from './routes/about[.]md'
 import { Route as ConversationsRouteRouteImport } from './routes/conversations/route'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AuthAppRouteRouteImport } from './routes/_auth/app/route'
 import { Route as ApiChatRouteRouteImport } from './routes/api/chat/route'
 import { Route as ConversationsIndexRouteImport } from './routes/conversations/index'
@@ -35,9 +38,24 @@ const GuestRouteRoute = GuestRouteRouteImport.update({
   id: '/_guest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutDotmdRoute = AboutDotmdRouteImport.update({
+  id: '/about.md',
+  path: '/about.md',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConversationsRouteRoute = ConversationsRouteRouteImport.update({
   id: '/conversations',
   path: '/conversations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
@@ -84,6 +102,9 @@ const ConversationsIdIndexRoute = ConversationsIdIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/conversations': typeof ConversationsRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/about.md': typeof AboutDotmdRoute
+  '/privacy': typeof PrivacyRoute
   '/app': typeof AuthAppRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations/': typeof ConversationsIndexRoute
@@ -95,6 +116,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/about.md': typeof AboutDotmdRoute
+  '/privacy': typeof PrivacyRoute
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations': typeof ConversationsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRouteRoute
@@ -109,6 +133,9 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_guest': typeof GuestRouteRouteWithChildren
   '/conversations': typeof ConversationsRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/about.md': typeof AboutDotmdRoute
+  '/privacy': typeof PrivacyRoute
   '/_auth/app': typeof AuthAppRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations/': typeof ConversationsIndexRoute
@@ -123,6 +150,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/conversations'
+    | '/about'
+    | '/about.md'
+    | '/privacy'
     | '/app'
     | '/api/chat'
     | '/conversations/'
@@ -134,6 +164,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/about.md'
+    | '/privacy'
     | '/api/chat'
     | '/conversations'
     | '/api/auth/$'
@@ -147,6 +180,9 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_guest'
     | '/conversations'
+    | '/about'
+    | '/about.md'
+    | '/privacy'
     | '/_auth/app'
     | '/api/chat'
     | '/conversations/'
@@ -162,6 +198,9 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   GuestRouteRoute: typeof GuestRouteRouteWithChildren
   ConversationsRouteRoute: typeof ConversationsRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  AboutDotmdRoute: typeof AboutDotmdRoute
+  PrivacyRoute: typeof PrivacyRoute
   ApiChatRouteRoute: typeof ApiChatRouteRoute
   ApiAuthSplatRouteRoute: typeof ApiAuthSplatRouteRoute
 }
@@ -189,11 +228,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuestRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about.md': {
+      id: '/about.md'
+      path: '/about.md'
+      fullPath: '/about.md'
+      preLoaderRoute: typeof AboutDotmdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/conversations': {
       id: '/conversations'
       path: '/conversations'
       fullPath: '/conversations'
       preLoaderRoute: typeof ConversationsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/app': {
@@ -311,6 +371,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   GuestRouteRoute: GuestRouteRouteWithChildren,
   ConversationsRouteRoute: ConversationsRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
+  AboutDotmdRoute: AboutDotmdRoute,
+  PrivacyRoute: PrivacyRoute,
   ApiChatRouteRoute: ApiChatRouteRoute,
   ApiAuthSplatRouteRoute: ApiAuthSplatRouteRoute,
 }
