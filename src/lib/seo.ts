@@ -117,8 +117,8 @@ export function buildNoindexHead({ title, follow = false }: { title: string; fol
       { title },
       { name: "robots", content: follow ? "noindex, follow" : "noindex, nofollow" },
     ],
-    links: [] as const,
-    scripts: [] as const,
+    links: [],
+    scripts: [],
   }
 }
 
@@ -143,9 +143,7 @@ const websiteNode: WebSite = {
   publisher: { "@id": PERSON_ID },
 }
 
-// `codeRepository` is a SoftwareSourceCode property; it is still the most useful
-// link for the application entity, so keep it alongside the standard fields.
-const applicationNode: WebApplication & { codeRepository: string } = {
+const applicationNode: WebApplication = {
   "@type": "WebApplication",
   "@id": APP_ID,
   name: siteConfig.name,
@@ -164,7 +162,6 @@ const applicationNode: WebApplication & { codeRepository: string } = {
   creator: { "@id": PERSON_ID },
   publisher: { "@id": PERSON_ID },
   isPartOf: { "@id": WEBSITE_ID },
-  codeRepository: siteConfig.githubUrl,
   license: LICENSE_URL,
   featureList: [
     "Conversational answers about Nathan Brodin's experience and projects",

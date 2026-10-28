@@ -79,16 +79,8 @@ export function getRootHead(): {
       { name: "author", content: siteConfig.author },
       { name: "creator", content: siteConfig.author },
       { name: "publisher", content: siteConfig.author },
-      {
-        name: "theme-color",
-        content: siteConfig.themeColors.light,
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        name: "theme-color",
-        content: siteConfig.themeColors.dark,
-        media: "(prefers-color-scheme: dark)",
-      },
+      // Updated before paint by the theme boot script, so one meta is enough.
+      { name: "theme-color", content: siteConfig.themeColors.light },
     ],
     links: [
       { rel: "author", href: siteConfig.authorUrl },
