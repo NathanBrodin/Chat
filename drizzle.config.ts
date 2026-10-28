@@ -1,14 +1,14 @@
-import "dotenv/config"
-import { config } from "dotenv"
-import { defineConfig } from "drizzle-kit"
+import type { Config } from "drizzle-kit"
+import { ENV } from "varlock/env"
 
-config({ path: ".env.local" })
-
-export default defineConfig({
+export default {
   out: "./drizzle",
-  schema: "./lib/db/schema.ts",
+  schema: "./src/lib/db/schema/index.ts",
+  breakpoints: true,
+  verbose: true,
+
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.POSTGRES_URL!,
+    url: ENV.DATABASE_URL,
   },
-})
+} satisfies Config

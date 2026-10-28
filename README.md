@@ -1,144 +1,163 @@
-<a href="https://chat.brodin.dev">
-  <img alt="Nathan's AI demo" src="./.github/nathan-s-ai.gif" align="center">
-  <h1 align="center">Nathan's AI</h1>
-</a>
+# chatbot-template
 
-<p align="center">
-It’s my portfolio, reimagined as a chat conversation, answered by AI.
-</p>
+A minimal chatbot template built with TanStack [Start](https://tanstack.com/start/latest), the [AI SDK](https://ai-sdk.dev), [coss UI](https://coss.com/ui), [coss chat](https://coss.com/ui/chat) and [OpenRouter](https://openrouter.ai).
 
-<p align="center">
-  <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
-  <a href="#sources-of-inspiration"><strong>Sources of Inspiration</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
-</p>
-<br/>
+Forked from [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-template), with the UI migrated to coss and the framework migrated from Next.js to TanStack Start using [cove](https://github.com/mugnavo/cove).
 
-Nathan's AI is a unique twist on the traditional portfolio. Instead of scrolling through pages of information, visitors can simply ask questions to learn about my career, skills, projects, and experiences. Built with Next.js, Tailwind CSS, and Vercel’s AI SDK, this chatbot acts as an interactive resume, letting you explore my journey in a conversational way.
+## Features
 
-## Tech Stack
+- Streaming chat with markdown rendering and shadcn/typeset
+- Tool calling example
+- Web search via OpenRouter's web search server tool
+- Web fetch via the AI SDK's first-party web fetch tool, with HTML-to-markdown conversion and SSRF protections
+- Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
+- Per-IP rate limiting on `/api/chat` with Upstash Redis + `@upstash/ratelimit`
+- Better Auth starter (email + GitHub/Google OAuth) with login/signup pages, persisted with Drizzle ORM + Neon PostgreSQL
 
-- [Next.js](https://nextjs.org) App Router
-  - Advanced routing for seamless navigation and performance
-  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
-- [AI SDK](https://sdk.vercel.ai/docs)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Supports Anthropic (default), OpenAI, Cohere, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Vercel Postgres powered by Neon](https://vercel.com/storage/postgres) for saving chat history
-- [@upstash/ratelimit](https://upstash.com/docs/oss/sdks/ts/ratelimit/overview)
-  - Preventing excessive usage of the chat
-- [motion](https://motion.dev)
-  - A modern animation library for JavaScript and React
-  - Clean and easy to use animations
+## Deploy
 
-## Sources of Inspiration
+The [vite config](./vite.config.ts) uses [Nitro](https://nitro.build/) by default, which supports many [deployment presets](https://nitro.build/deploy) like Netlify, Vercel, Node.js, and more. Refer to the [TanStack Start hosting docs](https://tanstack.com/start/latest/docs/framework/react/guide/hosting) for more information.
 
-I am proud of my designs, but it doesn't came from the pure source of my imagination. Here you can find links of website I used to create my own design.
+Set the following in your hosting provider's environment variables:
 
-- Empty Screen messages: [Cal.com](https://cal.com/)
-- Messages animation: [Build UI](https://buildui.com/recipes/animated-list)
-- Title animation: [@jh3yy](https://x.com/jh3yy/status/1849062440773820747)
-- Themes: [ui/jln](https://ui.jln.dev/)
+- `OPENROUTER_API_KEY`, create one at [openrouter.ai/keys](https://openrouter.ai/keys).
+- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, create a Redis database at [console.upstash.com](https://console.upstash.com), then copy the REST URL and REST token from the database details (or use the Vercel Upstash integration, which sets them automatically).
+- `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `VITE_BASE_URL` — see [`.env.schema`](./.env.schema), which is the source of truth for every variable. Use your Neon project's pooled connection string for `DATABASE_URL`.
 
-## Deploy Your Own
+## Local development
 
-You can deploy your own version of Nathan's AI Chatbot to Vercel with one click:
+#### Prerequisites
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnathanbrodin%2Fchat&env=ANTHROPIC_API_KEY,KV_URL,KV_REST_API_URL,KV_REST_API_TOKEN,KV_REST_API_READ_ONLY_TOKEN&demo-title=Nathan's%20AI&demo-description=Curious%20about%20Nathan%20Brodin%3F%20Ask%20his%20AI%20anything!&demo-url=https%3A%2F%2Fchat.brodin.dev)
+- [Node.js](https://nodejs.org/en/download) >= 24
+- [pnpm](https://pnpm.io/installation) >= 12
+- [Vite Plus](https://viteplus.dev/guide/#install-vp) (`vp`)
 
-### Setting up the chat's services
-
-Nathan's AI depends on multiple services to function properly, and as you saw by deploying to Vercel, you need a few environment variables to make it work. Follow these steps to configure the necessary environment variables.
-
-#### 1. AI Provider (Anthropic API)
-
-Grab your [Anthropic API Key](https://console.anthropic.com/settings/keys) and paste it into your `.env.local` file:
-
-```
-ANTHROPIC_API_KEY="your-api-key-here"
-```
-
-Nathan's AI currently uses Anthropic, but you can switch to another provider by updating the model inside `streamText()` in [lib/chat/actions.tsx](./lib/chat/actions.tsx). For more details, check out the [AI SDK documentation](https://sdk.vercel.ai/docs/foundations/providers-and-models). If you switch providers, remember to update the relevant environment variables accordingly.
-
-#### 2. Rate Limiting (Upstash)
-
-To prevent users (or bots) from consuming all your AI credits in a caffeine-fueled chat spree, we use Upstash for rate limiting.
-
-1. Create a Redis database on [Upstash](https://upstash.com/docs/redis/overall/getstarted).
-2. Add these variables to your `.env.local` file:
-
-```
-KV_URL="your-kv-url"
-KV_REST_API_URL="your-rest-api-url"
-KV_REST_API_TOKEN="your-api-token"
-KV_REST_API_READ_ONLY_TOKEN="your-read-only-token"
-```
-
-#### 3. Chat Storage (Neon Postgres)
-
-If you want to save chat logs for fine-tuning responses (definitely not because you're nosy), you'll need a Postgres database.
-
-1. Create a Postgres database on [Neon](https://neon.tech/).
-2. Add your connection string to `.env.local`:
-
-```
-POSTGRES_URL="your-database-url"
-```
-
-
-### Updating the AI Content
-
-Customize the AI’s responses by replacing all content inside the [./content/\*\*](./content/) directory with your own experiences, education, or whatever makes your AI unique.
-
-The content structure is defined in:
-
-- [contentlayer.config.ts](./contentlayer.config.ts)
-- [lib/chat/types.ts](lib/chat/types.ts)
-
-Adapt these files as needed to fit your requirements.
-
-### Renaming Nathan's AI
-
-If your name happens to be Nathan, congratulations! The chatbot is already personalized for you. No changes needed.
-
-For everyone else, you'll need to update all occurrences of its current name.
-
-#### VIM Users:
-
-Run a simple:
-
-```
-g/Nathan's AI/
-```
-
-This will show all occurrences so you can update them efficiently.
-
-#### Non-VIM Users:
-
-That's not my problem sorry, find your way's to replace it.
-
-## Running locally
-
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Nathan's AI locally. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
-
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various authentication provider accounts.
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+#### Setup
 
 ```bash
-bun install
+vp install
 ```
+
+Create a [Neon](https://neon.tech) project, then create a `.env.local` file with your values based on [`.env.schema`](./.env.schema). Copy the pooled connection string into `DATABASE_URL`, then validate the environment:
+
+```sh
+vpr env:load
+```
+
+Create an OpenRouter key at [openrouter.ai/keys](https://openrouter.ai/keys) and a Redis database at [console.upstash.com](https://console.upstash.com).
+
+Generate the initial migration with drizzle-kit, then apply it to your Neon database:
+
+```sh
+vpr db generate
+vpr db migrate
+```
+
+https://orm.drizzle.team/docs/migrations
+
+Start the dev server:
 
 ```bash
-bun run dev
+vpr dev
 ```
 
-That's it, you are all set!
-If you run into any problems or have any questions, please hesitate to ask me.
+The development server should now be running at [http://localhost:3000](http://localhost:3000).
+
+## Configuration
+
+| Env var                    | Required | Description                                                                                  |
+| -------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY`       | Yes      | OpenRouter API key. Get one at [openrouter.ai/keys](https://openrouter.ai/keys).             |
+| `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL for rate limiting. From your database details.                        |
+| `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token for rate limiting. From your database details.                      |
+| `DATABASE_URL`             | Yes      | Neon PostgreSQL connection URL (pooled). Create a project at [neon.tech](https://neon.tech). |
+| `BETTER_AUTH_SECRET`       | Yes      | Better Auth signing secret. Generate one with `vpr auth:secret`.                             |
+| `VITE_BASE_URL`            | Yes      | Public origin used by the browser and Better Auth.                                           |
+
+[Varlock](https://varlock.dev/) keeps the environment-variable contract in `.env.schema` and generates types from it. Put local values, including secrets, in the uncommitted `.env.local`, then run `vpr env:load` to validate them.
+
+In application code, `import { ENV } from "varlock/env"` instead of reading `process.env` directly.
+
+The model is hardcoded to `~z-ai/glm-flash-latest` in [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts).
+
+### Rate limit
+
+`/api/chat` is rate-limited per client IP with [`@upstash/ratelimit`](https://github.com/upstash/ratelimit-js) backed by Upstash Redis (`Redis.fromEnv()`).
+
+Current windows, in [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts):
+
+```ts
+Ratelimit.slidingWindow(5, "30s") // burst: 5 requests per 30 seconds
+Ratelimit.slidingWindow(50, "24h") // daily: 50 requests per day
+```
+
+Both limits are keyed by the first IP in the `x-forwarded-for` header (requests without the header share a single fallback bucket). Exceeding either returns `429` with `{ "error": "Ratelimited" }`. Tune the numbers there to match your budget — see the Security section below.
+
+## Security
+
+The `/api/chat` route is **public and unauthenticated**: every allowed request spends your OpenRouter credits. It is rate-limited (see Configuration above).
+
+- **Rate limit is per-IP, not global.** One IP is capped at 50 requests/day with the default windows, but N IPs (botnet, rotating proxies) get N× the budget.
+- **Cap spend.** Keep an [OpenRouter spend limit](https://openrouter.ai/settings/limits) as a backstop.
+- **Add auth or WAF** if abuse appears: require login for heavy use, and/or add firewall rules from your hosting provider in front of `/api/chat`.
+- Requests without an `x-forwarded-for` header share one fallback bucket, so they throttle each other — expected on local dev, suspicious in production logs.
+- **Web fetch can request any public URL.** It blocks localhost, private, reserved, and cloud metadata addresses, including redirects and DNS-resolved addresses, and caps response size. Fetched content is untrusted and can contain prompt injections; set `requireUrlInUserMessage: true` in [src/tools/web_fetch.ts](src/tools/web_fetch.ts) so the model can only fetch URLs that appear in user messages.
+
+The route already validates the request body, caps output tokens and step count, and aborts generation on client disconnect — but those bound a single request, not overall volume.
+
+## How it works
+
+- [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts) rate-limits by IP with Upstash, then streams responses with `streamText` behind a TanStack Start API route (server handlers)
+- [src/components/chat/](src/components/chat) renders the conversation with `useChat` and coss chat primitives, entry at [src/components/chat/index.tsx](src/components/chat/index.tsx), served by the [`/` route](src/routes/index.tsx).
+- [src/tools/](src/tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [src/tools/index.ts](src/tools/index.ts): a server-executed GitHub repo lookup, web fetch, the interactive `ask_user` questionnaire, and provider-native web search.
+
+## Tool parts
+
+Assistant messages are a list of typed parts. [src/components/chat/chat-message.tsx](src/components/chat/chat-message.tsx) switches on `part.type` and delegates each one to a component in [src/components/chat/parts/](src/components/chat/parts):
+
+| Part type          | Component                                                              | Renders                                                                                                                                               |
+| ------------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`             | [text-part.tsx](src/components/chat/parts/text-part.tsx)               | Markdown via react-markdown and coss typeset.                                                                                                         |
+| `tool-github_repo` | [github-repo-part.tsx](src/components/chat/parts/github-repo-part.tsx) | A spinner while the lookup runs, then a linked stat line (stars, forks, language).                                                                    |
+| `tool-web_search`  | [web-search-part.tsx](src/components/chat/parts/web-search-part.tsx)   | A "Searching the web…" status while the search runs, then a persistent "Searched the web" line per search.                                            |
+| `tool-web_fetch`   | [web-fetch-part.tsx](src/components/chat/parts/web-fetch-part.tsx)     | A "Reading…" status while the page loads, then a collapsible summary with a markdown preview and an external link.                                    |
+| `tool-ask_user`    | [ask-user-part.tsx](src/components/chat/parts/ask-user-part.tsx)       | The answered questions inline. Pending questions render in [question-card.tsx](src/components/chat/question-card.tsx), pinned to the scroller bottom. |
+| `source-url`       | [sources-part.tsx](src/components/chat/parts/sources-part.tsx)         | Web search citations, deduped into a "Searched N websites" drawer once the message finishes streaming.                                                |
+
+Tool parts move through states as the stream progresses — `input-streaming` → `input-available` → `output-available` (or `output-error`) — and each component switches on `part.state` to show progress, results, and failures.
+
+### Adding your own tool
+
+1. Create `src/tools/<name>.ts` (the filename is the model-facing tool name) exporting a `tool()` with a `description`, an `inputSchema`, and an `execute` function (omit `execute` for tools the user answers in the UI, like `ask_user`), then register it in [src/tools/index.ts](src/tools/index.ts).
+2. Add a part component in [src/components/chat/parts/](src/components/chat/parts) and a `case "tool-<name>"` in [chat-message.tsx](src/components/chat/chat-message.tsx).
+
+Message types are inferred from the tool definitions via `InferUITools`, so `part.input` and `part.output` are fully typed in your part component — renaming a tool field is a build error, not a silent `undefined`.
+
+## Logging
+
+[evlog](https://www.evlog.dev/) is wired into the app through Nitro and emits one structured event per request. Add a [drain](https://www.evlog.dev/integrate/adapters/overview) when production needs logs sent to your chosen provider.
+
+## Scripts
+
+Check [package.json](./package.json) for the full list of available scripts.
+
+- **`auth:generate`** - Regenerate the [auth db schema](./src/lib/db/schema/auth.schema.ts) if you've made changes to your Better Auth [config](./src/lib/auth/auth.ts).
+- **`db`** - Run [drizzle-kit](https://orm.drizzle.team/docs/kit-overview) commands. (e.g. `vpr db generate`, `vpr db studio`)
+- **`ui`** - The shadcn/ui CLI. (e.g. `vpr ui add button`)
+- **`format`**, **`lint`** - Run Oxfmt and Oxlint, or both via `vpr check`.
+- **`deps`** - Selectively upgrade dependencies via taze. Dependency versions are pinned, so run `vpr deps` to selectively upgrade packages.
+
+#### Utilities
+
+- [`auth/middleware.ts`](./src/lib/auth/middleware.ts) - Sample middleware for enforcing authentication on server functions & API routes.
+- [`theme-toggle.tsx`](./src/components/theme-toggle.tsx), [`theme-provider.tsx`](./src/components/theme-provider.tsx) - A theme toggle and provider for toggling between light and dark mode (press `d` anywhere outside a text field to toggle).
+
+## Issue watchlist
+
+- [Devtools releases](https://github.com/TanStack/devtools/releases) - TanStack Devtools is in alpha and may still have breaking changes.
+- [Nitro v3 beta](https://nitro.build/blog/v3-beta) - The app is configured with Nitro v3 beta by default.
+- [Drizzle ORM v1 RC](https://orm.drizzle.team/docs/relations-v1-v2) - Drizzle ORM v1 is in RC with relations v2.
+
+## License
+
+Code in this template is public domain via [Unlicense](./LICENSE). Feel free to remove or replace for your own project.
