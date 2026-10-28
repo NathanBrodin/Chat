@@ -2,8 +2,8 @@ import { SiGithub } from "@icons-pack/react-simple-icons"
 import { useQuery } from "@tanstack/react-query"
 
 import { SidebarMenuButton } from "@/components/ui/sidebar"
+import { siteConfig } from "@/config/site"
 import { githubStarsQueryOptions } from "@/lib/github/queries"
-import { siteConfig } from "@/lib/site"
 
 const compactNumber = new Intl.NumberFormat("en-US", {
   notation: "compact",

@@ -3,10 +3,10 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { ContentPage } from "@/components/content-page"
+import { breadcrumbJsonLd, buildSeoHead, faqJsonLd, PAGES } from "@/config/site"
 import { aboutFaqs, aboutLastUpdated, aboutMarkdown } from "@/content/pages"
-import { aboutPageJsonLd, breadcrumbJsonLd, buildSeoHead, faqJsonLd, PAGES } from "@/lib/seo"
 
-export const Route = createFileRoute("/about")({
+export const Route = createFileRoute("/about/")({
   head: () => {
     const seo = buildSeoHead("about")
 
@@ -22,10 +22,7 @@ export const Route = createFileRoute("/about")({
         },
       ],
       scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify(aboutPageJsonLd()),
-        },
+        ...seo.scripts,
         {
           type: "application/ld+json",
           children: JSON.stringify(
@@ -48,7 +45,6 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <ContentPage
-      eyebrow="About"
       title="About Nathan's AI"
       description={PAGES.about.description}
       lastUpdated={aboutLastUpdated}

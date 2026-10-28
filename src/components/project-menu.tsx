@@ -10,7 +10,7 @@ import {
   MenuLinkItem,
 } from "@/components/ui/menu"
 import { SidebarMenuButton } from "@/components/ui/sidebar"
-import { siteConfig } from "@/lib/site"
+import { siteConfig } from "@/config/site"
 
 export function ProjectMenu() {
   return (

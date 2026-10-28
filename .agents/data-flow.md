@@ -53,7 +53,7 @@ Treat non-blocking route warming as a limited performance budget. Use it only wh
 
 The component hook still owns pending, error, and rendered states. A warming failure must not fail navigation; the hook may retry according to its normal policy.
 
-`beforeLoad` is primarily for data that affects routing, such as an auth redirect. If the rare warming exception above must begin there, kick off the query without awaiting it. `beforeLoad` runs serially before matched loaders, while loaders can run in parallel. Follow `src/routes/_auth/route.tsx` for the protected-layout pattern; keep cached user data in Query rather than Router context.
+`beforeLoad` is primarily for data that affects routing, such as redirects. If the rare warming exception above must begin there, kick off the query without awaiting it. `beforeLoad` runs serially before matched loaders, while loaders can run in parallel. Keep cached data in Query rather than Router context.
 
 Route loaders are isomorphic. Keep database, filesystem, secrets, and other server-only work behind a Start server function, and forward the Query `signal` to it.
 

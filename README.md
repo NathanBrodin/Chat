@@ -33,7 +33,7 @@ Set the following in your hosting provider's environment variables:
 
 - `OPENROUTER_API_KEY`, create one at [openrouter.ai/keys](https://openrouter.ai/keys).
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, create a Redis database at [console.upstash.com](https://console.upstash.com), then copy the REST URL and REST token from the database details (or use the Vercel Upstash integration, which sets them automatically).
-- `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `VITE_BASE_URL` — see [`.env.schema`](./.env.schema), which is the source of truth for every variable. Use your Neon project's pooled connection string for `DATABASE_URL`, and set `VITE_BASE_URL=https://chat.brodin.dev` in production.
+- `DATABASE_URL` and `GITHUB_API_TOKEN` — see [`.env.schema`](./.env.schema), which is the source of truth for every variable. Use your Neon project's pooled connection string for `DATABASE_URL`.
 
 After the first deploy, verify the domain in Google Search Console and Bing Webmaster Tools, then submit `https://chat.brodin.dev/sitemap.xml`.
 
@@ -102,11 +102,11 @@ Both limits are keyed by the first IP in the `x-forwarded-for` header (requests 
 
 ## Security
 
-The `/api/chat` route is **public and unauthenticated**: every allowed request spends your OpenRouter credits. It is rate-limited (see Configuration above).
+The `/api/chat` route is **public**: every allowed request spends your OpenRouter credits. It is rate-limited (see Configuration above).
 
 - **Rate limit is per-IP, not global.** One IP is capped at 50 requests/day with the default windows, but N IPs (botnet, rotating proxies) get N× the budget.
 - **Cap spend.** Keep an [OpenRouter spend limit](https://openrouter.ai/settings/limits) as a backstop.
-- **Add auth or WAF** if abuse appears: require login for heavy use, and/or add firewall rules from your hosting provider in front of `/api/chat`.
+- **Add a WAF** if abuse appears: add firewall rules from your hosting provider in front of `/api/chat`.
 - Requests without an `x-forwarded-for` header share one fallback bucket, so they throttle each other — expected on local dev, suspicious in production logs.
 - **Web fetch can request any public URL.** It blocks localhost, private, reserved, and cloud metadata addresses, including redirects and DNS-resolved addresses, and caps response size. Fetched content is untrusted and can contain prompt injections; set `requireUrlInUserMessage: true` in [src/tools/web_fetch.ts](src/tools/web_fetch.ts) so the model can only fetch URLs that appear in user messages.
 
@@ -146,7 +146,7 @@ Message types are inferred from the tool definitions via `InferUITools`, so `par
 
 ## SEO & GEO
 
-The indexable pages are `/`, `/about`, and `/privacy`. Auth and conversation routes are `noindex` and excluded from the sitemap.
+The indexable pages are `/`, `/about`, and `/privacy`. Conversation routes are `noindex` and excluded from the sitemap.
 
 Machine-readable endpoints:
 
@@ -165,7 +165,6 @@ When page content changes, update `lastModified` in [`src/lib/seo.ts`](./src/lib
 
 Check [package.json](./package.json) for the full list of available scripts.
 
-- **`auth:generate`** - Regenerate the [auth db schema](./src/lib/db/schema/auth.schema.ts) if you've made changes to your Better Auth [config](./src/lib/auth/auth.ts).
 - **`db`** - Run [drizzle-kit](https://orm.drizzle.team/docs/kit-overview) commands. (e.g. `vpr db generate`, `vpr db studio`)
 - **`ui`** - The shadcn/ui CLI. (e.g. `vpr ui add button`)
 - **`icons`** - Regenerate the favicon, Apple touch icon, and PWA icons with [`scripts/generate-icons.mjs`](./scripts/generate-icons.mjs).
@@ -174,7 +173,6 @@ Check [package.json](./package.json) for the full list of available scripts.
 
 #### Utilities
 
-- [`auth/middleware.ts`](./src/lib/auth/middleware.ts) - Sample middleware for enforcing authentication on server functions & API routes.
 - [`theme-toggle.tsx`](./src/components/theme-toggle.tsx), [`theme-provider.tsx`](./src/components/theme-provider.tsx) - A theme toggle and provider for toggling between light and dark mode (press `d` anywhere outside a text field to toggle).
 
 ## Issue watchlist

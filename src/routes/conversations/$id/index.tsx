@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/empty"
 import { Skeleton } from "@/components/ui/skeleton"
 import { conversationQueryOptions } from "@/lib/chat/queries"
-import { buildNoindexHead } from "@/lib/seo"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/conversations/$id/")({
@@ -23,9 +22,7 @@ export const Route = createFileRoute("/conversations/$id/")({
     await context.queryClient.query(conversationQueryOptions(params.id))
   },
   head: () => ({
-    ...buildNoindexHead({ title: "Conversation | Nathan's AI" }),
-    links: [],
-    scripts: [],
+    meta: [{ title: "Conversation | Nathan's AI" }],
   }),
   component: ConversationPage,
   pendingComponent: ConversationPending,

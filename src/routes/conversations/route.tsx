@@ -4,7 +4,6 @@ import { useServerFn } from "@tanstack/react-start"
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { conversationsQueryOptions } from "@/lib/chat/queries"
-import { buildNoindexHead } from "@/lib/seo"
 
 import { ConversationsSidebar } from "./-components/conversations-sidebar"
 import { $setSidebarOpen, sidebarOpenQueryOptions } from "./-lib/cookies"
@@ -16,7 +15,12 @@ export const Route = createFileRoute("/conversations")({
       context.queryClient.query(sidebarOpenQueryOptions()),
     ])
   },
-  head: () => buildNoindexHead({ title: "Conversations | Nathan's AI" }),
+  head: () => ({
+    meta: [
+      { title: "Conversations | Nathan's AI" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: RouteComponent,
 })
 

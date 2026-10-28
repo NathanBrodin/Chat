@@ -1,6 +1,4 @@
-import { siteConfig } from "@/lib/site"
-
-const LICENSE_URL = `${siteConfig.githubUrl}/blob/main/LICENSE`
+import { siteConfig } from "@/config/site"
 
 function buildIndexContent() {
   return `# Nathan's AI
@@ -64,21 +62,19 @@ Prefer those URLs for personal facts. This file is intentionally a small, mainta
 - Tool-assisted responses, including web search, web fetch, and GitHub repository lookup
 - Clarifying questions when a request is ambiguous
 - Public, shareable conversation links
-- Optional accounts for signed-in users
 
 ## How it is built
 
 - TanStack Start and TanStack Router with React and TypeScript
 - Nitro server runtime with server-rendered pages
 - AI SDK with an OpenRouter-hosted language model
-- PostgreSQL with Drizzle ORM for accounts and public conversations
-- Better Auth for authentication
+- PostgreSQL with Drizzle ORM for public conversations
 - Upstash for rate limiting
 - Tailwind CSS and shadcn/ui-style components
 
 ## Privacy and public conversations
 
-Conversations are public by default and can be shared by URL. They are excluded from search indexing and from the sitemap, and they carry \`noindex, nofollow\` directives. Approximate location derived from request headers is stored with a conversation. Signed-in users have account data managed by Better Auth. See ${siteConfig.url}/privacy for details.
+Conversations are public by default and can be shared by URL. They are excluded from search indexing and from the sitemap, and they carry \`noindex, nofollow\` directives. Approximate location derived from request headers is stored with a conversation. See ${siteConfig.url}/privacy for details.
 
 ## Limitations
 
@@ -101,10 +97,6 @@ Questions about Nathan's experience, projects, technical decisions, frontend sta
 
 Yes. The app is free to use and open source under the MIT license.
 
-### Do I need an account?
-
-No. You can start a conversation without signing in. Accounts add signed-in features.
-
 ### Are conversations private?
 
 No. Conversations are public and shareable. They are kept out of search indexes but anyone with the link can read them.
@@ -118,7 +110,7 @@ On the portfolio: ${siteConfig.portfolioLlmsFullUrl} (full profile) and ${siteCo
 - About this app: ${siteConfig.url}/about
 - Privacy: ${siteConfig.url}/privacy
 - Repository: ${siteConfig.githubUrl}
-- License: ${LICENSE_URL}
+- License: ${siteConfig.githubUrl}/blob/main/LICENSE
 `
 }
 

@@ -1,21 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import { PAGES } from "@/lib/seo"
-import { absoluteUrl } from "@/lib/site"
-
-const CACHE_CONTROL = "public, s-maxage=86400, stale-while-revalidate=604800"
-
-const XML_ENTITIES: Record<string, string> = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&apos;",
-}
-
-function escapeXml(value: string) {
-  return value.replace(/[&<>"']/g, (character) => XML_ENTITIES[character])
-}
+import { absoluteUrl, PAGES } from "@/config/site"
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -43,10 +28,22 @@ ${urls}
         return new Response(sitemap, {
           headers: {
             "Content-Type": "application/xml; charset=utf-8",
-            "Cache-Control": CACHE_CONTROL,
+            "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
           },
         })
       },
     },
   },
 })
+
+function escapeXml(value: string) {
+  const entities: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&apos;",
+  }
+
+  return value.replace(/[&<>"']/g, (character) => entities[character])
+}

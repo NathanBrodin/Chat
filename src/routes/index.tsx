@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 
 import { Chat } from "@/components/chat"
 import { Sidebar, SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { buildSeoHead } from "@/lib/seo"
+import { buildSeoHead } from "@/config/site"
 
 export const Route = createFileRoute("/")({
   head: () => buildSeoHead("home"),

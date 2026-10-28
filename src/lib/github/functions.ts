@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { ENV } from "varlock/env"
 import { z } from "zod"
 
-import { siteConfig } from "@/lib/site"
+import { siteConfig } from "@/config/site"
 
 const REQUEST_TIMEOUT_MS = 5000
 

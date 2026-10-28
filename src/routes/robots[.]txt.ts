@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router"
 
-import { siteConfig } from "@/lib/site"
+import { siteConfig } from "@/config/site"
 
-const CACHE_CONTROL = "public, s-maxage=86400, stale-while-revalidate=604800"
-
-// A single `User-agent: *` group keeps `/api/` disallowed for every crawler.
-// Separate AI groups would override these rules unless they repeated them.
-const ROBOTS = `User-agent: *
+export const Route = createFileRoute("/robots.txt")({
+  server: {
+    handlers: {
+      GET: () => {
+        // A single `User-agent: *` group keeps `/api/` disallowed for every
+        // crawler; separate AI groups would override these rules.
+        const robots = `User-agent: *
 Allow: /
 Disallow: /api/
 
@@ -16,14 +18,10 @@ Disallow: /api/
 Sitemap: ${siteConfig.url}/sitemap.xml
 `
 
-export const Route = createFileRoute("/robots.txt")({
-  server: {
-    handlers: {
-      GET: () => {
-        return new Response(ROBOTS, {
+        return new Response(robots, {
           headers: {
             "Content-Type": "text/plain; charset=utf-8",
-            "Cache-Control": CACHE_CONTROL,
+            "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
           },
         })
       },

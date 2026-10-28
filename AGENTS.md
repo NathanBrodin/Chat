@@ -2,7 +2,7 @@
 
 ## Essentials
 
-- Stack: TypeScript + React (TanStack Start), with Drizzle ORM, shadcn/ui, and Better Auth.
+- Stack: TypeScript + React (TanStack Start), with Drizzle ORM and shadcn/ui.
 - Use shadcn CLI (`vpr ui add <component>`) for adding new UI components & primitives.
 - Use `lucide-react` for UI icons (use `Icon` suffix, e.g. `import { Loader2Icon } from "lucide-react"`); for brand icons use `@icons-pack/react-simple-icons` (e.g. `SiGithub`).
 - Keep UI copy user-centered: describe outcomes and next actions concisely without exposing providers, internal states, or implementation details.
@@ -16,7 +16,7 @@
 - Keep the main control flow easy to follow. Avoid wrapper layers that merely rename or forward calls and fragmentation that creates unnecessary jumps between files or functions.
 - Extract helpers only when they meaningfully improve readability, reuse, or testability.
 - Keep types simple and close to where they are used. Prefer inference and avoid type gymnastics unless necessary.
-- Be robust at system boundaries such as user input, auth, external APIs, and persistence. Within trusted boundaries, rely on established invariants instead of guarding against hypothetical states.
+- Be robust at system boundaries such as user input, permissions, external APIs, and persistence. Within trusted boundaries, rely on established invariants instead of guarding against hypothetical states.
 - Handle edge cases in proportion to their likelihood and impact. Avoid adding complexity for contrived, extremely unlikely, low-impact scenarios outside normal supported use, while preserving applicable security and data-integrity requirements.
 - Add concise comments only for non-obvious intent, unusual edge cases, and important constraints. Briefly explain why, not what.
 
@@ -31,8 +31,7 @@
 ## Topic-specific Guidelines
 
 - [Data flow](.agents/data-flow.md) - TanStack Start/Router + Query data loading, cache behavior, mutations, and server boundaries
-- [Auth patterns](.agents/auth.md) - Route guards, middleware, auth utilities
-- [Database conventions](.agents/database.md) - Drizzle column types and generated Better Auth schema ownership
+- [Database conventions](.agents/database.md) - Drizzle column types and schema ownership
 - [Observability](.agents/observability.md) - evlog request context, structured errors, and safe event logging for server-side features
 - [TypeScript conventions](.agents/typescript.md) - Casting rules, prefer type inference
 - [Workflow](.agents/workflow.md) - Workflow commands, validation approach

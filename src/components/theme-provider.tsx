@@ -3,7 +3,7 @@ import { useHotkey } from "@tanstack/react-hotkeys"
 import { ScriptOnce } from "@tanstack/react-router"
 import { createContext, use, useEffect, useState } from "react"
 
-import { siteConfig } from "@/lib/site"
+import { siteConfig } from "@/config/site"
 
 export type Theme = "dark" | "light" | "system"
 

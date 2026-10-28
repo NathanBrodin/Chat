@@ -67,37 +67,9 @@ export default defineConfig({
       },
     },
 
-    // Signed-in account pages.
-    "/app": {
-      headers: {
-        "X-Robots-Tag": "noindex, nofollow",
-        "Cache-Control": "private, no-store",
-      },
-    },
-    "/app/**": {
-      headers: {
-        "X-Robots-Tag": "noindex, nofollow",
-        "Cache-Control": "private, no-store",
-      },
-    },
-
-    // Auth pages may pass link equity but must not be indexed or cached.
-    "/login": {
-      headers: {
-        "X-Robots-Tag": "noindex, follow",
-        "Cache-Control": "private, no-store",
-      },
-    },
-    "/signup": {
-      headers: {
-        "X-Robots-Tag": "noindex, follow",
-        "Cache-Control": "private, no-store",
-      },
-    },
-
     /**
-     * Indexable pages can be shared at the CDN. Home renders no auth-aware
-     * content; if per-user SSR is added to `/`, remove its rule.
+     * Indexable pages can be shared at the CDN. Home renders no per-user
+     * content; if personalized SSR is added to `/`, remove its rule.
      * Asset routes (`/og`, `/sitemap.xml`, `/robots.txt`, `/llms.txt`,
      * `/llms-full.txt`, `/manifest.webmanifest`, `/about.md`) are omitted so
      * their handlers keep ownership of cache headers.

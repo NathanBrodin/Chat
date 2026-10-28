@@ -1,14 +1,10 @@
-import type { CssInput } from "@takumi-rs/helpers"
 import type { FontLoader, ImageLoader } from "@takumi-rs/helpers/renderer"
 import { createFileRoute } from "@tanstack/react-router"
 import { createElement } from "react"
 import z from "zod"
 
-import { OG_STAR_SRC, OG_STAR_SVG, OgImage } from "@/components/og-image"
-import { siteConfig } from "@/lib/site"
-
-const MAX_TITLE_LENGTH = 120
-const MAX_DESCRIPTION_LENGTH = 240
+import { OG_STAR_SRC, ogStarSvg, OgImage } from "@/components/og-image"
+import { siteConfig } from "@/config/site"
 
 // Raw values are bounded so a request cannot carry unbounded work; rendering
 // clamps them to the lengths the card can show.
@@ -16,14 +12,6 @@ const ogSearchSchema = z.object({
   title: z.string().max(1024).optional(),
   description: z.string().max(2048).optional(),
 })
-
-const namedHtmlEntities = {
-  amp: "&",
-  lt: "<",
-  gt: ">",
-  quot: '"',
-  apos: "'",
-} as const
 
 export const Route = createFileRoute("/og")({
   server: {
@@ -38,13 +26,10 @@ export const Route = createFileRoute("/og")({
           return new Response("Invalid search parameters", { status: 400 })
         }
 
-        const title = clampText(
-          decodeHtmlEntities(parsed.data.title) ?? siteConfig.title,
-          MAX_TITLE_LENGTH,
-        )
+        const title = clampText(decodeHtmlEntities(parsed.data.title) ?? siteConfig.title, 120)
         const description = clampText(
           decodeHtmlEntities(parsed.data.description) ?? siteConfig.description,
-          MAX_DESCRIPTION_LENGTH,
+          240,
         )
         const { fonts, images } = await loadOgAssets(url.origin)
 
@@ -54,7 +39,22 @@ export const Route = createFileRoute("/og")({
           fonts,
           images,
           fontFamilies: ["Cal Sans", "Geist Mono"],
-          css: OG_CSS,
+          css: [
+            '@import "tailwindcss";',
+            {
+              selector: ":root",
+              style: {
+                "--font-sans": "'Cal Sans'",
+                "--font-display": "'Cal Sans'",
+                "--font-mono": "'Geist Mono'",
+                "--color-background": "#09090b",
+                "--color-foreground": "#f5f5f5",
+                "--color-primary": "#f5f5f5",
+                "--color-muted-foreground": "#a1a1a1",
+                "--color-border": "rgba(255, 255, 255, 0.08)",
+              },
+            },
+          ],
           headers: {
             "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
           },
@@ -64,26 +64,16 @@ export const Route = createFileRoute("/og")({
   },
 })
 
-// Flat values from the dark theme in src/styles.css: Takumi does not resolve var() inside custom property values.
-const OG_CSS: CssInput[] = [
-  '@import "tailwindcss";',
-  {
-    selector: ":root",
-    style: {
-      "--font-sans": "'Cal Sans'",
-      "--font-display": "'Cal Sans'",
-      "--font-mono": "'Geist Mono'",
-      "--color-background": "#09090b",
-      "--color-foreground": "#f5f5f5",
-      "--color-primary": "#f5f5f5",
-      "--color-muted-foreground": "#a1a1a1",
-      "--color-border": "rgba(255, 255, 255, 0.08)",
-    },
-  },
-]
-
 function decodeHtmlEntities(value: string | undefined) {
   if (!value) return
+
+  const namedEntities = {
+    amp: "&",
+    lt: "<",
+    gt: ">",
+    quot: '"',
+    apos: "'",
+  } as const
 
   return value.replace(/&(#(?:x[a-f\d]+|\d+)|[a-z]+);/gi, (entity, body: string) => {
     if (body.startsWith("#")) {
@@ -102,7 +92,7 @@ function decodeHtmlEntities(value: string | undefined) {
       }
     }
 
-    const namedEntity = namedHtmlEntities[body.toLowerCase() as keyof typeof namedHtmlEntities]
+    const namedEntity = namedEntities[body.toLowerCase() as keyof typeof namedEntities]
 
     return namedEntity ?? entity
   })
@@ -150,7 +140,7 @@ function loadOgAssets(origin: string): Promise<OgAssets> {
           { name: "Cal Sans", data: calSans },
           { name: "Geist Mono", data: geistMono },
         ],
-        images: [{ src: OG_STAR_SRC, data: new TextEncoder().encode(OG_STAR_SVG) }],
+        images: [{ src: OG_STAR_SRC, data: new TextEncoder().encode(ogStarSvg()) }],
       }
     })
     .catch((error: unknown) => {

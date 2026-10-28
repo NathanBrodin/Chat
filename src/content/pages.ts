@@ -1,4 +1,4 @@
-import { siteConfig } from "@/lib/site"
+import { siteConfig } from "@/config/site"
 
 export const aboutLastUpdated = "2026-10-28"
 export const privacyLastUpdated = "2026-10-28"
@@ -31,8 +31,6 @@ export const aboutFaqs = [
       "Yes. The app is open source under the MIT license at https://github.com/NathanBrodin/Chat.",
   },
 ] as const
-
-const faqMarkdown = aboutFaqs.map((faq) => `### ${faq.question}\n\n${faq.answer}`).join("\n\n")
 
 export const aboutMarkdown = `Nathan's AI is an interactive portfolio for Nathan Brodin, a frontend engineer. Instead of reading a static page, you can ask questions about his experience, projects, and the way he builds for the web. Answers stream back from a language model and can include links, sources, and short follow-up questions.
 
@@ -67,7 +65,6 @@ Nathan's AI is designed, built, and maintained by [Nathan Brodin](${siteConfig.p
 - **UI:** Tailwind CSS and shadcn/ui, with Cal Sans and Geist Mono.
 - **AI:** Vercel AI SDK with OpenRouter as the model gateway for streaming, tool calls, and token usage.
 - **Data:** PostgreSQL with Drizzle ORM. Conversations are stored as JSON message history with metadata.
-- **Auth:** Better Auth with email and password, GitHub, or Google sign-in.
 - **Rate limiting:** Upstash Redis.
 - **Hosting:** Vercel.
 
@@ -77,7 +74,7 @@ The project is open source under the MIT license. Read the [Chat source code on 
 
 ## Frequently asked questions
 
-${faqMarkdown}
+${aboutFaqs.map((faq) => `### ${faq.question}\n\n${faq.answer}`).join("\n\n")}
 `
 
 export const privacyMarkdown = `This page explains what Nathan's AI stores, who processes it, and what is public. It applies to the chat app at ${siteConfig.url}.
@@ -104,15 +101,8 @@ The app reads Vercel's geolocation headers from each request. When available, it
 
 The IP address itself is not stored with the conversation. It is used for rate limiting as described below.
 
-## Accounts
-
-Signing in is optional. When you create an account, authentication is handled by Better Auth. Depending on how you sign in, the app stores your name, email address, profile image, and the identifiers needed to link a GitHub or Google account. Passwords for email sign-in are hashed by Better Auth before storage. Account records live in the same PostgreSQL database as conversations.
-
-Questions about account data can be sent to [${siteConfig.email}](mailto:${siteConfig.email}).
-
 ## Cookies and local storage
 
-- Session cookies set by Better Auth keep you signed in after you authenticate.
 - The \`conversations_sidebar_open\` cookie remembers whether the conversation sidebar is open. It is httpOnly and expires after one year.
 - Your theme preference is stored in your browser's local storage under the key \`theme\`. It is never sent to the server. A small inline script applies the saved theme before the page loads.
 
@@ -125,7 +115,6 @@ The app does not include advertising cookies or cross-site tracking scripts.
 - **GitHub** receives public repository names when the model looks up repository stats.
 - **Vercel** hosts the app and supplies the geolocation headers used for conversations.
 - **Websites the model fetches** receive a request from the app when the model chooses to read a page.
-- **GitHub and Google** receive authentication requests if you choose social sign-in.
 
 ## Rate limiting
 
@@ -133,5 +122,5 @@ To prevent abuse, \`/api/chat\` is limited per IP address: 5 requests in 30 seco
 
 ## Retention and contact
 
-Conversations and account records remain stored until they are removed by the site operator. There is no self-service delete flow yet. For questions about this policy, stored data, or removal requests, email [${siteConfig.email}](mailto:${siteConfig.email}).
+Conversations remain stored until they are removed by the site operator. There is no self-service delete flow yet. For questions about this policy, stored data, or removal requests, email [${siteConfig.email}](mailto:${siteConfig.email}).
 `

@@ -64,7 +64,7 @@
   --dazzle-hover: 0;
 }
 
-.dazzle .dazzle-text {
+.dazzle p {
   grid-area: 1 / 1;
   margin: 0;
   max-width: 100%;
@@ -85,7 +85,7 @@
     calc(var(--dazzle-hover) * var(--dazzle-unit) * -0.1);
 }
 
-.dazzle .dazzle-text-glare {
+.dazzle p:last-of-type {
   background:
     linear-gradient(
         108deg,

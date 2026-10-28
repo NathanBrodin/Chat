@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { ArrowLeftIcon } from "lucide-react"
 import type { ReactNode } from "react"
 
-import { SiteLinks } from "@/components/site-links"
+import { Footer } from "@/components/footer"
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   dateStyle: "long",
@@ -10,26 +10,19 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 })
 
 type ContentPageProps = {
-  readonly eyebrow: string
   readonly title: string
   readonly description: string
   readonly lastUpdated?: string
   readonly children: ReactNode
 }
 
-export function ContentPage({
-  eyebrow,
-  title,
-  description,
-  lastUpdated,
-  children,
-}: ContentPageProps) {
+export function ContentPage({ title, description, lastUpdated, children }: ContentPageProps) {
   return (
-    <div className="min-h-svh bg-background">
+    <div className="flex min-h-svh flex-col bg-background">
       <main
         id="main-content"
         tabIndex={-1}
-        className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-6 py-12 md:gap-12 md:px-8 md:py-20"
+        className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-12 md:gap-12 md:px-8 md:py-20"
       >
         <header className="flex flex-col gap-4">
           <Link
@@ -39,10 +32,6 @@ export function ContentPage({
             <ArrowLeftIcon className="size-4" aria-hidden="true" />
             Back to chat
           </Link>
-
-          <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
-            {eyebrow}
-          </p>
 
           <h1 className="font-heading text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
             {title}
@@ -63,11 +52,9 @@ export function ContentPage({
         </header>
 
         <article className="typeset max-w-[68ch]">{children}</article>
-
-        <footer className="border-t border-border pt-8">
-          <SiteLinks />
-        </footer>
       </main>
+
+      <Footer />
     </div>
   )
 }

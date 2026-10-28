@@ -3,10 +3,10 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { ContentPage } from "@/components/content-page"
+import { breadcrumbJsonLd, buildSeoHead, PAGES } from "@/config/site"
 import { privacyLastUpdated, privacyMarkdown } from "@/content/pages"
-import { breadcrumbJsonLd, buildSeoHead, PAGES, privacyPageJsonLd } from "@/lib/seo"
 
-export const Route = createFileRoute("/privacy")({
+export const Route = createFileRoute("/privacy/")({
   head: () => {
     const seo = buildSeoHead("privacy")
 
@@ -14,10 +14,7 @@ export const Route = createFileRoute("/privacy")({
       meta: seo.meta,
       links: seo.links,
       scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify(privacyPageJsonLd()),
-        },
+        ...seo.scripts,
         {
           type: "application/ld+json",
           children: JSON.stringify(
@@ -36,7 +33,6 @@ export const Route = createFileRoute("/privacy")({
 function PrivacyPage() {
   return (
     <ContentPage
-      eyebrow="Privacy"
       title="Privacy"
       description={PAGES.privacy.description}
       lastUpdated={privacyLastUpdated}

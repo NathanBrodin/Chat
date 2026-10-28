@@ -10,43 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthRouteRouteImport } from './routes/_auth/route'
-import { Route as GuestRouteRouteImport } from './routes/_guest/route'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as AboutDotmdRouteImport } from './routes/about[.]md'
 import { Route as ConversationsRouteRouteImport } from './routes/conversations/route'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as OgRouteImport } from './routes/og'
-import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AuthAppRouteRouteImport } from './routes/_auth/app/route'
+import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as ApiChatRouteRouteImport } from './routes/api/chat/route'
 import { Route as ConversationsIndexRouteImport } from './routes/conversations/index'
-import { Route as AuthAppIndexRouteImport } from './routes/_auth/app/index'
-import { Route as GuestLoginIndexRouteImport } from './routes/_guest/login/index'
-import { Route as GuestSignupIndexRouteImport } from './routes/_guest/signup/index'
-import { Route as ApiAuthSplatRouteRouteImport } from './routes/api/auth/$/route'
+import { Route as PrivacyIndexRouteImport } from './routes/privacy/index'
 import { Route as ConversationsIdIndexRouteImport } from './routes/conversations/$id/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRouteRoute = AuthRouteRouteImport.update({
-  id: '/_auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuestRouteRoute = GuestRouteRouteImport.update({
-  id: '/_guest',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutDotmdRoute = AboutDotmdRouteImport.update({
@@ -79,11 +59,6 @@ const OgRoute = OgRouteImport.update({
   path: '/og',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   id: '/robots.txt',
   path: '/robots.txt',
@@ -94,10 +69,10 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => AuthRouteRoute,
+const AboutIndexRoute = AboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRouteRoute = ApiChatRouteRouteImport.update({
   id: '/api/chat',
@@ -109,24 +84,9 @@ const ConversationsIndexRoute = ConversationsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ConversationsRouteRoute,
 } as any)
-const AuthAppIndexRoute = AuthAppIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthAppRouteRoute,
-} as any)
-const GuestLoginIndexRoute = GuestLoginIndexRouteImport.update({
-  id: '/login/',
-  path: '/login/',
-  getParentRoute: () => GuestRouteRoute,
-} as any)
-const GuestSignupIndexRoute = GuestSignupIndexRouteImport.update({
-  id: '/signup/',
-  path: '/signup/',
-  getParentRoute: () => GuestRouteRoute,
-} as any)
-const ApiAuthSplatRouteRoute = ApiAuthSplatRouteRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
+const PrivacyIndexRoute = PrivacyIndexRouteImport.update({
+  id: '/privacy/',
+  path: '/privacy/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConversationsIdIndexRoute = ConversationsIdIndexRouteImport.update({
@@ -138,65 +98,49 @@ const ConversationsIdIndexRoute = ConversationsIdIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/conversations': typeof ConversationsRouteRouteWithChildren
-  '/about': typeof AboutRoute
   '/about.md': typeof AboutDotmdRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
-  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/app': typeof AuthAppRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
+  '/about/': typeof AboutIndexRoute
   '/conversations/': typeof ConversationsIndexRoute
-  '/api/auth/$': typeof ApiAuthSplatRouteRoute
-  '/app/': typeof AuthAppIndexRoute
-  '/login/': typeof GuestLoginIndexRoute
-  '/signup/': typeof GuestSignupIndexRoute
+  '/privacy/': typeof PrivacyIndexRoute
   '/conversations/$id/': typeof ConversationsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/about.md': typeof AboutDotmdRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
-  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRouteRoute
+  '/about': typeof AboutIndexRoute
   '/conversations': typeof ConversationsIndexRoute
-  '/api/auth/$': typeof ApiAuthSplatRouteRoute
-  '/app': typeof AuthAppIndexRoute
-  '/login': typeof GuestLoginIndexRoute
-  '/signup': typeof GuestSignupIndexRoute
+  '/privacy': typeof PrivacyIndexRoute
   '/conversations/$id': typeof ConversationsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_auth': typeof AuthRouteRouteWithChildren
-  '/_guest': typeof GuestRouteRouteWithChildren
   '/conversations': typeof ConversationsRouteRouteWithChildren
-  '/about': typeof AboutRoute
   '/about.md': typeof AboutDotmdRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
-  '/privacy': typeof PrivacyRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_auth/app': typeof AuthAppRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
+  '/about/': typeof AboutIndexRoute
   '/conversations/': typeof ConversationsIndexRoute
-  '/api/auth/$': typeof ApiAuthSplatRouteRoute
-  '/_auth/app/': typeof AuthAppIndexRoute
-  '/_guest/login/': typeof GuestLoginIndexRoute
-  '/_guest/signup/': typeof GuestSignupIndexRoute
+  '/privacy/': typeof PrivacyIndexRoute
   '/conversations/$id/': typeof ConversationsIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -204,83 +148,64 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/conversations'
-    | '/about'
     | '/about.md'
     | '/llms-full.txt'
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
-    | '/privacy'
     | '/robots.txt'
     | '/sitemap.xml'
-    | '/app'
     | '/api/chat'
+    | '/about/'
     | '/conversations/'
-    | '/api/auth/$'
-    | '/app/'
-    | '/login/'
-    | '/signup/'
+    | '/privacy/'
     | '/conversations/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/about.md'
     | '/llms-full.txt'
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
-    | '/privacy'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/api/chat'
+    | '/about'
     | '/conversations'
-    | '/api/auth/$'
-    | '/app'
-    | '/login'
-    | '/signup'
+    | '/privacy'
     | '/conversations/$id'
   id:
     | '__root__'
     | '/'
-    | '/_auth'
-    | '/_guest'
     | '/conversations'
-    | '/about'
     | '/about.md'
     | '/llms-full.txt'
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
-    | '/privacy'
     | '/robots.txt'
     | '/sitemap.xml'
-    | '/_auth/app'
     | '/api/chat'
+    | '/about/'
     | '/conversations/'
-    | '/api/auth/$'
-    | '/_auth/app/'
-    | '/_guest/login/'
-    | '/_guest/signup/'
+    | '/privacy/'
     | '/conversations/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  GuestRouteRoute: typeof GuestRouteRouteWithChildren
   ConversationsRouteRoute: typeof ConversationsRouteRouteWithChildren
-  AboutRoute: typeof AboutRoute
   AboutDotmdRoute: typeof AboutDotmdRoute
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
   OgRoute: typeof OgRoute
-  PrivacyRoute: typeof PrivacyRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRouteRoute: typeof ApiChatRouteRoute
-  ApiAuthSplatRouteRoute: typeof ApiAuthSplatRouteRoute
+  AboutIndexRoute: typeof AboutIndexRoute
+  PrivacyIndexRoute: typeof PrivacyIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -290,27 +215,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_auth': {
-      id: '/_auth'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_guest': {
-      id: '/_guest'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof GuestRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about.md': {
@@ -355,13 +259,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OgRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/robots.txt': {
       id: '/robots.txt'
       path: '/robots.txt'
@@ -376,12 +273,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/app': {
-      id: '/_auth/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AuthAppRouteRouteImport
-      parentRoute: typeof AuthRouteRoute
+    '/about/': {
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about/'
+      preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
       id: '/api/chat'
@@ -397,32 +294,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConversationsIndexRouteImport
       parentRoute: typeof ConversationsRouteRoute
     }
-    '/_auth/app/': {
-      id: '/_auth/app/'
-      path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AuthAppIndexRouteImport
-      parentRoute: typeof AuthAppRouteRoute
-    }
-    '/_guest/login/': {
-      id: '/_guest/login/'
-      path: '/login'
-      fullPath: '/login/'
-      preLoaderRoute: typeof GuestLoginIndexRouteImport
-      parentRoute: typeof GuestRouteRoute
-    }
-    '/_guest/signup/': {
-      id: '/_guest/signup/'
-      path: '/signup'
-      fullPath: '/signup/'
-      preLoaderRoute: typeof GuestSignupIndexRouteImport
-      parentRoute: typeof GuestRouteRoute
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteRouteImport
+    '/privacy/': {
+      id: '/privacy/'
+      path: '/privacy'
+      fullPath: '/privacy/'
+      preLoaderRoute: typeof PrivacyIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conversations/$id/': {
@@ -434,44 +310,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AuthAppRouteRouteChildren {
-  AuthAppIndexRoute: typeof AuthAppIndexRoute
-}
-
-const AuthAppRouteRouteChildren: AuthAppRouteRouteChildren = {
-  AuthAppIndexRoute: AuthAppIndexRoute,
-}
-
-const AuthAppRouteRouteWithChildren = AuthAppRouteRoute._addFileChildren(
-  AuthAppRouteRouteChildren,
-)
-
-interface AuthRouteRouteChildren {
-  AuthAppRouteRoute: typeof AuthAppRouteRouteWithChildren
-}
-
-const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthAppRouteRoute: AuthAppRouteRouteWithChildren,
-}
-
-const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren,
-)
-
-interface GuestRouteRouteChildren {
-  GuestLoginIndexRoute: typeof GuestLoginIndexRoute
-  GuestSignupIndexRoute: typeof GuestSignupIndexRoute
-}
-
-const GuestRouteRouteChildren: GuestRouteRouteChildren = {
-  GuestLoginIndexRoute: GuestLoginIndexRoute,
-  GuestSignupIndexRoute: GuestSignupIndexRoute,
-}
-
-const GuestRouteRouteWithChildren = GuestRouteRoute._addFileChildren(
-  GuestRouteRouteChildren,
-)
 
 interface ConversationsRouteRouteChildren {
   ConversationsIndexRoute: typeof ConversationsIndexRoute
@@ -488,20 +326,17 @@ const ConversationsRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRouteRoute: AuthRouteRouteWithChildren,
-  GuestRouteRoute: GuestRouteRouteWithChildren,
   ConversationsRouteRoute: ConversationsRouteRouteWithChildren,
-  AboutRoute: AboutRoute,
   AboutDotmdRoute: AboutDotmdRoute,
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
   OgRoute: OgRoute,
-  PrivacyRoute: PrivacyRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRouteRoute: ApiChatRouteRoute,
-  ApiAuthSplatRouteRoute: ApiAuthSplatRouteRoute,
+  AboutIndexRoute: AboutIndexRoute,
+  PrivacyIndexRoute: PrivacyIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
