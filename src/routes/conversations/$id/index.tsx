@@ -15,12 +15,18 @@ import {
 } from "@/components/ui/empty"
 import { Skeleton } from "@/components/ui/skeleton"
 import { conversationQueryOptions } from "@/lib/chat/queries"
+import { buildNoindexHead } from "@/lib/seo"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/conversations/$id/")({
   loader: async ({ context, params }) => {
     await context.queryClient.query(conversationQueryOptions(params.id))
   },
+  head: () => ({
+    ...buildNoindexHead({ title: "Conversation | Nathan's AI" }),
+    links: [],
+    scripts: [],
+  }),
   component: ConversationPage,
   pendingComponent: ConversationPending,
   errorComponent: ConversationError,

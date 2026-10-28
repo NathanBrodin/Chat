@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { GalleryVerticalEndIcon } from "lucide-react"
 
 import { authQueryOptions } from "@/lib/auth/queries"
+import { buildNoindexHead } from "@/lib/seo"
 
 export const Route = createFileRoute("/_guest")({
   component: RouteComponent,
@@ -26,6 +27,11 @@ export const Route = createFileRoute("/_guest")({
       redirectUrl: REDIRECT_URL,
     }
   },
+  head: () => ({
+    ...buildNoindexHead({ title: "Account | Nathan's AI", follow: true }),
+    links: [],
+    scripts: [],
+  }),
 })
 
 function RouteComponent() {

@@ -9,9 +9,15 @@ import { Label } from "@/components/ui/label"
 import { toastManager } from "@/components/ui/toast"
 import { authClient } from "@/lib/auth/auth-client"
 import { authQueryOptions } from "@/lib/auth/queries"
+import { buildNoindexHead } from "@/lib/seo"
 
 export const Route = createFileRoute("/_guest/signup/")({
   component: SignupForm,
+  head: () => ({
+    ...buildNoindexHead({ title: "Create an account | Nathan's AI", follow: true }),
+    links: [],
+    scripts: [],
+  }),
 })
 
 function SignupForm() {
