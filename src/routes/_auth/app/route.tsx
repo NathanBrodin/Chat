@@ -1,7 +1,6 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router"
 
 import { SignOutButton } from "@/components/sign-out-button"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 
 export const Route = createFileRoute("/_auth/app")({
@@ -20,7 +19,6 @@ function AppLayout() {
             _auth/app/route.tsx
           </span>
         </div>
-        <ThemeToggle />
       </div>
       <div className="w-full max-w-3xl rounded-md border p-2">
         <Outlet />

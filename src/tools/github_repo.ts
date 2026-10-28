@@ -1,4 +1,5 @@
 import { tool } from "ai"
+import { ENV } from "varlock/env"
 import { z } from "zod"
 
 export const githubRepo = tool({
@@ -28,7 +29,10 @@ export const githubRepo = tool({
 
     try {
       const res = await fetch(`https://api.github.com/repos/${repo}`, {
-        headers: { accept: "application/vnd.github+json" },
+        headers: {
+          accept: "application/vnd.github+json",
+          authorization: `Bearer ${ENV.GITHUB_API_TOKEN}`,
+        },
         signal,
       })
       if (!res.ok) {

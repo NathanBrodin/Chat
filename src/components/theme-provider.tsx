@@ -3,7 +3,7 @@ import { useHotkey } from "@tanstack/react-hotkeys"
 import { ScriptOnce } from "@tanstack/react-router"
 import { createContext, use, useEffect, useState } from "react"
 
-type Theme = "dark" | "light" | "system"
+export type Theme = "dark" | "light" | "system"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -91,8 +91,6 @@ export function ThemeProvider({
 function ThemeHotkey() {
   const { theme, setTheme } = useTheme()
 
-  // Single keys are skipped while typing, modifiers must match exactly, and
-  // requireReset covers key repeat, so this preserves the previous behavior.
   useHotkey(
     "D",
     () => {

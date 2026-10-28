@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query"
 import { Link, useParams } from "@tanstack/react-router"
 
 import { AppLogo } from "@/components/app-logo"
+import { GithubStarsButton } from "@/components/github-stars-button"
+import { ProjectMenu } from "@/components/project-menu"
 import { CircularProgress } from "@/components/ui/circular-progress"
 import {
   Sidebar,
@@ -75,7 +77,12 @@ export function ConversationsSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <div className="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col">
+          <GithubStarsButton />
+          <ProjectMenu />
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }

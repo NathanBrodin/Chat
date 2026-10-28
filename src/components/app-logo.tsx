@@ -25,7 +25,7 @@ export function AppLogo() {
   return (
     <span className="group/logo flex w-fit items-center gap-1.5 font-heading text-base leading-none font-semibold text-foreground">
       <Logo className="size-5 transition-all duration-300 ease-in-out" />
-      <span className="[text-box:trim-both_cap_alphabetic]">Nathan's AI</span>
+      <span>Nathan's AI</span>
     </span>
   )
 }
