@@ -95,6 +95,22 @@ export default defineConfig({
       },
     },
 
+    /**
+     * Indexable pages can be shared at the CDN. Home renders no auth-aware
+     * content; if per-user SSR is added to `/`, remove its rule.
+     * Asset routes (`/og`, `/sitemap.xml`, `/robots.txt`, `/llms.txt`,
+     * `/llms-full.txt`, `/manifest.webmanifest`, `/about.md`) are omitted so
+     * their handlers keep ownership of cache headers.
+     */
+    "/": {
+      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" },
+    },
+    "/about": {
+      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" },
+    },
+    "/privacy": {
+      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" },
+    },
   },
 
   rolldownConfig: {
