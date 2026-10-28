@@ -16,6 +16,7 @@ import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as OgRouteImport } from './routes/og'
+import { Route as PrivacyDotmdRouteImport } from './routes/privacy[.]md'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
@@ -57,6 +58,11 @@ const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
 const OgRoute = OgRouteImport.update({
   id: '/og',
   path: '/og',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyDotmdRoute = PrivacyDotmdRouteImport.update({
+  id: '/privacy.md',
+  path: '/privacy.md',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
+  '/privacy.md': typeof PrivacyDotmdRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRouteRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
+  '/privacy.md': typeof PrivacyDotmdRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRouteRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
+  '/privacy.md': typeof PrivacyDotmdRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRouteRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
+    | '/privacy.md'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/api/chat'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
+    | '/privacy.md'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/api/chat'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
+    | '/privacy.md'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/api/chat'
@@ -201,6 +213,7 @@ export interface RootRouteChildren {
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
   OgRoute: typeof OgRoute
+  PrivacyDotmdRoute: typeof PrivacyDotmdRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRouteRoute: typeof ApiChatRouteRoute
@@ -257,6 +270,13 @@ declare module '@tanstack/react-router' {
       path: '/og'
       fullPath: '/og'
       preLoaderRoute: typeof OgRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy.md': {
+      id: '/privacy.md'
+      path: '/privacy.md'
+      fullPath: '/privacy.md'
+      preLoaderRoute: typeof PrivacyDotmdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -332,6 +352,7 @@ const rootRouteChildren: RootRouteChildren = {
   LlmsDottxtRoute: LlmsDottxtRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
   OgRoute: OgRoute,
+  PrivacyDotmdRoute: PrivacyDotmdRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRouteRoute: ApiChatRouteRoute,

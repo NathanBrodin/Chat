@@ -8,7 +8,7 @@ export const Route = createFileRoute("/manifest.webmanifest")({
       GET: () => {
         const manifest = {
           id: "/",
-          name: "Nathan's AI | Nathan Brodin",
+          name: "Nathan's AI · Nathan Brodin",
           short_name: "Nathan's AI",
           description: siteConfig.description,
           start_url: "/",

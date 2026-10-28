@@ -43,7 +43,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootDocument({ children }: { readonly children: React.ReactNode }) {
   return (
-    // suppress since we're updating the "dark" class in ThemeProvider
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />

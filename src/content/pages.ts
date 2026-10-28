@@ -3,7 +3,6 @@ import { siteConfig } from "@/config/site"
 export const aboutLastUpdated = "2026-10-28"
 export const privacyLastUpdated = "2026-10-28"
 
-// The visible FAQ and the FAQPage schema are generated from the same list.
 export const aboutFaqs = [
   {
     question: "Is this Nathan's real portfolio?",

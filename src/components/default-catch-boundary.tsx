@@ -24,7 +24,7 @@ export function DefaultCatchBoundary({ error }: Readonly<ErrorComponentProps>) {
       tabIndex={-1}
       className="flex min-h-svh min-w-0 flex-1 flex-col items-center justify-center gap-6 p-4"
     >
-      <title>Something went wrong | Nathan&apos;s AI</title>
+      <title>Something went wrong · Nathan&apos;s AI</title>
       <meta name="robots" content="noindex" />
       <ErrorComponent error={error} />
       <div className="flex flex-wrap items-center gap-2">

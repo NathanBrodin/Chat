@@ -17,7 +17,7 @@ export const Route = createFileRoute("/conversations")({
   },
   head: () => ({
     meta: [
-      { title: "Conversations | Nathan's AI" },
+      { title: "Conversations · Nathan's AI" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

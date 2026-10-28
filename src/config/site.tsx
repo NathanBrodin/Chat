@@ -18,7 +18,7 @@ import type {
 export const siteConfig = {
   url: "https://chat.brodin.dev",
   name: "Nathan's AI",
-  title: "Nathan's AI | Ask Nathan Brodin Anything",
+  title: "Nathan's AI · Ask Nathan Brodin Anything",
   description:
     "An interactive AI portfolio that answers questions about Nathan Brodin's experience, projects, and approach to building fast, accessible products for the web.",
   keywords: [
@@ -75,7 +75,7 @@ export const PAGES = {
   },
   about: {
     path: "/about",
-    title: "About Nathan's AI | An AI Portfolio by Nathan Brodin",
+    title: "About Nathan's AI · An AI Portfolio by Nathan Brodin",
     ogTitle: "About Nathan's AI",
     description:
       "How Nathan's AI works, what it can answer about Nathan Brodin's experience and projects, and the stack behind this interactive portfolio.",
@@ -85,7 +85,7 @@ export const PAGES = {
   },
   privacy: {
     path: "/privacy",
-    title: "Privacy | Nathan's AI",
+    title: "Privacy · Nathan's AI",
     ogTitle: "Privacy",
     description:
       "How Nathan's AI handles conversations, cookies, and approximate location, and what stays public when you share a chat.",
@@ -178,15 +178,16 @@ export function buildSeoHead(pageKey: PageKey) {
       { property: "og:image", content: image },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: `${page.title} — ${siteConfig.author}` },
+      { property: "og:image:alt", content: `${page.title} · ${siteConfig.author}` },
       { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@nathan_brodin" },
       { name: "twitter:creator", content: "@nathan_brodin" },
       { name: "twitter:title", content: page.title },
       { name: "twitter:description", content: description },
+      { name: "twitter:url", content: canonical },
       { name: "twitter:image", content: image },
-      { name: "twitter:image:alt", content: `${page.title} — ${siteConfig.author}` },
+      { name: "twitter:image:alt", content: `${page.title} · ${siteConfig.author}` },
     ],
     links: [{ rel: "canonical", href: canonical }],
     scripts: [

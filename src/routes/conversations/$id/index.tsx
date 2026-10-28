@@ -19,11 +19,19 @@ import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/conversations/$id/")({
   loader: async ({ context, params }) => {
-    await context.queryClient.query(conversationQueryOptions(params.id))
+    return await context.queryClient.query(conversationQueryOptions(params.id))
   },
-  head: () => ({
-    meta: [{ title: "Conversation | Nathan's AI" }],
-  }),
+  head: ({ loaderData }) => {
+    if (!loaderData) {
+      return {
+        meta: [{ title: "Conversation · Nathan's AI" }],
+      }
+    }
+
+    return {
+      meta: [{ title: `${loaderData.title} · Nathan's AI` }],
+    }
+  },
   component: ConversationPage,
   pendingComponent: ConversationPending,
   errorComponent: ConversationError,
