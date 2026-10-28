@@ -24,7 +24,8 @@ import {
 
 const MAX_DESCRIPTION_LENGTH = 160
 const LICENSE_URL = `${siteConfig.githubUrl}/blob/main/LICENSE`
-const ROBOTS_INDEXABLE = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+const ROBOTS_INDEXABLE =
+  "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
 
 export type PageKey = keyof typeof PAGES
 
@@ -245,7 +246,9 @@ export function privacyPageJsonLd() {
   return webPageJsonLd({ pageKey: "privacy" })
 }
 
-export function breadcrumbJsonLd(items: readonly { name: string; path: string }[]): WithContext<BreadcrumbList> {
+export function breadcrumbJsonLd(
+  items: readonly { name: string; path: string }[],
+): WithContext<BreadcrumbList> {
   const itemListElement: ListItem[] = items.map((item, index) => ({
     "@type": "ListItem",
     position: index + 1,
@@ -260,7 +263,9 @@ export function breadcrumbJsonLd(items: readonly { name: string; path: string }[
   }
 }
 
-export function faqJsonLd(faqs: readonly { question: string; answer: string }[]): WithContext<FAQPage> {
+export function faqJsonLd(
+  faqs: readonly { question: string; answer: string }[],
+): WithContext<FAQPage> {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",

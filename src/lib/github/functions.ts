@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { ENV } from "varlock/env"
 import { z } from "zod"
 
-import { site } from "@/lib/site"
+import { siteConfig } from "@/lib/site"
 
 const REQUEST_TIMEOUT_MS = 5000
 
@@ -16,7 +16,7 @@ const repoResponseSchema = z.object({
  */
 export const $getStargazersCount = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    const response = await fetch(`https://api.github.com/repos/${site.githubRepo}`, {
+    const response = await fetch(`https://api.github.com/repos/${siteConfig.githubRepo}`, {
       headers: {
         accept: "application/vnd.github+json",
         authorization: `Bearer ${ENV.GITHUB_API_TOKEN}`,

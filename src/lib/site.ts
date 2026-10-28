@@ -45,9 +45,6 @@ export const siteConfig = {
   },
 } as const
 
-// Temporary alias while importers migrate to `siteConfig`.
-export const site = siteConfig
-
 export const PERSON_ID = "https://brodin.dev/#person"
 export const WEBSITE_ID = "https://chat.brodin.dev/#website"
 export const APP_ID = "https://chat.brodin.dev/#app"
@@ -69,7 +66,10 @@ export function ogImageUrl({ title, description }: { title?: string; description
   return query ? `${siteConfig.url}/og?${query}` : `${siteConfig.url}/og`
 }
 
-export function getRootHead(): { meta: JSX.IntrinsicElements["meta"][]; links: JSX.IntrinsicElements["link"][] } {
+export function getRootHead(): {
+  meta: JSX.IntrinsicElements["meta"][]
+  links: JSX.IntrinsicElements["link"][]
+} {
   return {
     meta: [
       { charSet: "utf-8" },
@@ -79,8 +79,16 @@ export function getRootHead(): { meta: JSX.IntrinsicElements["meta"][]; links: J
       { name: "author", content: siteConfig.author },
       { name: "creator", content: siteConfig.author },
       { name: "publisher", content: siteConfig.author },
-      { name: "theme-color", content: siteConfig.themeColors.light, media: "(prefers-color-scheme: light)" },
-      { name: "theme-color", content: siteConfig.themeColors.dark, media: "(prefers-color-scheme: dark)" },
+      {
+        name: "theme-color",
+        content: siteConfig.themeColors.light,
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        name: "theme-color",
+        content: siteConfig.themeColors.dark,
+        media: "(prefers-color-scheme: dark)",
+      },
     ],
     links: [
       { rel: "author", href: siteConfig.authorUrl },
