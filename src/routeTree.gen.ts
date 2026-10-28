@@ -13,6 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as GuestRouteRouteImport } from './routes/_guest/route'
 import { Route as ConversationsRouteRouteImport } from './routes/conversations/route'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthAppRouteRouteImport } from './routes/_auth/app/route'
 import { Route as ApiChatRouteRouteImport } from './routes/api/chat/route'
 import { Route as ConversationsIndexRouteImport } from './routes/conversations/index'
@@ -38,6 +43,31 @@ const GuestRouteRoute = GuestRouteRouteImport.update({
 const ConversationsRouteRoute = ConversationsRouteRouteImport.update({
   id: '/conversations',
   path: '/conversations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
+  id: '/llms-full.txt',
+  path: '/llms-full.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
+  id: '/manifest.webmanifest',
+  path: '/manifest.webmanifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
@@ -84,6 +114,11 @@ const ConversationsIdIndexRoute = ConversationsIdIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/conversations': typeof ConversationsRouteRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/app': typeof AuthAppRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations/': typeof ConversationsIndexRoute
@@ -95,6 +130,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations': typeof ConversationsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRouteRoute
@@ -109,6 +149,11 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_guest': typeof GuestRouteRouteWithChildren
   '/conversations': typeof ConversationsRouteRouteWithChildren
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_auth/app': typeof AuthAppRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations/': typeof ConversationsIndexRoute
@@ -123,6 +168,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/conversations'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/manifest.webmanifest'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/app'
     | '/api/chat'
     | '/conversations/'
@@ -134,6 +184,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/manifest.webmanifest'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/conversations'
     | '/api/auth/$'
@@ -147,6 +202,11 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_guest'
     | '/conversations'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/manifest.webmanifest'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/_auth/app'
     | '/api/chat'
     | '/conversations/'
@@ -162,6 +222,11 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   GuestRouteRoute: typeof GuestRouteRouteWithChildren
   ConversationsRouteRoute: typeof ConversationsRouteRouteWithChildren
+  LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
+  ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRouteRoute: typeof ApiChatRouteRoute
   ApiAuthSplatRouteRoute: typeof ApiAuthSplatRouteRoute
 }
@@ -194,6 +259,41 @@ declare module '@tanstack/react-router' {
       path: '/conversations'
       fullPath: '/conversations'
       preLoaderRoute: typeof ConversationsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms-full.txt': {
+      id: '/llms-full.txt'
+      path: '/llms-full.txt'
+      fullPath: '/llms-full.txt'
+      preLoaderRoute: typeof LlmsFullDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manifest.webmanifest': {
+      id: '/manifest.webmanifest'
+      path: '/manifest.webmanifest'
+      fullPath: '/manifest.webmanifest'
+      preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/app': {
@@ -311,6 +411,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   GuestRouteRoute: GuestRouteRouteWithChildren,
   ConversationsRouteRoute: ConversationsRouteRouteWithChildren,
+  LlmsFullDottxtRoute: LlmsFullDottxtRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
+  ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRouteRoute: ApiChatRouteRoute,
   ApiAuthSplatRouteRoute: ApiAuthSplatRouteRoute,
 }
