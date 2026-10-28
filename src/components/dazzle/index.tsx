@@ -9,11 +9,19 @@ const STAR_PATH =
 
 const STAR_COUNT = 5
 
-export function Dazzle({ text, className }: { text: string; className?: string }) {
+export function Dazzle({
+  text,
+  className,
+  as: Component = "span",
+}: {
+  text: string
+  className?: string
+  as?: "span" | "h1" | "h2"
+}) {
   const starId = `dazzle-star-${React.useId().replace(/[^a-zA-Z0-9]/g, "")}`
 
   return (
-    <div
+    <Component
       className={cn(
         "dazzle font-heading font-semibold whitespace-nowrap max-sm:whitespace-normal",
         className,
@@ -30,13 +38,15 @@ export function Dazzle({ text, className }: { text: string; className?: string }
           <use href={`#${starId}`} />
         </svg>
       ))}
-      <p>{text}</p>
-      <p aria-hidden="true">{text}</p>
+      <span className="dazzle-text">{text}</span>
+      <span className="dazzle-text dazzle-text-glare" aria-hidden="true">
+        {text}
+      </span>
       <svg className="dazzle-defs" aria-hidden="true" focusable="false">
         <defs>
           <path id={starId} d={STAR_PATH} />
         </defs>
       </svg>
-    </div>
+    </Component>
   )
 }

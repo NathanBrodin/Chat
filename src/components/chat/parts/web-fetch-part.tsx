@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "lucide-react"
-import ReactMarkdown from "react-markdown"
+import ReactMarkdown, { type Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { MarkdownPre } from "@/components/chat/markdown-code"
@@ -18,6 +18,18 @@ import { safeHttpUrl } from "@/lib/utils"
 import { type WebFetchToolPart } from "@/tools"
 
 const PREVIEW_LENGTH = 4_000
+
+// Fetched pages are third-party content, so every link leaves the app and
+// must not pass ranking signals back to the source.
+const previewComponents: Components = {
+  pre: MarkdownPre,
+  img: () => null,
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="nofollow ugc noopener noreferrer">
+      {children}
+    </a>
+  ),
+}
 
 const compactNumberFormat = new Intl.NumberFormat("en", {
   notation: "compact",
@@ -65,7 +77,7 @@ export function WebFetchPart({
                 <a
                   href={href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="nofollow ugc noopener noreferrer"
                   className="flex w-fit max-w-full min-w-0 items-center gap-1 hover:text-foreground"
                 >
                   <span className="truncate">{output.finalUrl}</span>
@@ -84,10 +96,7 @@ export function WebFetchPart({
                   scrollFade
                 >
                   <div className="typeset typeset-docs p-3">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{ pre: MarkdownPre, img: () => null }}
-                    >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={previewComponents}>
                       {preview}
                     </ReactMarkdown>
                   </div>

@@ -8,9 +8,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toastManager } from "@/components/ui/toast"
 import { authClient } from "@/lib/auth/auth-client"
+import { buildNoindexHead } from "@/lib/seo"
 
 export const Route = createFileRoute("/_guest/login/")({
   component: LoginForm,
+  head: () => ({
+    ...buildNoindexHead({ title: "Log in | Nathan's AI", follow: true }),
+    links: [],
+    scripts: [],
+  }),
 })
 
 function LoginForm() {

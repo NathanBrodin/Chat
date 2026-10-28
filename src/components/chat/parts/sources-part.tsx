@@ -39,7 +39,7 @@ export function SourcesPart({ parts }: { parts: ChatMessagePart[] }) {
                 key={source.url}
                 href={source.url}
                 target="_blank"
-                rel="noreferrer"
+                rel="nofollow ugc noopener noreferrer"
                 aria-label={`${source.title || getHostname(source.url)} (opens in a new tab)`}
               >
                 <TraceLine>

@@ -10,9 +10,15 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { buildNoindexHead } from "@/lib/seo"
 
 export const Route = createFileRoute("/conversations/")({
   component: ConversationsPage,
+  head: () => ({
+    ...buildNoindexHead({ title: "Conversations | Nathan's AI" }),
+    links: [],
+    scripts: [],
+  }),
 })
 
 function ConversationsPage() {

@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 
+import { SignOutButton } from "@/components/sign-out-button"
+import { Button } from "@/components/ui/button"
 import { useAuthSuspense } from "@/lib/auth/hooks"
 
 export const Route = createFileRoute("/_auth/app/")({
@@ -8,23 +10,21 @@ export const Route = createFileRoute("/_auth/app/")({
 
 function AppIndex() {
   const { user } = useAuthSuspense()
+  const displayName = user?.name || user?.email || "your account"
 
   return (
-    <div className="flex flex-col items-center gap-3 text-center text-sm">
-      <pre className="mb-1 rounded-md border bg-card p-1 text-xs text-card-foreground">
-        _auth/app/index.tsx
-      </pre>
-
-      <div>
-        Signed in as:
-        <span className="mt-0.5 block font-mono text-xs">{user?.name}</span>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">Your account</h1>
+        <p className="text-sm text-muted-foreground">
+          Signed in as <span className="font-medium text-foreground">{displayName}</span>
+        </p>
       </div>
-
-      <div>
-        <p>/app is a protected route under the _auth layout:</p>
-        <pre className="mx-auto mt-0.5 block w-fit rounded-md border bg-card p-1 text-xs text-card-foreground">
-          _auth/route.tsx
-        </pre>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="lg" render={<Link to="/conversations" />}>
+          View conversations
+        </Button>
+        <SignOutButton />
       </div>
     </div>
   )

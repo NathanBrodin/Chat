@@ -10,6 +10,7 @@ import { QuestionCard } from "@/components/chat/question-card"
 import { StatusIcon } from "@/components/chat/status-icon"
 import { Suggestions } from "@/components/chat/suggestions"
 import { Dazzle } from "@/components/dazzle"
+import { SiteLinks } from "@/components/site-links"
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
@@ -72,13 +73,21 @@ export function Chat({
     <div className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col">
       <ChatHeader messages={messages} title={title} />
       {messages.length === 0 ? (
-        <div className="flex min-h-0 flex-1 items-center justify-center p-6">
-          <Empty className="gap-0">
-            <EmptyHeader className="max-w-3xl">
-              <Dazzle text="What can I help with?" />
+        <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto p-6">
+          <Empty className="gap-6">
+            <EmptyHeader className="max-w-3xl gap-4">
+              <p className="font-mono text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase">
+                Nathan&apos;s AI
+              </p>
+              <Dazzle as="h1" text="Ask my AI anything about Nathan Brodin" />
+              <p className="max-w-xl text-sm text-muted-foreground sm:text-base">
+                Get answers about my experience, projects, and approach to building fast, accessible
+                products for the web.
+              </p>
             </EmptyHeader>
-            <EmptyContent>
+            <EmptyContent className="max-w-2xl gap-6">
               <Suggestions onSelect={handleSend} />
+              <SiteLinks className="justify-center" />
             </EmptyContent>
           </Empty>
         </div>
@@ -169,7 +178,10 @@ export function Chat({
           onStop={() => stop()}
         />
         <p className="text-center text-xs text-muted-foreground">
-          All conversations are public. Do not share personal information.
+          All conversations are public. Do not share personal information.{" "}
+          <a className="underline underline-offset-4 hover:text-foreground" href="/privacy">
+            Privacy
+          </a>
         </p>
       </div>
     </div>

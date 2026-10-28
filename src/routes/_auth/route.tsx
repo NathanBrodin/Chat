@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
 import { authQueryOptions } from "@/lib/auth/queries"
+import { buildNoindexHead } from "@/lib/seo"
 
 /**
  * This is the _auth layout, which enables 'protected routes'
@@ -42,4 +43,9 @@ export const Route = createFileRoute("/_auth")({
      * for simpler centralized revalidation via TanStack Query.
      */
   },
+  head: () => ({
+    ...buildNoindexHead({ title: "Account | Nathan's AI" }),
+    links: [],
+    scripts: [],
+  }),
 })
