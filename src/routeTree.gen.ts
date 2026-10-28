@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as GuestRouteRouteImport } from './routes/_guest/route'
 import { Route as ConversationsRouteRouteImport } from './routes/conversations/route'
+import { Route as OgRouteImport } from './routes/og'
 import { Route as AuthAppRouteRouteImport } from './routes/_auth/app/route'
 import { Route as ApiChatRouteRouteImport } from './routes/api/chat/route'
 import { Route as ConversationsIndexRouteImport } from './routes/conversations/index'
@@ -38,6 +39,11 @@ const GuestRouteRoute = GuestRouteRouteImport.update({
 const ConversationsRouteRoute = ConversationsRouteRouteImport.update({
   id: '/conversations',
   path: '/conversations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OgRoute = OgRouteImport.update({
+  id: '/og',
+  path: '/og',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
@@ -84,6 +90,7 @@ const ConversationsIdIndexRoute = ConversationsIdIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/conversations': typeof ConversationsRouteRouteWithChildren
+  '/og': typeof OgRoute
   '/app': typeof AuthAppRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations/': typeof ConversationsIndexRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/og': typeof OgRoute
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations': typeof ConversationsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRouteRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_guest': typeof GuestRouteRouteWithChildren
   '/conversations': typeof ConversationsRouteRouteWithChildren
+  '/og': typeof OgRoute
   '/_auth/app': typeof AuthAppRouteRouteWithChildren
   '/api/chat': typeof ApiChatRouteRoute
   '/conversations/': typeof ConversationsIndexRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/conversations'
+    | '/og'
     | '/app'
     | '/api/chat'
     | '/conversations/'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/og'
     | '/api/chat'
     | '/conversations'
     | '/api/auth/$'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_guest'
     | '/conversations'
+    | '/og'
     | '/_auth/app'
     | '/api/chat'
     | '/conversations/'
@@ -162,6 +174,7 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   GuestRouteRoute: typeof GuestRouteRouteWithChildren
   ConversationsRouteRoute: typeof ConversationsRouteRouteWithChildren
+  OgRoute: typeof OgRoute
   ApiChatRouteRoute: typeof ApiChatRouteRoute
   ApiAuthSplatRouteRoute: typeof ApiAuthSplatRouteRoute
 }
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/conversations'
       fullPath: '/conversations'
       preLoaderRoute: typeof ConversationsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/og': {
+      id: '/og'
+      path: '/og'
+      fullPath: '/og'
+      preLoaderRoute: typeof OgRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/app': {
@@ -311,6 +331,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   GuestRouteRoute: GuestRouteRouteWithChildren,
   ConversationsRouteRoute: ConversationsRouteRouteWithChildren,
+  OgRoute: OgRoute,
   ApiChatRouteRoute: ApiChatRouteRoute,
   ApiAuthSplatRouteRoute: ApiAuthSplatRouteRoute,
 }
