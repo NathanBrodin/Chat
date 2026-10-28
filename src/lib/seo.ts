@@ -33,6 +33,7 @@ export const PAGES = {
   home: {
     path: "/",
     title: siteConfig.title,
+    ogTitle: "Ask my AI anything about Nathan Brodin",
     description: siteConfig.description,
     lastModified: "2026-10-28",
     changefreq: "weekly",
@@ -41,6 +42,7 @@ export const PAGES = {
   about: {
     path: "/about",
     title: "About Nathan's AI | An AI Portfolio by Nathan Brodin",
+    ogTitle: "About Nathan's AI",
     description:
       "How Nathan's AI works, what it can answer about Nathan Brodin's experience and projects, and the stack behind this interactive portfolio.",
     lastModified: "2026-10-28",
@@ -50,6 +52,7 @@ export const PAGES = {
   privacy: {
     path: "/privacy",
     title: "Privacy | Nathan's AI",
+    ogTitle: "Privacy",
     description:
       "How Nathan's AI handles conversations, account data, cookies, and approximate location, and what stays public when you share a chat.",
     lastModified: "2026-10-28",
@@ -74,7 +77,7 @@ export function buildSeoHead(pageKey: PageKey) {
   const page = PAGES[pageKey]
   const description = truncateDescription(page.description)
   const canonical = absoluteUrl(page.path)
-  const image = ogImageUrl({ title: page.title, description })
+  const image = ogImageUrl({ title: page.ogTitle, description })
   const imageAlt = `${page.title} — ${siteConfig.author}`
 
   return {
@@ -207,7 +210,7 @@ function pageNode(pageKey: PageKey): WebPage | AboutPage {
     about: { "@id": PERSON_ID },
     primaryImageOfPage: {
       "@type": "ImageObject",
-      url: ogImageUrl({ title: page.title, description }),
+      url: ogImageUrl({ title: page.ogTitle, description }),
     },
   }
 
@@ -215,6 +218,7 @@ function pageNode(pageKey: PageKey): WebPage | AboutPage {
     return {
       ...base,
       "@type": "AboutPage",
+      mainEntity: { "@id": APP_ID },
     }
   }
 
