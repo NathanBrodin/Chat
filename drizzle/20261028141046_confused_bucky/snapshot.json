@@ -1,0 +1,319 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "e39c7508-f3aa-4cdb-9d96-1754aee7c738",
+  "prevIds": [
+    "42c11307-32ef-43bd-9ca0-a0076a3ced4a"
+  ],
+  "footprints": [
+    {
+      "statementType": "drop_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "account"
+      ],
+      "writes": [
+        "s|fk|public.account.account_user_id_user_id_fkey",
+        "n|fk|public.account.account_user_id_user_id_fkey",
+        "e|fk|public.account.account_user_id_user_id_fkey",
+        "n|con|public.account.account_user_id_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.account",
+        "n|sch|public",
+        "e|col|public.account.user_id"
+      ]
+    },
+    {
+      "statementType": "drop_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "session"
+      ],
+      "writes": [
+        "s|fk|public.session.session_user_id_user_id_fkey",
+        "n|fk|public.session.session_user_id_user_id_fkey",
+        "e|fk|public.session.session_user_id_user_id_fkey",
+        "n|con|public.session.session_user_id_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.session",
+        "n|sch|public",
+        "e|col|public.session.user_id"
+      ]
+    },
+    {
+      "statementType": "drop_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "account"
+      ],
+      "writes": [
+        "s|tbl|public.account",
+        "n|tbl|public.account",
+        "e|tbl|public.account",
+        "n|rel|public.account",
+        "n|type|public.account"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "drop_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "session"
+      ],
+      "writes": [
+        "s|tbl|public.session",
+        "n|tbl|public.session",
+        "e|tbl|public.session",
+        "n|rel|public.session",
+        "n|type|public.session"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "drop_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "user"
+      ],
+      "writes": [
+        "s|tbl|public.user",
+        "n|tbl|public.user",
+        "e|tbl|public.user",
+        "n|rel|public.user",
+        "n|type|public.user"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "drop_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "verification"
+      ],
+      "writes": [
+        "s|tbl|public.verification",
+        "n|tbl|public.verification",
+        "e|tbl|public.verification",
+        "n|rel|public.verification",
+        "n|type|public.verification"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "drop",
+      "key": "tables\u0000[\"public\",\"account\"]"
+    },
+    {
+      "op": "drop",
+      "key": "tables\u0000[\"public\",\"session\"]"
+    },
+    {
+      "op": "drop",
+      "key": "tables\u0000[\"public\",\"user\"]"
+    },
+    {
+      "op": "drop",
+      "key": "tables\u0000[\"public\",\"verification\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"account_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"provider_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"user_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"access_token\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"refresh_token\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"id_token\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"access_token_expires_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"refresh_token_expires_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"scope\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"password\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"created_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"account\",\"updated_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"session\",\"id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"session\",\"expires_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"session\",\"token\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"session\",\"created_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"session\",\"updated_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"session\",\"ip_address\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"session\",\"user_agent\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"session\",\"user_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user\",\"id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user\",\"name\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user\",\"email\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user\",\"email_verified\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user\",\"image\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user\",\"created_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"user\",\"updated_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"verification\",\"id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"verification\",\"identifier\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"verification\",\"value\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"verification\",\"expires_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"verification\",\"created_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"verification\",\"updated_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "indexes\u0000[\"public\",\"account_userId_idx\"]"
+    },
+    {
+      "op": "drop",
+      "key": "indexes\u0000[\"public\",\"session_userId_idx\"]"
+    },
+    {
+      "op": "drop",
+      "key": "indexes\u0000[\"public\",\"verification_identifier_idx\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"account\",\"account_user_id_user_id_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"session\",\"session_user_id_user_id_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "pks\u0000[\"public\",\"account\",\"account_pkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "pks\u0000[\"public\",\"session\",\"session_pkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "pks\u0000[\"public\",\"user\",\"user_pkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "pks\u0000[\"public\",\"verification\",\"verification_pkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "uniques\u0000[\"public\",\"session\",\"session_token_key\"]"
+    },
+    {
+      "op": "drop",
+      "key": "uniques\u0000[\"public\",\"user\",\"user_email_key\"]"
+    }
+  ]
+}
