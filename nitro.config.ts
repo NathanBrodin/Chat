@@ -27,6 +27,76 @@ export default defineConfig({
     }),
   ],
 
+  routeRules: {
+    /**
+     * Baseline response hardening for every route. There is intentionally no
+     * enforcing Content-Security-Policy: the app relies on inline theme scripts,
+     * Rive WebGL/WASM, and third-party analytics that a strict policy would
+     * break. Follow up with a report-only CSP, collect violations, then enforce.
+     */
+    "**": {
+      headers: {
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "X-Frame-Options": "DENY",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+        "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+      },
+    },
+
+    // API responses are never indexable and must never be cached.
+    "/api/**": {
+      headers: {
+        "X-Robots-Tag": "noindex",
+        "Cache-Control": "no-store",
+      },
+    },
+
+    // Public conversations stay shareable but are excluded from search results.
+    "/conversations": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+        "Cache-Control": "private, no-store",
+      },
+    },
+    "/conversations/**": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+        "Cache-Control": "private, no-store",
+      },
+    },
+
+    // Signed-in account pages.
+    "/app": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+        "Cache-Control": "private, no-store",
+      },
+    },
+    "/app/**": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+        "Cache-Control": "private, no-store",
+      },
+    },
+
+    // Auth pages may pass link equity but must not be indexed or cached.
+    "/login": {
+      headers: {
+        "X-Robots-Tag": "noindex, follow",
+        "Cache-Control": "private, no-store",
+      },
+    },
+    "/signup": {
+      headers: {
+        "X-Robots-Tag": "noindex, follow",
+        "Cache-Control": "private, no-store",
+      },
+    },
+
+  },
+
   rolldownConfig: {
     onLog(level, log, defaultHandler) {
       if (level === "warn" && ignoredWarningCodes.has(log.code ?? "")) return
@@ -36,14 +106,4 @@ export default defineConfig({
 
   // Shiki's Emscripten onig.wasm can't be parsed; highlighting uses the JS engine.
   wasm: { silent: true },
-
-  /**
-   * TODO(security): Review production security headers before deployment.
-   *
-   * App-level policies such as CSP, Permissions-Policy, X-Frame-Options /
-   * frame-ancestors, COOP, Referrer-Policy, and X-Content-Type-Options are
-   * intentionally not configured by the Cove Stack template because safe values
-   * depend on the app's embedding requirements, browser APIs, integrations, and
-   * content.
-   */
 })
