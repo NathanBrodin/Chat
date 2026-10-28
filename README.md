@@ -1,5 +1,5 @@
 <a href="https://chat.brodin.dev">
-  <img alt="Nathan's AI demo" src="./.github/nathan-s-ai.gif" align="center">
+  <img alt="Nathan's AI — ask anything about Nathan Brodin" src="https://chat.brodin.dev/og" align="center">
   <h1 align="center">Nathan's AI</h1>
 </a>
 
@@ -22,6 +22,7 @@ It’s my portfolio, reimagined as a chat conversation, answered by AI.
 - Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
 - Per-IP rate limiting on `/api/chat` with Upstash Redis + `@upstash/ratelimit`
 - Drizzle ORM + Neon PostgreSQL chat persistence
+- Server-rendered SEO surface: JSON-LD, canonical metadata, sitemap, robots, `llms.txt`, manifest, and dynamic OG images
 - Title animation from [@jh3yy](https://x.com/jh3yy/status/1849062440773820747)
 
 ## Deploy
@@ -32,7 +33,9 @@ Set the following in your hosting provider's environment variables:
 
 - `OPENROUTER_API_KEY`, create one at [openrouter.ai/keys](https://openrouter.ai/keys).
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, create a Redis database at [console.upstash.com](https://console.upstash.com), then copy the REST URL and REST token from the database details (or use the Vercel Upstash integration, which sets them automatically).
-- `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `VITE_BASE_URL` — see [`.env.schema`](./.env.schema), which is the source of truth for every variable. Use your Neon project's pooled connection string for `DATABASE_URL`.
+- `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `VITE_BASE_URL` — see [`.env.schema`](./.env.schema), which is the source of truth for every variable. Use your Neon project's pooled connection string for `DATABASE_URL`, and set `VITE_BASE_URL=https://chat.brodin.dev` in production.
+
+After the first deploy, verify the domain in Google Search Console and Bing Webmaster Tools, then submit `https://chat.brodin.dev/sitemap.xml`.
 
 ## Local development
 
@@ -141,6 +144,23 @@ Message types are inferred from the tool definitions via `InferUITools`, so `par
 
 [evlog](https://www.evlog.dev/) is wired into the app through Nitro and emits one structured event per request. Add a [drain](https://www.evlog.dev/integrate/adapters/overview) when production needs logs sent to your chosen provider.
 
+## SEO & GEO
+
+The indexable pages are `/`, `/about`, and `/privacy`. Auth and conversation routes are `noindex` and excluded from the sitemap.
+
+Machine-readable endpoints:
+
+- [`/robots.txt`](https://chat.brodin.dev/robots.txt) — crawl rules and sitemap
+- [`/sitemap.xml`](https://chat.brodin.dev/sitemap.xml) — the three indexable pages
+- [`/llms.txt`](https://chat.brodin.dev/llms.txt) and [`/llms-full.txt`](https://chat.brodin.dev/llms-full.txt) — AI-readable site index and app reference
+- [`/about.md`](https://chat.brodin.dev/about.md) — markdown version of the About page
+- [`/manifest.webmanifest`](https://chat.brodin.dev/manifest.webmanifest) — install metadata and icons
+- [`/og`](https://chat.brodin.dev/og) — dynamic 1200×630 social card
+
+The canonical `Person` entity lives on [brodin.dev](https://brodin.dev). Chat's JSON-LD references `https://brodin.dev/#person` rather than defining a competing profile.
+
+When page content changes, update `lastModified` in [`src/lib/seo.ts`](./src/lib/seo.ts). If the logo changes, run `vpr icons` to regenerate the favicon and PWA icon set.
+
 ## Scripts
 
 Check [package.json](./package.json) for the full list of available scripts.
@@ -148,6 +168,7 @@ Check [package.json](./package.json) for the full list of available scripts.
 - **`auth:generate`** - Regenerate the [auth db schema](./src/lib/db/schema/auth.schema.ts) if you've made changes to your Better Auth [config](./src/lib/auth/auth.ts).
 - **`db`** - Run [drizzle-kit](https://orm.drizzle.team/docs/kit-overview) commands. (e.g. `vpr db generate`, `vpr db studio`)
 - **`ui`** - The shadcn/ui CLI. (e.g. `vpr ui add button`)
+- **`icons`** - Regenerate the favicon, Apple touch icon, and PWA icons with [`scripts/generate-icons.mjs`](./scripts/generate-icons.mjs).
 - **`format`**, **`lint`** - Run Oxfmt and Oxlint, or both via `vpr check`.
 - **`deps`** - Selectively upgrade dependencies via taze. Dependency versions are pinned, so run `vpr deps` to selectively upgrade packages.
 

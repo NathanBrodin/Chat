@@ -2,6 +2,25 @@
   "name": "chat",
   "version": "0.0.1",
   "private": true,
+  "description": "Nathan Brodin's portfolio, reimagined as an AI chat.",
+  "keywords": [
+    "ai portfolio",
+    "ai sdk",
+    "nathan brodin",
+    "tanstack start",
+    "typescript"
+  ],
+  "homepage": "https://chat.brodin.dev",
+  "license": "MIT",
+  "author": {
+    "name": "Nathan Brodin",
+    "email": "nathan@brodin.dev",
+    "url": "https://brodin.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NathanBrodin/Chat.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vp dev",
