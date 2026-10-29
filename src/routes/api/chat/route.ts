@@ -1,28 +1,20 @@
-import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
   generateId,
-  isStepCount,
-  streamText,
   toUIMessageStream,
   validateUIMessages,
 } from "ai"
-import { createAILogger, createEvlogIntegration } from "evlog/ai"
-import { ENV } from "varlock/env"
 
+import { createNathanAgent } from "@/agent/nathan"
 import { isValidChatId } from "@/lib/chat/chat-id"
 import { getLocation } from "@/lib/chat/geolocation"
 import { checkChatRateLimit } from "@/lib/chat/rate-limit"
 import { saveConversation } from "@/lib/chat/store"
 import { chatErrors } from "@/lib/errors/chat"
 import { useLogger } from "@/lib/logger.server"
-import { getTools, type ChatUIMessage } from "@/tools/index"
-
-const openrouter = createOpenRouter({
-  apiKey: ENV.OPENROUTER_API_KEY,
-})
+import { type ChatUIMessage } from "@/tools/index"
 
 export const Route = createFileRoute("/api/chat")({
   server: {
@@ -46,14 +38,14 @@ export const Route = createFileRoute("/api/chat")({
           throw chatErrors.INVALID_CHAT_ID()
         }
 
-        const tools = getTools()
+        const agent = createNathanAgent(log)
 
         // Validate the shape of every message and tool part before trusting it.
         let messages: ChatUIMessage[]
         try {
           const validated = await validateUIMessages<ChatUIMessage>({
             messages: (body as { messages?: unknown })?.messages,
-            tools: tools as Parameters<typeof validateUIMessages>[0]["tools"],
+            tools: agent.tools as Parameters<typeof validateUIMessages>[0]["tools"],
           })
           messages = validated
         } catch (err) {
@@ -65,18 +57,10 @@ export const Route = createFileRoute("/api/chat")({
         const location = getLocation(request)
 
         log.set({ chat: { id, messageCount: messages.length } })
-        const ai = createAILogger(log)
 
-        const result = streamText({
-          model: ai.wrap(openrouter("~z-ai/glm-flash-latest")),
-          maxOutputTokens: 8192,
+        const result = await agent.stream({
           messages: await convertToModelMessages(messages),
-          tools,
-          stopWhen: isStepCount(5),
           abortSignal: request.signal,
-          telemetry: {
-            integrations: [createEvlogIntegration(ai)],
-          },
         })
 
         // A reply after ask_user continues the last message, so count its parts.
