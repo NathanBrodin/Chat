@@ -3,8 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { createElement } from "react"
 import z from "zod"
 
-import { OG_STAR_SRC, ogStarSvg, OgImage } from "@/components/og-image"
-import { siteConfig } from "@/config/site"
+import { OG_LOGO_SRC, OgImage } from "@/components/og-image"
 
 // Raw values are bounded so a request cannot carry unbounded work; rendering
 // clamps them to the lengths the card can show.
@@ -26,39 +25,42 @@ export const Route = createFileRoute("/og")({
           return new Response("Invalid search parameters", { status: 400 })
         }
 
-        const title = clampText(decodeHtmlEntities(parsed.data.title) ?? siteConfig.title, 120)
-        const description = clampText(
-          decodeHtmlEntities(parsed.data.description) ?? siteConfig.description,
-          240,
-        )
+        const rawTitle = decodeHtmlEntities(parsed.data.title)
+        const rawDescription = decodeHtmlEntities(parsed.data.description)
+        const title = rawTitle ? clampText(rawTitle, 120) : undefined
+        const description = rawDescription ? clampText(rawDescription, 240) : undefined
         const { fonts, images } = await loadOgAssets(url.origin)
 
-        return new ImageResponse(createElement(OgImage, { title, description }), {
-          width: 1200,
-          height: 630,
-          fonts,
-          images,
-          fontFamilies: ["Cal Sans", "Geist Mono"],
-          css: [
-            '@import "tailwindcss";',
-            {
-              selector: ":root",
-              style: {
-                "--font-sans": "'Cal Sans'",
-                "--font-display": "'Cal Sans'",
-                "--font-mono": "'Geist Mono'",
-                "--color-background": "#09090b",
-                "--color-foreground": "#f5f5f5",
-                "--color-primary": "#f5f5f5",
-                "--color-muted-foreground": "#a1a1a1",
-                "--color-border": "rgba(255, 255, 255, 0.08)",
+        return new ImageResponse(
+          createElement(OgImage, { title, description }),
+          {
+            width: 1200,
+            height: 630,
+            fonts,
+            images,
+            fontFamilies: ["Cal Sans", "Geist Mono"],
+            css: [
+              '@import "tailwindcss";',
+              {
+                selector: ":root",
+                style: {
+                  "--font-sans": "'Cal Sans'",
+                  "--font-display": "'Cal Sans'",
+                  "--font-mono": "'Geist Mono'",
+                  "--color-background": "#fafafa",
+                  "--color-foreground": "#262626",
+                  "--color-card": "#ffffff",
+                  "--color-primary": "#262626",
+                  "--color-muted-foreground": "#737373",
+                  "--color-border": "rgba(0, 0, 0, 0.08)",
+                },
               },
+            ],
+            headers: {
+              "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
             },
-          ],
-          headers: {
-            "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
           },
-        })
+        )
       },
     },
   },
@@ -133,14 +135,15 @@ function loadOgAssets(origin: string): Promise<OgAssets> {
   cachedAssets ??= Promise.all([
     fetchBytes(origin, "/fonts/CalSansVF.woff2"),
     fetchBytes(origin, "/fonts/geist-mono-latin-wght-normal.woff2"),
+    fetchBytes(origin, "/og-logo.svg"),
   ])
-    .then(([calSans, geistMono]): OgAssets => {
+    .then(([calSans, geistMono, logo]): OgAssets => {
       return {
         fonts: [
           { name: "Cal Sans", data: calSans },
           { name: "Geist Mono", data: geistMono },
         ],
-        images: [{ src: OG_STAR_SRC, data: new TextEncoder().encode(ogStarSvg()) }],
+        images: [{ src: OG_LOGO_SRC, data: logo }],
       }
     })
     .catch((error: unknown) => {

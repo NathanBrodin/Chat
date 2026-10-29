@@ -113,6 +113,12 @@ export function ogImageUrl({ title, description }: { title?: string; description
   return query ? `${siteConfig.url}/og?${query}` : `${siteConfig.url}/og`
 }
 
+function pageImageUrl(pageKey: PageKey, description: string) {
+  return pageKey === "home"
+    ? ogImageUrl({})
+    : ogImageUrl({ title: PAGES[pageKey].ogTitle, description })
+}
+
 export function getRootHead(): {
   meta: JSX.IntrinsicElements["meta"][]
   links: JSX.IntrinsicElements["link"][]
@@ -159,7 +165,7 @@ export function buildSeoHead(pageKey: PageKey) {
   const page = PAGES[pageKey]
   const description = truncateDescription(page.description)
   const canonical = absoluteUrl(page.path)
-  const image = ogImageUrl({ title: page.ogTitle, description })
+  const image = pageImageUrl(pageKey, description)
 
   return {
     meta: [
@@ -320,7 +326,7 @@ function pageJsonLd(pageKey: PageKey): WithContext<WebPage | AboutPage> {
     about: { "@id": PERSON_ID },
     primaryImageOfPage: {
       "@type": "ImageObject",
-      url: ogImageUrl({ title: page.ogTitle, description }),
+      url: pageImageUrl(pageKey, description),
     },
   }
 
