@@ -173,7 +173,7 @@ Check [package.json](./package.json) for the full list of available scripts.
 
 #### Utilities
 
-- [`theme-toggle.tsx`](./src/components/theme-toggle.tsx), [`theme-provider.tsx`](./src/components/theme-provider.tsx) - A theme toggle and provider for toggling between light and dark mode (press `d` anywhere outside a text field to toggle).
+- [`theme-toggle.tsx`](./src/components/theme-toggle.tsx), [`theme-provider.tsx`](./src/components/theme-provider.tsx) - A theme toggle and provider for toggling between light and dark mode (press `t` anywhere outside a text field to toggle).
 
 ## Issue watchlist
 

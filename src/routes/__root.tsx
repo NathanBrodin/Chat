@@ -60,7 +60,7 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
 
         <ThemeProvider>
           <ToastProvider>
-            <TooltipProvider>{children}</TooltipProvider>
+            <TooltipProvider delay={0}>{children}</TooltipProvider>
           </ToastProvider>
         </ThemeProvider>
 

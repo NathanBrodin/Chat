@@ -100,7 +100,7 @@ function ThemeHotkey() {
   const { theme, setTheme } = useTheme()
 
   useHotkey(
-    "D",
+    "T",
     () => {
       const resolved =
         theme === "system"

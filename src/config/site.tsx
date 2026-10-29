@@ -21,16 +21,6 @@ export const siteConfig = {
   title: "Nathan's AI · Ask Nathan Brodin Anything",
   description:
     "An interactive AI portfolio that answers questions about Nathan Brodin's experience, projects, and approach to building fast, accessible products for the web.",
-  keywords: [
-    "Nathan Brodin",
-    "AI portfolio",
-    "chat with my portfolio",
-    "interactive portfolio",
-    "frontend engineer",
-    "AI chat",
-    "TanStack Start",
-    "TypeScript",
-  ],
   author: "Nathan Brodin",
   authorUrl: "https://brodin.dev",
   portfolioUrl: "https://brodin.dev",
@@ -171,7 +161,6 @@ export function buildSeoHead(pageKey: PageKey) {
     meta: [
       { title: page.title },
       { name: "description", content: description },
-      { name: "keywords", content: siteConfig.keywords.join(", ") },
       {
         name: "robots",
         content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",

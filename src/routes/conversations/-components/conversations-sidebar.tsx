@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { Link, useParams } from "@tanstack/react-router"
+import { useSyncExternalStore } from "react"
 
 import { AppLogo } from "@/components/app-logo"
 import { GithubStarsButton } from "@/components/github-stars-button"
 import { ProjectMenu } from "@/components/project-menu"
 import { CircularProgress } from "@/components/ui/circular-progress"
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +20,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSkeleton,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { getContextPercent } from "@/lib/chat/context-usage"
 import { conversationsQueryOptions } from "@/lib/chat/queries"
@@ -25,9 +28,29 @@ import type { ConversationSummary } from "@/lib/chat/store"
 
 import { RelativeTime } from "./relative-time"
 
+function subscribeToPlatform() {
+  return () => {}
+}
+
+function getIsMac() {
+  return /Mac|iPhone|iPad/i.test(navigator.userAgent)
+}
+
+function getServerIsMac() {
+  return false
+}
+
+function useIsMac() {
+  return useSyncExternalStore(subscribeToPlatform, getIsMac, getServerIsMac)
+}
+
 export function ConversationsSidebar() {
   const conversations = useQuery(conversationsQueryOptions())
   const { id: activeId } = useParams({ strict: false })
+  const { isMobile, state } = useSidebar()
+  const isMac = useIsMac()
+
+  const toggleLabel = state === "collapsed" ? "Show Sidebar" : "Hide Sidebar"
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -40,7 +63,22 @@ export function ConversationsSidebar() {
           >
             <AppLogo />
           </SidebarMenuButton>
-          <SidebarTrigger />
+          <SidebarTrigger
+            aria-keyshortcuts="Control+B Meta+B"
+            aria-label={toggleLabel}
+            tooltip={{
+              hidden: isMobile,
+              children: (
+                <span className="flex items-center gap-1.5">
+                  {toggleLabel}
+                  <KbdGroup>
+                    <Kbd>{isMac ? "⌘" : "Ctrl"}</Kbd>
+                    <Kbd>B</Kbd>
+                  </KbdGroup>
+                </span>
+              ),
+            }}
+          />
         </div>
       </SidebarHeader>
       <SidebarContent>
