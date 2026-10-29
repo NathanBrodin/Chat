@@ -5,7 +5,22 @@ import { Sidebar, SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { buildSeoHead } from "@/config/site"
 
 export const Route = createFileRoute("/")({
-  head: () => buildSeoHead("home"),
+  head: () => {
+    const seo = buildSeoHead("home")
+
+    return {
+      ...seo,
+      links: [
+        ...seo.links,
+        {
+          rel: "alternate",
+          type: "text/markdown",
+          href: "/llms.md",
+          title: "Nathan's AI site index (Markdown)",
+        },
+      ],
+    }
+  },
   component: HomePage,
 })
 

@@ -12,7 +12,15 @@ export const Route = createFileRoute("/privacy/")({
 
     return {
       meta: seo.meta,
-      links: seo.links,
+      links: [
+        ...seo.links,
+        {
+          rel: "alternate",
+          type: "text/markdown",
+          href: "/privacy.md",
+          title: "Privacy (Markdown)",
+        },
+      ],
       scripts: [
         ...seo.scripts,
         {

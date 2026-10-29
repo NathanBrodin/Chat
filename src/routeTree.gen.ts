@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutDotmdRouteImport } from './routes/about[.]md'
 import { Route as ConversationsRouteRouteImport } from './routes/conversations/route'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
+import { Route as LlmsDotmdRouteImport } from './routes/llms[.]md'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as OgRouteImport } from './routes/og'
@@ -43,6 +44,11 @@ const ConversationsRouteRoute = ConversationsRouteRouteImport.update({
 const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
   id: '/llms-full.txt',
   path: '/llms-full.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDotmdRoute = LlmsDotmdRouteImport.update({
+  id: '/llms.md',
+  path: '/llms.md',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/conversations': typeof ConversationsRouteRouteWithChildren
   '/about.md': typeof AboutDotmdRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.md': typeof LlmsDotmdRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about.md': typeof AboutDotmdRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.md': typeof LlmsDotmdRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/conversations': typeof ConversationsRouteRouteWithChildren
   '/about.md': typeof AboutDotmdRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.md': typeof LlmsDotmdRoute
   '/llms.txt': typeof LlmsDottxtRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/og': typeof OgRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/conversations'
     | '/about.md'
     | '/llms-full.txt'
+    | '/llms.md'
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about.md'
     | '/llms-full.txt'
+    | '/llms.md'
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/conversations'
     | '/about.md'
     | '/llms-full.txt'
+    | '/llms.md'
     | '/llms.txt'
     | '/manifest.webmanifest'
     | '/og'
@@ -210,6 +222,7 @@ export interface RootRouteChildren {
   ConversationsRouteRoute: typeof ConversationsRouteRouteWithChildren
   AboutDotmdRoute: typeof AboutDotmdRoute
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
+  LlmsDotmdRoute: typeof LlmsDotmdRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
   OgRoute: typeof OgRoute
@@ -249,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/llms-full.txt'
       fullPath: '/llms-full.txt'
       preLoaderRoute: typeof LlmsFullDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.md': {
+      id: '/llms.md'
+      path: '/llms.md'
+      fullPath: '/llms.md'
+      preLoaderRoute: typeof LlmsDotmdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/llms.txt': {
@@ -349,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConversationsRouteRoute: ConversationsRouteRouteWithChildren,
   AboutDotmdRoute: AboutDotmdRoute,
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
+  LlmsDotmdRoute: LlmsDotmdRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
   OgRoute: OgRoute,

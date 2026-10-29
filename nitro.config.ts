@@ -71,17 +71,27 @@ export default defineConfig({
      * Indexable pages can be shared at the CDN. Home renders no per-user
      * content; if personalized SSR is added to `/`, remove its rule.
      * Asset routes (`/og`, `/sitemap.xml`, `/robots.txt`, `/llms.txt`,
-     * `/llms-full.txt`, `/manifest.webmanifest`, `/about.md`) are omitted so
-     * their handlers keep ownership of cache headers.
+     * `/llms-full.txt`, `/llms.md`, `/manifest.webmanifest`, `/about.md`,
+     * `/privacy.md`) are omitted so their handlers keep ownership of cache
+     * headers.
      */
     "/": {
-      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" },
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        Vary: "Accept",
+      },
     },
     "/about": {
-      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" },
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        Vary: "Accept",
+      },
     },
     "/privacy": {
-      headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" },
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        Vary: "Accept",
+      },
     },
   },
 

@@ -153,9 +153,12 @@ Machine-readable endpoints:
 - [`/robots.txt`](https://chat.brodin.dev/robots.txt) — crawl rules and sitemap
 - [`/sitemap.xml`](https://chat.brodin.dev/sitemap.xml) — the three indexable pages
 - [`/llms.txt`](https://chat.brodin.dev/llms.txt) and [`/llms-full.txt`](https://chat.brodin.dev/llms-full.txt) — AI-readable site index and app reference
-- [`/about.md`](https://chat.brodin.dev/about.md) — markdown version of the About page
+- [`/llms.md`](https://chat.brodin.dev/llms.md) — markdown version of the site index
+- [`/about.md`](https://chat.brodin.dev/about.md) and [`/privacy.md`](https://chat.brodin.dev/privacy.md) — markdown versions of the content pages
 - [`/manifest.webmanifest`](https://chat.brodin.dev/manifest.webmanifest) — install metadata and icons
 - [`/og`](https://chat.brodin.dev/og) — dynamic 1200×630 social card
+
+The public pages (`/`, `/about`, `/privacy`) also negotiate content. Requests that include `Accept: text/markdown` receive markdown — the homepage returns the site index — while browsers asking for HTML get the app. Both variants send `Vary: Accept` so shared caches keep them separate.
 
 The canonical `Person` entity lives on [brodin.dev](https://brodin.dev). Chat's JSON-LD references `https://brodin.dev/#person` rather than defining a competing profile.
 

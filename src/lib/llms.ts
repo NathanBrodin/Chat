@@ -33,6 +33,14 @@ Nathan's AI is a chat application built and maintained by Nathan Brodin, a front
 
 - About this app: ${siteConfig.url}/about
 - Privacy: ${siteConfig.url}/privacy
+
+## Markdown
+
+- Site index: ${siteConfig.url}/llms.md
+- About: ${siteConfig.url}/about.md
+- Privacy: ${siteConfig.url}/privacy.md
+
+The public pages (\`/\`, \`/about\`, \`/privacy\`) also return markdown when a request includes \`Accept: text/markdown\`; the homepage returns this site index.
 `
 }
 
@@ -107,10 +115,19 @@ On the portfolio: ${siteConfig.portfolioLlmsFullUrl} (full profile) and ${siteCo
 
 ## Links
 
+- Home: ${siteConfig.url}
 - About this app: ${siteConfig.url}/about
 - Privacy: ${siteConfig.url}/privacy
 - Repository: ${siteConfig.githubUrl}
 - License: ${siteConfig.githubUrl}/blob/main/LICENSE
+
+## Markdown
+
+- Site index: ${siteConfig.url}/llms.md
+- About: ${siteConfig.url}/about.md
+- Privacy: ${siteConfig.url}/privacy.md
+
+The public pages (\`/\`, \`/about\`, \`/privacy\`) also return markdown when a request includes \`Accept: text/markdown\`; the homepage returns this site index.
 `
 }
 
