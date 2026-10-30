@@ -35,8 +35,11 @@ export async function checkChatRateLimit(request: Request) {
   const dailyResult = await daily.limit(ip)
   if (!dailyResult.success) {
     throw chatErrors.RATE_LIMITED_DAILY({
-      retryAfter: Math.max(1, Math.ceil((dailyResult.reset - Date.now()) / 1000)),
-      internal: { limit: dailyResult.limit, remaining: dailyResult.remaining },
+      internal: {
+        retryAfter: Math.max(1, Math.ceil((dailyResult.reset - Date.now()) / 1000)),
+        limit: dailyResult.limit,
+        remaining: dailyResult.remaining,
+      },
     })
   }
 }

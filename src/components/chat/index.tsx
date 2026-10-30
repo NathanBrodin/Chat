@@ -54,19 +54,7 @@ export function Chat({
     sendMessage({ text: prompt })
   }
 
-  // The transport surfaces HTTP failures as APICallError carrying the raw
-  // response body, so unwrap with parseChatError and branch on stable codes,
-  // never on user-facing messages.
   const parsedError = error ? parseChatError(error) : null
-  const errorTitle =
-    parsedError?.code === "chat.RATE_LIMITED_BURST" ||
-    parsedError?.code === "chat.RATE_LIMITED_DAILY"
-      ? "Slow down — rate limited"
-      : parsedError?.code === "chat.INVALID_JSON" || parsedError?.code === "chat.INVALID_MESSAGES"
-        ? "Couldn't process that"
-        : parsedError?.code === "chat.STREAM_FAILED"
-          ? "Response interrupted"
-          : "Request failed"
 
   return (
     <div className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col">
@@ -149,17 +137,8 @@ export function Chat({
       <div className="mx-auto flex w-full max-w-2xl shrink-0 flex-col gap-2 px-6 pb-2">
         {parsedError && (
           <Alert variant="error">
-            <AlertTitle>{errorTitle}</AlertTitle>
-            <AlertDescription>
-              <span>{parsedError.message}</span>
-              {parsedError.why && <span>{parsedError.why}</span>}
-              {parsedError.fix && <span className="font-medium">{parsedError.fix}</span>}
-              {parsedError.link && (
-                <a className="underline" href={parsedError.link}>
-                  Learn more
-                </a>
-              )}
-            </AlertDescription>
+            <AlertTitle>Something went wrong</AlertTitle>
+            <AlertDescription>{parsedError.message}</AlertDescription>
             <AlertAction>
               <Button variant="ghost" size="xs" onClick={() => clearError()}>
                 Dismiss

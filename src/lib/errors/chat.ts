@@ -4,40 +4,39 @@ export const chatErrors = defineErrorCatalog("chat", {
   RATE_LIMITED_BURST: {
     status: 429,
     message: ({ retryAfter }: { retryAfter: number }) =>
-      `Too many chat requests (retry in ${retryAfter}s)`,
+      `You're sending messages too quickly. Try again in ${retryAfter} seconds.`,
     why: "Burst limit of 5 requests per 30 seconds exceeded",
-    fix: "Wait a few seconds and try again",
+    fix: "Wait for the burst window to reset before retrying",
   },
   RATE_LIMITED_DAILY: {
     status: 429,
-    message: ({ retryAfter }: { retryAfter: number }) =>
-      `Daily chat limit reached (retry in ${retryAfter}s)`,
+    message: "You've reached today's message limit. Try again later.",
     why: "Daily limit of 50 requests per 24 hours exceeded",
-    fix: "Try again tomorrow",
+    fix: "Wait for the daily window to reset before retrying",
   },
   INVALID_JSON: {
     status: 400,
-    message: "Invalid chat request",
+    message: "Your message couldn't be sent. Reload the page and try again.",
     why: "Request body is not valid JSON",
-    fix: "Reload the page and try again",
+    fix: "Send a request body that parses as JSON",
   },
   INVALID_MESSAGES: {
     status: 422,
-    message: "Invalid chat messages",
+    message: "This conversation couldn't be loaded. Reload the page and start a new conversation.",
     why: "Message history failed AI SDK validation",
-    fix: "Reload the page and start a new conversation",
+    fix: "Send messages that satisfy the ChatUIMessage schema",
   },
   INVALID_CHAT_ID: {
     status: 400,
-    message: "Invalid chat request",
+    message: "This conversation couldn't be found. Reload the page and start a new conversation.",
     why: "The chat identifier is missing or malformed",
-    fix: "Reload the page and try again",
+    fix: "Send a valid chat id",
   },
   STREAM_FAILED: {
     status: 500,
-    message: "Chat response failed",
+    message: "The response stopped before it finished. Try again.",
     why: "The model stream errored before completing",
-    fix: "Try again",
+    fix: "Check the request event for the underlying provider error",
   },
 })
 
