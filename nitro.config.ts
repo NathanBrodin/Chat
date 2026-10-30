@@ -104,4 +104,11 @@ export default defineConfig({
 
   // Shiki's Emscripten onig.wasm can't be parsed; highlighting uses the JS engine.
   wasm: { silent: true },
+
+  /**
+   * The web fetch tool's SSRF-safe transport loads undici through a runtime
+   * `require` that the bundler cannot resolve, so it must ship as a real
+   * dependency in the function output instead of being inlined.
+   */
+  traceDeps: ["undici"],
 })
