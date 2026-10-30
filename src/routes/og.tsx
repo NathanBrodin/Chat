@@ -31,36 +31,33 @@ export const Route = createFileRoute("/og")({
         const description = rawDescription ? clampText(rawDescription, 240) : undefined
         const { fonts, images } = await loadOgAssets(url.origin)
 
-        return new ImageResponse(
-          createElement(OgImage, { title, description }),
-          {
-            width: 1200,
-            height: 630,
-            fonts,
-            images,
-            fontFamilies: ["Cal Sans", "Geist Mono"],
-            css: [
-              '@import "tailwindcss";',
-              {
-                selector: ":root",
-                style: {
-                  "--font-sans": "'Cal Sans'",
-                  "--font-display": "'Cal Sans'",
-                  "--font-mono": "'Geist Mono'",
-                  "--color-background": "#fafafa",
-                  "--color-foreground": "#262626",
-                  "--color-card": "#ffffff",
-                  "--color-primary": "#262626",
-                  "--color-muted-foreground": "#737373",
-                  "--color-border": "rgba(0, 0, 0, 0.08)",
-                },
+        return new ImageResponse(createElement(OgImage, { title, description }), {
+          width: 1200,
+          height: 630,
+          fonts,
+          images,
+          fontFamilies: ["Cal Sans", "Geist Mono"],
+          css: [
+            '@import "tailwindcss";',
+            {
+              selector: ":root",
+              style: {
+                "--font-sans": "'Cal Sans'",
+                "--font-display": "'Cal Sans'",
+                "--font-mono": "'Geist Mono'",
+                "--color-background": "#fafafa",
+                "--color-foreground": "#262626",
+                "--color-card": "#ffffff",
+                "--color-primary": "#262626",
+                "--color-muted-foreground": "#737373",
+                "--color-border": "rgba(0, 0, 0, 0.08)",
               },
-            ],
-            headers: {
-              "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
             },
+          ],
+          headers: {
+            "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
           },
-        )
+        })
       },
     },
   },

@@ -10,13 +10,13 @@ import {
 } from "ai"
 
 import { createNathanAgent } from "@/lib/chat/agent/nathan"
-import { isValidChatId } from "@/lib/chat/chat-id"
-import { getLocation } from "@/lib/chat/geolocation"
 import { model } from "@/lib/chat/model"
 import { checkChatRateLimit } from "@/lib/chat/rate-limit"
 import { saveConversation } from "@/lib/chat/store"
 import { type ChatUIMessage } from "@/lib/chat/tools"
+import { isValidChatId } from "@/lib/chat/utils"
 import { chatErrors } from "@/lib/errors/chat"
+import { getLocation } from "@/lib/geolocation"
 import { useLogger } from "@/lib/logger.server"
 
 export const Route = createFileRoute("/api/chat")({

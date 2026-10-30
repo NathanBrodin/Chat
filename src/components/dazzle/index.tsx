@@ -3,6 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 import { DAZZLE_STAR_PATH } from "./star"
+
 import "./style.css"
 
 const STAR_COUNT = 5

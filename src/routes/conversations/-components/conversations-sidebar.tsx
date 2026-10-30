@@ -23,10 +23,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { getContextPercent } from "@/lib/chat/context-usage"
-import { formatCost } from "@/lib/chat/format"
 import { model } from "@/lib/chat/model"
 import { conversationsQueryOptions } from "@/lib/chat/queries"
 import type { ConversationSummary } from "@/lib/chat/store"
+import { formatCost } from "@/lib/chat/utils"
 
 import { RelativeTime } from "./relative-time"
 

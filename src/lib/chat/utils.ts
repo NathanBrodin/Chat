@@ -1,3 +1,9 @@
+const CHAT_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/
+
+export function isValidChatId(id: string): boolean {
+  return CHAT_ID_PATTERN.test(id)
+}
+
 const relativeTimeFormat = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" })
 
 const RELATIVE_TIME_UNITS: ReadonlyArray<readonly [Intl.RelativeTimeFormatUnit, number]> = [

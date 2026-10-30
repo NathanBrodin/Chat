@@ -3,9 +3,9 @@ import { CircularProgress } from "@/components/ui/circular-progress"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/preview-card"
 import { Progress } from "@/components/ui/progress"
 import { getContextPercent, getUsedTokens } from "@/lib/chat/context-usage"
-import { formatCost } from "@/lib/chat/format"
 import { model } from "@/lib/chat/model"
 import type { ChatUIMessage } from "@/lib/chat/tools"
+import { formatCost } from "@/lib/chat/utils"
 
 function formatTokens(value: number) {
   if (value >= 1_000_000) {

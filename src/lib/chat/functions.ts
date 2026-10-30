@@ -1,8 +1,8 @@
 import { notFound } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
-import { isValidChatId } from "@/lib/chat/chat-id"
 import { getConversation, listConversations } from "@/lib/chat/store"
+import { isValidChatId } from "@/lib/chat/utils"
 
 export const $listConversations = createServerFn({ method: "GET" }).handler(async () => {
   return listConversations()

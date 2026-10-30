@@ -1,11 +1,11 @@
 import { desc, eq } from "drizzle-orm"
 
 import type { ConversationMetadata } from "@/lib/chat/context-usage"
-import type { ConversationLocation } from "@/lib/chat/geolocation"
 import { model } from "@/lib/chat/model"
 import type { ChatUIMessage } from "@/lib/chat/tools"
 import { db } from "@/lib/db/index"
 import { conversation } from "@/lib/db/schema/chat.schema"
+import type { Location } from "@/lib/geolocation"
 
 const TITLE_MAX_LENGTH = 80
 
@@ -46,7 +46,7 @@ export async function saveConversation({
 }: {
   id: string
   messages: ChatUIMessage[]
-  location: ConversationLocation
+  location: Location
 }) {
   const values = {
     id,

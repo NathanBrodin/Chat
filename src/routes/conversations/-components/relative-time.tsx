@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { formatRelativeTime } from "@/lib/chat/format"
+import { formatRelativeTime } from "@/lib/chat/utils"
 
 export function RelativeTime({ date }: { date: Date }) {
   const [now, setNow] = useState(() => new Date())

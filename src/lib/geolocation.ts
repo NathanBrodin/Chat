@@ -1,4 +1,4 @@
-export type ConversationLocation = {
+export type Location = {
   city: string | null
   country: string | null
   region: string | null
@@ -23,7 +23,7 @@ function coordinate(value: string | null): number | null {
  * Reads Vercel's geolocation headers. Every field is null outside the Vercel
  * runtime, where these headers are absent.
  */
-export function getLocation(request: Request): ConversationLocation {
+export function getLocation(request: Request): Location {
   return {
     city: header(request, "x-vercel-ip-city"),
     country: header(request, "x-vercel-ip-country"),
