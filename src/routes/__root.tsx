@@ -1,6 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router"
 import { createMiddleware } from "@tanstack/react-start"
+import { Analytics } from "@vercel/analytics/react"
 import { evlogErrorHandler } from "evlog/nitro/v3"
 import { lazy, Suspense } from "react"
 
@@ -70,6 +71,7 @@ function RootDocument({ children }: { readonly children: React.ReactNode }) {
           </Suspense>
         )}
 
+        <Analytics />
         <Scripts />
       </body>
     </html>
