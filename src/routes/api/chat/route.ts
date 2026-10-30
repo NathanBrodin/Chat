@@ -41,7 +41,8 @@ export const Route = createFileRoute("/api/chat")({
           throw chatErrors.INVALID_CHAT_ID()
         }
 
-        const agent = createNathanAgent(log)
+        const location = getLocation(request)
+        const agent = createNathanAgent(log, location)
 
         // Validate the shape of every message and tool part before trusting it.
         let messages: ChatUIMessage[]
@@ -56,8 +57,6 @@ export const Route = createFileRoute("/api/chat")({
             cause: err instanceof Error ? err : undefined,
           })
         }
-
-        const location = getLocation(request)
 
         log.set({ chat: { id, messageCount: messages.length, model: model.id } })
 

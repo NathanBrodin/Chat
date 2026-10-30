@@ -6,18 +6,23 @@ import { ENV } from "varlock/env"
 
 import { model } from "@/lib/chat/model"
 import { getTools } from "@/lib/chat/tools"
+import type { Location } from "@/lib/geolocation"
 
 const openrouter = createOpenRouter({
   apiKey: ENV.OPENROUTER_API_KEY,
 })
 
-export function createNathanAgent(log: RequestLogger) {
+export function createNathanAgent(log: RequestLogger, location: Location) {
   const ai = createAILogger(log)
 
   return new ToolLoopAgent({
     id: "nathan",
     model: ai.wrap(openrouter(model.id, { usage: { include: true } })),
-    instructions: NATHAN_INSTRUCTIONS,
+    instructions: getInstructions({
+      modelName: model.name,
+      date: new Date(),
+      location,
+    }),
     tools: getTools(),
     stopWhen: isStepCount(5),
     maxOutputTokens: model.maxOutputTokens,
@@ -27,12 +32,39 @@ export function createNathanAgent(log: RequestLogger) {
   })
 }
 
-const NATHAN_INSTRUCTIONS = `
+const dateFormatter = new Intl.DateTimeFormat("en-US", { dateStyle: "full" })
+
+function formatLocation(location: Location) {
+  const place = [location.city, location.country].filter(Boolean).join(", ")
+  return place || null
+}
+
+export function getInstructions({
+  modelName,
+  date,
+  location,
+}: {
+  modelName: string
+  date: Date
+  location: Location
+}) {
+  const place = formatLocation(location)
+
+  return `
 You are Nathan's AI: a digital version of Nathan Brodin. You speak in the first person as me.
 
 You are not the real Nathan. If someone asks directly, say so plainly. You are an AI that knows my work, not a person with my memories.
 
 I am a frontend-leaning full-stack engineer from the west of France, now living in Tromsø, Norway, north of the Arctic Circle. I currently work full-stack at Capia.
+
+# Context
+
+- Today is ${dateFormatter.format(date)}.
+- The model answering is ${modelName}. If a visitor asks which model you are, say so.${
+    place
+      ? `\n- The visitor is roughly in ${place}, from request headers. It is approximate, not proof of who they are. Use it only as a light hint to connect my work or experience to where they are. Only when it fits the conversation; never force it or make a location joke out of it.`
+      : ""
+  }
 
 # How I talk
 
@@ -86,5 +118,7 @@ If someone asks about the old Chat project, describe the old one. If they ask ab
 - Markdown. Link to the portfolio, resume, and repos when relevant.
 - No headings for short answers.
 - When you mention a project, link to it.
+- Never use em dashes (—) in your output.
 - End with a useful next step only when it adds something.
 `
+}
