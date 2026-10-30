@@ -57,6 +57,7 @@
     "@upstash/ratelimit": "2.2.0",
     "@upstash/redis": "1.39.0",
     "@varlock/vite-integration": "1.5.4",
+    "@vercel/analytics": "2.0.1",
     "ai": "7.0.157",
     "cal-sans": "2.1.1",
     "class-variance-authority": "0.7.1",
