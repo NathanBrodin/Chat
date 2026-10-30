@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { Link, useParams } from "@tanstack/react-router"
+import { ChevronDownIcon } from "lucide-react"
 import { useSyncExternalStore } from "react"
 
 import { AppLogo } from "@/components/app-logo"
@@ -22,6 +23,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Spinner } from "@/components/ui/spinner"
 import { getContextPercent } from "@/lib/chat/context-usage"
 import { model } from "@/lib/chat/model"
 import { conversationsQueryOptions } from "@/lib/chat/queries"
@@ -47,7 +49,8 @@ function useIsMac() {
 }
 
 export function ConversationsSidebar() {
-  const conversations = useQuery(conversationsQueryOptions())
+  const conversations = useInfiniteQuery(conversationsQueryOptions())
+  const items = conversations.data?.pages.flatMap((page) => page.conversations) ?? []
   const { id: activeId } = useParams({ strict: false })
   const { isMobile, state } = useSidebar()
   const isMac = useIsMac()
@@ -100,18 +103,44 @@ export function ConversationsSidebar() {
                     Couldn't load conversations.
                   </p>
                 </SidebarMenuItem>
-              ) : conversations.data.length === 0 ? (
+              ) : items.length === 0 ? (
                 <SidebarMenuItem>
                   <p className="px-2 py-1.5 text-xs text-muted-foreground">No conversations yet.</p>
                 </SidebarMenuItem>
               ) : (
-                conversations.data.map((conversation) => (
+                items.map((conversation) => (
                   <ConversationItem
                     key={conversation.id}
                     conversation={conversation}
                     isActive={conversation.id === activeId}
                   />
                 ))
+              )}
+              {conversations.isFetchNextPageError && (
+                <SidebarMenuItem>
+                  <p className="px-2 py-1.5 text-xs text-muted-foreground">
+                    Couldn't load more conversations.
+                  </p>
+                </SidebarMenuItem>
+              )}
+              {conversations.hasNextPage && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => conversations.fetchNextPage()}
+                    disabled={conversations.isFetchingNextPage}
+                    tooltip="Load more"
+                    className="text-muted-foreground group-data-[collapsible=icon]:justify-center"
+                  >
+                    {conversations.isFetchingNextPage ? (
+                      <Spinner />
+                    ) : (
+                      <ChevronDownIcon aria-hidden="true" />
+                    )}
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {conversations.isFetchingNextPage ? "Loading…" : "Load more"}
+                    </span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               )}
             </SidebarMenu>
           </SidebarGroupContent>

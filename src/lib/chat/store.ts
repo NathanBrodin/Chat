@@ -68,7 +68,9 @@ export async function saveConversation({
     })
 }
 
-export function listConversations() {
+const DEFAULT_CONVERSATION_PAGE_SIZE = 20
+
+function selectConversationSummaries() {
   return db
     .select({
       id: conversation.id,
@@ -79,10 +81,35 @@ export function listConversations() {
       createdAt: conversation.createdAt,
     })
     .from(conversation)
-    .orderBy(desc(conversation.createdAt))
 }
 
-export type ConversationSummary = Awaited<ReturnType<typeof listConversations>>[number]
+export type ConversationSummary = Awaited<ReturnType<typeof selectConversationSummaries>>[number]
+
+export type ConversationPage = {
+  conversations: ConversationSummary[]
+  nextOffset: number | null
+}
+
+export async function listConversations({
+  offset = 0,
+  limit = DEFAULT_CONVERSATION_PAGE_SIZE,
+}: {
+  offset?: number
+  limit?: number
+} = {}): Promise<ConversationPage> {
+  // Fetch one extra row to know whether another page exists without a count query.
+  const rows = await selectConversationSummaries()
+    .orderBy(desc(conversation.createdAt), desc(conversation.id))
+    .limit(limit + 1)
+    .offset(offset)
+
+  const hasMore = rows.length > limit
+
+  return {
+    conversations: hasMore ? rows.slice(0, limit) : rows,
+    nextOffset: hasMore ? offset + limit : null,
+  }
+}
 
 export async function getConversation(id: string) {
   const rows = await db.select().from(conversation).where(eq(conversation.id, id)).limit(1)

@@ -11,7 +11,7 @@ import { $setSidebarOpen, sidebarOpenQueryOptions } from "./-lib/cookies"
 export const Route = createFileRoute("/conversations")({
   loader: async ({ context }) => {
     await Promise.all([
-      context.queryClient.query(conversationsQueryOptions()),
+      context.queryClient.infiniteQuery(conversationsQueryOptions()),
       context.queryClient.query(sidebarOpenQueryOptions()),
     ])
   },
