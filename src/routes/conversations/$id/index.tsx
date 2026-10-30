@@ -13,6 +13,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { conversationQueryOptions } from "@/lib/chat/queries"
 import { cn } from "@/lib/utils"
@@ -48,6 +49,7 @@ function ConversationPage() {
       id={conversation.id}
       initialMessages={conversation.messages}
       title={conversation.title}
+      showSidebar
     />
   )
 }
@@ -59,10 +61,11 @@ function ConversationPending() {
       aria-label="Loading conversation"
       className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col"
     >
-      <div className="flex shrink-0 items-center justify-between gap-2 px-6 py-3">
+      <div className="flex shrink-0 items-center justify-between gap-2 px-4 py-3 md:px-6">
         <div className="flex min-w-0 items-center gap-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="size-1 rounded-full" />
+          <SidebarTrigger aria-label="Open conversations" className="-ms-2 md:hidden" />
+          <Skeleton className="h-4 w-24 max-md:hidden" />
+          <Skeleton className="size-1 rounded-full max-md:hidden" />
           <Skeleton className="h-4 w-36" />
         </div>
         <Skeleton className="h-8 w-28 rounded-lg" />

@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import { createFileRoute, Outlet } from "@tanstack/react-router"
+import { createFileRoute, Outlet, useParams } from "@tanstack/react-router"
 import { useServerFn } from "@tanstack/react-start"
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { conversationsQueryOptions } from "@/lib/chat/queries"
 
+import { ConversationsMobileHeader } from "./-components/conversations-mobile-header"
 import { ConversationsSidebar } from "./-components/conversations-sidebar"
 import { $setSidebarOpen, sidebarOpenQueryOptions } from "./-lib/cookies"
 
@@ -29,6 +30,7 @@ function RouteComponent() {
   const { data: sidebarOpen } = useSuspenseQuery(sidebarOpenQueryOptions())
   const queryKey = sidebarOpenQueryOptions().queryKey
   const setSidebarOpen = useServerFn($setSidebarOpen)
+  const { id } = useParams({ strict: false })
 
   const persistSidebarOpen = useMutation({
     mutationFn: (open: boolean) => setSidebarOpen({ data: { open } }),
@@ -46,12 +48,13 @@ function RouteComponent() {
 
   return (
     <SidebarProvider
-      className="h-svh overflow-hidden"
+      className="h-dvh overflow-hidden"
       onOpenChange={(open) => persistSidebarOpen.mutate(open)}
       open={sidebarOpen}
     >
       <ConversationsSidebar />
       <SidebarInset id="main-content" className="isolate overflow-hidden">
+        {!id && <ConversationsMobileHeader />}
         <Outlet />
       </SidebarInset>
     </SidebarProvider>

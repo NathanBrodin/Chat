@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   return (
-    <SidebarProvider className="h-svh overflow-hidden" defaultOpen={false} toggleable={false}>
+    <SidebarProvider className="h-dvh overflow-hidden" defaultOpen={false} toggleable={false}>
       <Sidebar variant="inset" collapsible="offcanvas" />
       <SidebarInset
         id="main-content"

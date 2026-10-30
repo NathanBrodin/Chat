@@ -142,7 +142,7 @@ export function SidebarProvider({
     <SidebarContext.Provider value={contextValue}>
       <div
         className={cn(
-          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar max-md:flex-col",
+          "group/sidebar-wrapper flex min-h-dvh w-full has-data-[variant=inset]:bg-sidebar max-md:flex-col",
           className,
         )}
         data-sidebar-open={open}
@@ -237,7 +237,7 @@ export function Sidebar({
       />
       <aside
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
+          "fixed inset-y-0 z-10 hidden h-dvh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
           side === "left"
             ? "left-0 group-data-[collapsible=offcanvas]:-left-(--sidebar-width)"
             : "right-0 group-data-[collapsible=offcanvas]:-right-(--sidebar-width)",

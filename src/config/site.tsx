@@ -43,8 +43,8 @@ export const siteConfig = {
     "https://www.figma.com/@nathanbrodin",
   ],
   themeColors: {
-    light: "#fafafa",
-    dark: "#09090b",
+    light: "#ffffff",
+    dark: "#161616",
   },
 } as const
 
@@ -116,7 +116,10 @@ export function getRootHead(): {
   return {
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1, interactive-widget=resizes-content",
+      },
       { name: "application-name", content: siteConfig.name },
       { name: "color-scheme", content: "light dark" },
       { name: "author", content: siteConfig.author },

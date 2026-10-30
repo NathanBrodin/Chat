@@ -4,7 +4,7 @@ import { siteConfig } from "@/config/site"
 
 export function Footer() {
   return (
-    <footer className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t pt-6">
+    <footer className="flex flex-wrap items-center justify-between gap-4 pt-4 md:mt-8 md:border-t md:pt-6">
       <p className="text-sm text-muted-foreground">
         Build by{" "}
         <a

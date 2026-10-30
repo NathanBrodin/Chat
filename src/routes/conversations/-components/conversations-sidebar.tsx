@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { Link, useParams } from "@tanstack/react-router"
+import { Link, useParams, useRouterState } from "@tanstack/react-router"
 import { ChevronDownIcon } from "lucide-react"
-import { useSyncExternalStore } from "react"
+import { useEffect, useSyncExternalStore } from "react"
 
 import { AppLogo } from "@/components/app-logo"
 import { GithubStarsButton } from "@/components/github-stars-button"
@@ -52,8 +52,13 @@ export function ConversationsSidebar() {
   const conversations = useInfiniteQuery(conversationsQueryOptions())
   const items = conversations.data?.pages.flatMap((page) => page.conversations) ?? []
   const { id: activeId } = useParams({ strict: false })
-  const { isMobile, state } = useSidebar()
+  const { isMobile, setOpenMobile, state } = useSidebar()
   const isMac = useIsMac()
+  const pathname = useRouterState({ select: (routerState) => routerState.location.pathname })
+
+  useEffect(() => {
+    setOpenMobile(false)
+  }, [pathname, setOpenMobile])
 
   const toggleLabel = state === "collapsed" ? "Show Sidebar" : "Hide Sidebar"
 

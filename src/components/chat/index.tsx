@@ -24,10 +24,13 @@ export function Chat({
   id,
   initialMessages,
   title,
+  showSidebar = false,
 }: {
   id?: string
   initialMessages?: ChatUIMessage[]
   title?: string
+  /** Show the conversations sidebar trigger in the header on mobile. */
+  showSidebar?: boolean
 } = {}) {
   const { messages, sendMessage, regenerate, status, stop, error, clearError, addToolOutput } =
     useChat<ChatUIMessage>({
@@ -62,7 +65,7 @@ export function Chat({
 
   return (
     <div className="mx-auto flex min-h-0 w-full min-w-0 flex-1 flex-col">
-      <ChatHeader messages={messages} title={title} />
+      <ChatHeader messages={messages} title={title} showSidebar={showSidebar} />
       {messages.length === 0 ? (
         <div className="flex min-h-0 flex-1 items-center justify-center p-6">
           <Empty className="gap-0">
@@ -80,7 +83,7 @@ export function Chat({
         <ChatConversation
           label="Conversation"
           busy={isBusy}
-          contentClassName="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-6"
+          contentClassName="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6 md:px-6"
         >
           {messages.map((message) => (
             <MessageScrollerItem
@@ -130,7 +133,7 @@ export function Chat({
         </ChatConversation>
       )}
 
-      <div className="mx-auto flex w-full max-w-2xl shrink-0 flex-col gap-2 px-6 pb-2">
+      <div className="mx-auto flex w-full max-w-2xl shrink-0 flex-col gap-2 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:px-6 md:pb-2">
         {parsedError && (
           <Alert variant="error">
             <AlertTitle>Something went wrong</AlertTitle>
