@@ -5,9 +5,9 @@ import { ChatConversation } from "@/components/chat/chat-conversation"
 import { ChatMessage } from "@/components/chat/chat-message"
 import { ChatHeader } from "@/components/chat/header"
 import { useChatResponseState } from "@/components/chat/hooks/use-chat-response-state"
+import { ThinkingLine } from "@/components/chat/parts/thinking-line"
 import { PromptForm } from "@/components/chat/prompt-form"
 import { QuestionCard } from "@/components/chat/question-card"
-import { StatusIcon } from "@/components/chat/status-icon"
 import { Suggestions } from "@/components/chat/suggestions"
 import { Dazzle } from "@/components/dazzle"
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
 import { MessageScrollerItem } from "@/components/ui/message-scroller"
-import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
+import { Trace } from "@/components/ui/trace"
 import { siteConfig } from "@/config/site"
 import { type ChatUIMessage } from "@/lib/chat/tools"
 import { parseChatError } from "@/lib/errors/parse-chat-error"
@@ -42,6 +42,9 @@ export function Chat({
   const responseState = useChatResponseState(status, messages)
 
   const lastMessage = messages.at(-1)
+  const hasEmptyAssistantItem =
+    lastMessage?.role === "assistant" &&
+    lastMessage.parts.every((part) => part.type === "step-start")
   const pendingQuestion =
     lastMessage?.role === "assistant"
       ? lastMessage.parts.find(
@@ -99,17 +102,12 @@ export function Chat({
               />
             </MessageScrollerItem>
           ))}
-          {status === "submitted" && (
+          {status === "submitted" && !hasEmptyAssistantItem && (
             <MessageScrollerItem messageId="thinking">
               <Message>
                 <MessageContent>
                   <Trace>
-                    <TraceLine status="running">
-                      <TraceIcon>
-                        <StatusIcon status="running" />
-                      </TraceIcon>
-                      <TraceTitle>Thinking</TraceTitle>
-                    </TraceLine>
+                    <ThinkingLine />
                   </Trace>
                 </MessageContent>
               </Message>

@@ -5,6 +5,7 @@ import { GithubRepoPart } from "@/components/chat/parts/github-repo-part"
 import { ReasoningPart } from "@/components/chat/parts/reasoning-part"
 import { SourcesPart } from "@/components/chat/parts/sources-part"
 import { TextPart } from "@/components/chat/parts/text-part"
+import { ThinkingLine } from "@/components/chat/parts/thinking-line"
 import { WebFetchPart } from "@/components/chat/parts/web-fetch-part"
 import { WebSearchPart } from "@/components/chat/parts/web-search-part"
 import { Bubble, BubbleContent } from "@/components/ui/bubble"
@@ -54,6 +55,7 @@ export function ChatMessage({
   const blocks = groupParts(message.parts)
   const reasoningParts = message.parts.filter((part) => part.type === "reasoning")
   const text = blocks.flatMap((block) => (Array.isArray(block) ? [] : block.text)).join("\n\n")
+  const awaitingFirstPart = message.parts.every((part) => part.type === "step-start")
 
   return (
     <Message align="start">
@@ -94,6 +96,11 @@ export function ChatMessage({
           ) : (
             <TextPart key={index} part={block} />
           ),
+        )}
+        {isStreaming && awaitingFirstPart && (
+          <Trace>
+            <ThinkingLine />
+          </Trace>
         )}
         {!isStreaming && <SourcesPart parts={message.parts} />}
         {!isStreaming && text && <MessageActions text={text} onRetry={onRetry} />}
