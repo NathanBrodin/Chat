@@ -1,5 +1,5 @@
-import { SiGithub } from "@icons-pack/react-simple-icons"
-import { ArrowUpRightIcon, EllipsisIcon, SunMoonIcon } from "lucide-react"
+import { Link } from "@tanstack/react-router"
+import { EllipsisIcon, SunMoonIcon } from "lucide-react"
 
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import {
@@ -21,8 +21,9 @@ export function ProjectMenu() {
         <EllipsisIcon aria-hidden="true" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64" side="right" sideOffset={8}>
-        <p className="px-2 py-1.5 text-xs text-muted-foreground">{siteConfig.description}</p>
-        <DropdownMenuSeparator />
+        <div className="rounded-md border p-1">
+          <p className="px-2 py-1.5 text-xs text-foreground">{siteConfig.description}</p>
+        </div>
         <div className="flex min-h-8 items-center gap-2 rounded-sm px-2 py-1 text-base sm:min-h-7 sm:text-sm">
           <SunMoonIcon aria-hidden="true" className="size-4 shrink-0 opacity-80" />
           Theme
@@ -31,14 +32,20 @@ export function ProjectMenu() {
           </div>
         </div>
         <DropdownMenuSeparator />
+        <MenuLinkItem closeOnClick render={<Link to="/about" />}>
+          About
+        </MenuLinkItem>
+        <MenuLinkItem closeOnClick render={<Link to="/privacy" />}>
+          Privacy
+        </MenuLinkItem>
+        <DropdownMenuSeparator />
         <MenuLinkItem
           closeOnClick
           href={`https://github.com/${siteConfig.githubRepo}`}
           rel="noopener noreferrer"
           target="_blank"
         >
-          <SiGithub aria-hidden="true" />
-          GitHub
+          GitHub ↗
         </MenuLinkItem>
         <MenuLinkItem
           closeOnClick
@@ -46,8 +53,7 @@ export function ProjectMenu() {
           rel="noopener noreferrer"
           target="_blank"
         >
-          <ArrowUpRightIcon aria-hidden="true" />
-          Portfolio
+          Portfolio ↗
         </MenuLinkItem>
       </DropdownMenuContent>
     </DropdownMenu>

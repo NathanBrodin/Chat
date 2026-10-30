@@ -16,6 +16,7 @@ import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
 import { MessageScrollerItem } from "@/components/ui/message-scroller"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
+import { siteConfig } from "@/config/site"
 import { type ChatUIMessage } from "@/lib/chat/tools"
 import { parseChatError } from "@/lib/errors/parse-chat-error"
 
@@ -63,11 +64,8 @@ export function Chat({
         <div className="flex min-h-0 flex-1 items-center justify-center p-6">
           <Empty className="gap-0">
             <EmptyHeader className="max-w-3xl">
-              <h1 className="sr-only">Nathan&apos;s AI — ask anything about Nathan Brodin</h1>
-              <p className="sr-only">
-                An interactive AI portfolio that answers questions about Nathan Brodin&apos;s
-                experience, projects, and approach to building for the web.
-              </p>
+              <h1 className="sr-only">{siteConfig.title}</h1>
+              <p className="sr-only">{siteConfig.description}</p>
               <Dazzle text="What can I help with?" />
             </EmptyHeader>
             <EmptyContent className="max-w-xl">
