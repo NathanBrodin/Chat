@@ -8,6 +8,7 @@ import {
   toUIMessageStream,
   validateUIMessages,
 } from "ai"
+import { createLogger } from "evlog"
 
 import { createNathanAgent } from "@/lib/chat/agent/nathan"
 import { model } from "@/lib/chat/model"
@@ -42,7 +43,15 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const location = getLocation(request)
-        const agent = createNathanAgent(log, location)
+
+        // Nitro emits the request event when response headers are sent, before the
+        // AI stream finishes. Keep AI metrics in a separate event tied to the request.
+        const aiLog = createLogger({
+          operation: "chat.ai",
+          requestId: log.getContext().requestId,
+          chat: { id },
+        })
+        const agent = createNathanAgent(aiLog, location)
 
         // Validate the shape of every message and tool part before trusting it.
         let messages: ChatUIMessage[]
@@ -58,7 +67,7 @@ export const Route = createFileRoute("/api/chat")({
           })
         }
 
-        log.set({ chat: { id, messageCount: messages.length, model: model.id } })
+        log.set({ chat: { id } })
 
         const result = await agent.stream({
           messages: await convertToModelMessages(messages),
@@ -128,6 +137,8 @@ export const Route = createFileRoute("/api/chat")({
               return JSON.stringify(streamError.toJSON())
             },
             onEnd: async ({ messages: updatedMessages, outcome }) => {
+              aiLog.emit({ outcome: outcome.status })
+
               if (outcome.status !== "completed") {
                 return
               }
@@ -136,7 +147,7 @@ export const Route = createFileRoute("/api/chat")({
                 await saveConversation({ id, messages: updatedMessages, location })
               } catch {
                 // Best-effort: a persistence failure must not corrupt the stream.
-                // No logging here — the request event has already emitted.
+                // No logging here — both wide events have already emitted.
               }
             },
           }),

@@ -143,7 +143,7 @@ Message types are inferred from the tool definitions via `InferUITools`, so `par
 
 ## Logging
 
-[evlog](https://www.evlog.dev/) is wired into the app through Nitro and emits one structured event per request. Add a [drain](https://www.evlog.dev/integrate/adapters/overview) when production needs logs sent to your chosen provider.
+[evlog](https://www.evlog.dev/) is wired into the app through Nitro and emits one structured event per request. Chat requests also emit a correlated `chat.ai` event when the stream ends, because Nitro v3 logs the request before streamed AI usage is known. Add a [drain](https://www.evlog.dev/integrate/adapters/overview) when production needs logs sent to your chosen provider.
 
 ## SEO & GEO
 
@@ -183,6 +183,7 @@ Check [package.json](./package.json) for the full list of available scripts.
 
 - [Devtools releases](https://github.com/TanStack/devtools/releases) - TanStack Devtools is in alpha and may still have breaking changes.
 - [Nitro v3 beta](https://nitro.build/blog/v3-beta) - The app is configured with Nitro v3 beta by default.
+- [evlog Nitro v3 streaming](https://github.com/evloghq/evlog/pull/433) - Nitro v3 emits request events at response headers, so stream-end AI usage is logged as a separate correlated `chat.ai` event.
 - [Drizzle ORM v1 RC](https://orm.drizzle.team/docs/relations-v1-v2) - Drizzle ORM v1 is in RC with relations v2.
 
 ## License

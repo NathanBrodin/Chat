@@ -15,6 +15,24 @@ Do not add permanent application logs merely as a routine part of implementation
 - Never log secrets, credentials, raw tokens, or unnecessary personal data. Treat full URLs and query strings, IP addresses, user agents, request bodies, and complete user/session records as sensitive; prefer stable IDs and explicitly allowlisted fields. Put private diagnostic values in `createError({ internal: ... })`, not client-visible fields.
 - Await work that contributes to the request event. The Nitro v3 integration does not support `log.fork()`, and mutating a logger after its response has completed produces a warning.
 
+### Streaming responses
+
+Nitro emits the request event when response headers are sent, before a streamed body finishes. Data produced while the body streams, such as AI SDK usage and tool timings, arrives after the request logger is sealed. Give that work its own wide event with `createLogger()`, correlate it with the request via `requestId` and any stable business IDs such as `chat.id`, and emit it when the stream ends. Do not call `log.set()` from stream callbacks.
+
+```ts
+import { createLogger } from "evlog"
+
+const aiLog = createLogger({
+  operation: "chat.ai",
+  requestId: log.getContext().requestId,
+  chat: { id },
+})
+const ai = createAILogger(aiLog)
+
+// In the stream's onEnd callback:
+aiLog.emit({ outcome: outcome.status })
+```
+
 ```ts
 import { createError } from "evlog"
 

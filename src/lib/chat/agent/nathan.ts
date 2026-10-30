@@ -12,8 +12,8 @@ const openrouter = createOpenRouter({
   apiKey: ENV.OPENROUTER_API_KEY,
 })
 
-export function createNathanAgent(log: RequestLogger, location: Location) {
-  const ai = createAILogger(log)
+export function createNathanAgent(aiLog: RequestLogger, location: Location) {
+  const ai = createAILogger(aiLog)
 
   return new ToolLoopAgent({
     id: "nathan",
