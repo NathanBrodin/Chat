@@ -85,7 +85,7 @@ If you run into any problems or have any questions, please hesitate to ask me.
 
 In application code, `import { ENV } from "varlock/env"` instead of reading `process.env` directly.
 
-The model is hardcoded to `~z-ai/glm-flash-latest` in [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts).
+The model is defined in [src/lib/chat/model.ts](src/lib/chat/model.ts), together with its context window and output limit.
 
 ### Rate limit
 

@@ -4,6 +4,7 @@ import type { RequestLogger } from "evlog"
 import { createAILogger, createEvlogIntegration } from "evlog/ai"
 import { ENV } from "varlock/env"
 
+import { model } from "@/lib/chat/model"
 import { getTools } from "@/tools"
 
 const openrouter = createOpenRouter({
@@ -15,11 +16,11 @@ export function createNathanAgent(log: RequestLogger) {
 
   return new ToolLoopAgent({
     id: "nathan",
-    model: ai.wrap(openrouter("~z-ai/glm-flash-latest")),
+    model: ai.wrap(openrouter(model.id, { usage: { include: true } })),
     instructions: NATHAN_INSTRUCTIONS,
     tools: getTools(),
     stopWhen: isStepCount(5),
-    maxOutputTokens: 8192,
+    maxOutputTokens: model.maxOutputTokens,
     telemetry: {
       integrations: [createEvlogIntegration(ai)],
     },

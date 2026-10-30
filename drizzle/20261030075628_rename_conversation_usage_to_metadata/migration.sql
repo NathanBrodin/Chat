@@ -1,0 +1,1 @@
+ALTER TABLE "conversation" RENAME COLUMN "usage" TO "metadata";

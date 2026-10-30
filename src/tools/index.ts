@@ -1,5 +1,7 @@
 import { type InferUITools, type LanguageModelUsage, type UIDataTypes, type UIMessage } from "ai"
 
+import type { Model } from "@/lib/chat/model"
+
 import { askUser } from "./ask_user"
 import { githubRepo } from "./github_repo"
 import { webFetch } from "./web_fetch"
@@ -15,13 +17,19 @@ export function getTools() {
   return { ...baseTools, web_search: getWebSearch() }
 }
 
+export type ChatMessageMetadata = {
+  // Milliseconds per reasoning part, keyed by its index in the message.
+  reasoningDurations?: Record<number, number>
+  // Usage of the final model call, which reflects the context window pressure.
+  usage?: LanguageModelUsage
+  // Snapshot of the model that generated the response.
+  model?: Model
+  // Accumulated cost reported by OpenRouter for the response, in USD.
+  cost?: number
+}
+
 export type ChatUIMessage = UIMessage<
-  {
-    // Milliseconds per reasoning part, keyed by its index in the message.
-    reasoningDurations?: Record<number, number>
-    // Token usage of the response, sent when the stream finishes.
-    usage?: LanguageModelUsage
-  },
+  ChatMessageMetadata,
   UIDataTypes,
   InferUITools<typeof baseTools> & {
     web_search: {

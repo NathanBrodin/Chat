@@ -4,6 +4,7 @@ import { ENV } from "varlock/env"
 export default {
   out: "./drizzle",
   schema: "./src/lib/db/schema/index.ts",
+  schemaFilter: ["public"],
   breakpoints: true,
   verbose: true,
 

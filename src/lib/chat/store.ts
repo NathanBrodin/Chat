@@ -1,6 +1,8 @@
 import { desc, eq } from "drizzle-orm"
 
+import type { ConversationMetadata } from "@/lib/chat/context-usage"
 import type { ConversationLocation } from "@/lib/chat/geolocation"
+import { model } from "@/lib/chat/model"
 import { db } from "@/lib/db/index"
 import { conversation } from "@/lib/db/schema/chat.schema"
 import type { ChatUIMessage } from "@/tools/index"
@@ -23,8 +25,18 @@ function deriveTitle(messages: ChatUIMessage[]) {
   return text.length > TITLE_MAX_LENGTH ? `${text.slice(0, TITLE_MAX_LENGTH).trimEnd()}…` : text
 }
 
-function deriveUsage(messages: ChatUIMessage[]) {
-  return messages.findLast((message) => message.role === "assistant")?.metadata?.usage ?? null
+function deriveMetadata(messages: ChatUIMessage[]): ConversationMetadata {
+  const lastAssistant = messages.findLast((message) => message.role === "assistant")
+
+  return {
+    model: lastAssistant?.metadata?.model ?? model,
+    usage: lastAssistant?.metadata?.usage ?? null,
+    cost: messages.reduce(
+      (total, message) =>
+        total + (message.role === "assistant" ? (message.metadata?.cost ?? 0) : 0),
+      0,
+    ),
+  }
 }
 
 export async function saveConversation({
@@ -40,7 +52,7 @@ export async function saveConversation({
     id,
     title: deriveTitle(messages),
     ...location,
-    usage: deriveUsage(messages),
+    metadata: deriveMetadata(messages),
     messages,
   }
 
@@ -63,7 +75,7 @@ export function listConversations() {
       title: conversation.title,
       country: conversation.country,
       city: conversation.city,
-      usage: conversation.usage,
+      metadata: conversation.metadata,
       createdAt: conversation.createdAt,
     })
     .from(conversation)

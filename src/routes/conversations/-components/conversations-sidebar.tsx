@@ -23,6 +23,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { getContextPercent } from "@/lib/chat/context-usage"
+import { formatCost } from "@/lib/chat/format"
+import { model } from "@/lib/chat/model"
 import { conversationsQueryOptions } from "@/lib/chat/queries"
 import type { ConversationSummary } from "@/lib/chat/store"
 
@@ -133,13 +135,18 @@ function ConversationItem({
   isActive: boolean
 }) {
   const place = [conversation.city, conversation.country].filter(Boolean).join(", ")
-  const contextPercent = getContextPercent(conversation.usage)
+  const contextPercent = getContextPercent(
+    conversation.metadata?.usage,
+    conversation.metadata?.model.contextWindow ?? model.contextWindow,
+  )
+  const cost = conversation.metadata?.cost ?? 0
+  const tooltip = cost > 0 ? `${conversation.title} · ${formatCost(cost)}` : conversation.title
 
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
         isActive={isActive}
-        tooltip={conversation.title}
+        tooltip={tooltip}
         render={<Link to="/conversations/$id" params={{ id: conversation.id }} />}
         className="flex h-auto flex-row items-start py-1.5"
       >

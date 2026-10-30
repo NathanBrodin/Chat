@@ -90,7 +90,8 @@ For each conversation, the app stores:
 
 - a random identifier and a title derived from the first message;
 - the full message history, including model replies and tool calls;
-- token usage reported by the model;
+- the model used for each response;
+- token usage reported by the model and the cost it reports;
 - creation and update timestamps;
 - approximate location, described below.
 

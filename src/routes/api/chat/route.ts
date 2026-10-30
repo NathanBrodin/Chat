@@ -1,8 +1,10 @@
+import type { OpenRouterUsageAccounting } from "@openrouter/ai-sdk-provider"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
   generateId,
+  type LanguageModelUsage,
   toUIMessageStream,
   validateUIMessages,
 } from "ai"
@@ -10,6 +12,7 @@ import {
 import { createNathanAgent } from "@/agent/nathan"
 import { isValidChatId } from "@/lib/chat/chat-id"
 import { getLocation } from "@/lib/chat/geolocation"
+import { model } from "@/lib/chat/model"
 import { checkChatRateLimit } from "@/lib/chat/rate-limit"
 import { saveConversation } from "@/lib/chat/store"
 import { chatErrors } from "@/lib/errors/chat"
@@ -56,7 +59,7 @@ export const Route = createFileRoute("/api/chat")({
 
         const location = getLocation(request)
 
-        log.set({ chat: { id, messageCount: messages.length } })
+        log.set({ chat: { id, messageCount: messages.length, model: model.id } })
 
         const result = await agent.stream({
           messages: await convertToModelMessages(messages),
@@ -70,6 +73,10 @@ export const Route = createFileRoute("/api/chat")({
             ? lastMessage.parts.filter((part) => part.type === "reasoning").length
             : 0
         const reasoningStarts = new Map<string, { index: number; time: number }>()
+        // A reply after ask_user continues the same assistant message, so keep
+        // the cost already accumulated for it.
+        let cost = lastMessage?.role === "assistant" ? (lastMessage.metadata?.cost ?? 0) : 0
+        let finalStepUsage: LanguageModelUsage | undefined
 
         return createUIMessageStreamResponse({
           stream: toUIMessageStream({
@@ -80,8 +87,22 @@ export const Route = createFileRoute("/api/chat")({
             sendSources: true,
             // The AI SDK does not time reasoning, so time each block here.
             messageMetadata: ({ part }) => {
+              if (part.type === "finish-step") {
+                const openrouterUsage = part.providerMetadata?.openrouter as
+                  | { usage?: OpenRouterUsageAccounting }
+                  | undefined
+
+                cost += openrouterUsage?.usage?.cost ?? 0
+                finalStepUsage = part.usage
+                return undefined
+              }
+
               if (part.type === "finish") {
-                return { usage: part.totalUsage }
+                return {
+                  usage: finalStepUsage,
+                  model,
+                  cost,
+                }
               }
 
               if (part.type === "reasoning-start") {

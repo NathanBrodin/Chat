@@ -1,0 +1,39 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "bc673fb8-5c94-4a73-a31c-7b74b69342b1",
+  "prevIds": [
+    "e39c7508-f3aa-4cdb-9d96-1754aee7c738"
+  ],
+  "footprints": [
+    {
+      "statementType": "rename_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "conversation",
+        "usage"
+      ],
+      "writes": [
+        "s|col|public.conversation.usage",
+        "n|col|public.conversation.usage",
+        "s|col|public.conversation.metadata",
+        "n|col|public.conversation.metadata"
+      ],
+      "reads": [
+        "n|tbl|public.conversation",
+        "n|sch|public"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "rename",
+      "key": "columns\u0000[\"public\",\"conversation\",\"usage\"]",
+      "set": {
+        "name": "metadata"
+      }
+    }
+  ]
+}

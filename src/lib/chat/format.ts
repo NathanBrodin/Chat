@@ -21,3 +21,12 @@ export function formatRelativeTime(date: Date, now: Date) {
 
   return relativeTimeFormat.format(0, "second")
 }
+
+export function formatCost(value: number) {
+  if (value <= 0) {
+    return "$0"
+  }
+
+  const digits = value < 0.01 ? 6 : value < 1 ? 4 : 2
+  return `$${value.toFixed(digits)}`
+}
