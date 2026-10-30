@@ -14,8 +14,8 @@ import {
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace"
+import { type WebFetchToolPart } from "@/lib/chat/tools"
 import { safeHttpUrl } from "@/lib/utils"
-import { type WebFetchToolPart } from "@/tools"
 
 const PREVIEW_LENGTH = 4_000
 

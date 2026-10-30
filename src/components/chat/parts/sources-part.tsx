@@ -9,8 +9,8 @@ import {
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace"
+import { type ChatMessagePart, type SourceUrlPart } from "@/lib/chat/tools"
 import { safeHttpUrl } from "@/lib/utils"
-import { type ChatMessagePart, type SourceUrlPart } from "@/tools"
 
 export function SourcesPart({ parts }: { parts: ChatMessagePart[] }) {
   const sources = getUniqueSources(parts)

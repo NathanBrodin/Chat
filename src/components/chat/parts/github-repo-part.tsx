@@ -9,7 +9,7 @@ import {
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace"
-import { type GithubRepoToolPart } from "@/tools"
+import { type GithubRepoToolPart } from "@/lib/chat/tools"
 
 const compactNumberFormat = new Intl.NumberFormat("en", {
   notation: "compact",

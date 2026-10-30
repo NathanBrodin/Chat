@@ -10,7 +10,7 @@ import { WebSearchPart } from "@/components/chat/parts/web-search-part"
 import { Bubble, BubbleContent } from "@/components/ui/bubble"
 import { Message, MessageContent } from "@/components/ui/message"
 import { Trace } from "@/components/ui/trace"
-import { type ChatMessagePart, type ChatUIMessage, type TextMessagePart } from "@/tools"
+import { type ChatMessagePart, type ChatUIMessage, type TextMessagePart } from "@/lib/chat/tools"
 
 type StepPart = Extract<
   ChatMessagePart,

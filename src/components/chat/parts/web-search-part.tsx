@@ -8,7 +8,7 @@ import {
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace"
-import { type WebSearchToolPart } from "@/tools"
+import { type WebSearchToolPart } from "@/lib/chat/tools"
 
 export function WebSearchPart({
   part,

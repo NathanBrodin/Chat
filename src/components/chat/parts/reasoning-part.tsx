@@ -8,7 +8,7 @@ import {
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace"
-import { type ReasoningMessagePart } from "@/tools"
+import { type ReasoningMessagePart } from "@/lib/chat/tools"
 
 export function ReasoningPart({
   part,

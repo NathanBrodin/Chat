@@ -3,9 +3,9 @@ import { desc, eq } from "drizzle-orm"
 import type { ConversationMetadata } from "@/lib/chat/context-usage"
 import type { ConversationLocation } from "@/lib/chat/geolocation"
 import { model } from "@/lib/chat/model"
+import type { ChatUIMessage } from "@/lib/chat/tools"
 import { db } from "@/lib/db/index"
 import { conversation } from "@/lib/db/schema/chat.schema"
-import type { ChatUIMessage } from "@/tools/index"
 
 const TITLE_MAX_LENGTH = 80
 

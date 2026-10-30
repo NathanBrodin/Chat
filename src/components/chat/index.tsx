@@ -16,8 +16,8 @@ import { Empty, EmptyContent, EmptyHeader } from "@/components/ui/empty"
 import { Message, MessageContent } from "@/components/ui/message"
 import { MessageScrollerItem } from "@/components/ui/message-scroller"
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace"
+import { type ChatUIMessage } from "@/lib/chat/tools"
 import { parseChatError } from "@/lib/errors/parse-chat-error"
-import { type ChatUIMessage } from "@/tools"
 
 export function Chat({
   id,

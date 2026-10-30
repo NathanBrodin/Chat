@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import type { ChatUIMessage } from "@/tools"
+import type { ChatUIMessage } from "@/lib/chat/tools"
 
 export function ChatHeader({ messages, title }: { messages: ChatUIMessage[]; title?: string }) {
   return (

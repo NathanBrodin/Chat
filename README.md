@@ -108,7 +108,7 @@ The `/api/chat` route is **public**: every allowed request spends your OpenRoute
 - **Cap spend.** Keep an [OpenRouter spend limit](https://openrouter.ai/settings/limits) as a backstop.
 - **Add a WAF** if abuse appears: add firewall rules from your hosting provider in front of `/api/chat`.
 - Requests without an `x-forwarded-for` header share one fallback bucket, so they throttle each other — expected on local dev, suspicious in production logs.
-- **Web fetch can request any public URL.** It blocks localhost, private, reserved, and cloud metadata addresses, including redirects and DNS-resolved addresses, and caps response size. Fetched content is untrusted and can contain prompt injections; set `requireUrlInUserMessage: true` in [src/tools/web_fetch.ts](src/tools/web_fetch.ts) so the model can only fetch URLs that appear in user messages.
+- **Web fetch can request any public URL.** It blocks localhost, private, reserved, and cloud metadata addresses, including redirects and DNS-resolved addresses, and caps response size. Fetched content is untrusted and can contain prompt injections; set `requireUrlInUserMessage: true` in [src/lib/chat/tools/web_fetch.ts](src/lib/chat/tools/web_fetch.ts) so the model can only fetch URLs that appear in user messages.
 
 The route already validates the request body, caps output tokens and step count, and aborts generation on client disconnect — but those bound a single request, not overall volume.
 
@@ -116,7 +116,8 @@ The route already validates the request body, caps output tokens and step count,
 
 - [src/routes/api/chat/route.ts](src/routes/api/chat/route.ts) rate-limits by IP with Upstash, then streams responses with `streamText` behind a TanStack Start API route (server handlers)
 - [src/components/chat/](src/components/chat) renders the conversation with `useChat` and coss chat primitives, entry at [src/components/chat/index.tsx](src/components/chat/index.tsx), served by the [`/` route](src/routes/index.tsx).
-- [src/tools/](src/tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [src/tools/index.ts](src/tools/index.ts): a server-executed GitHub repo lookup, web fetch, the interactive `ask_user` questionnaire, and provider-native web search.
+- [src/lib/chat/agent/nathan.ts](src/lib/chat/agent/nathan.ts) defines the `ToolLoopAgent` — model, instructions, and step limit — and wires in the tools.
+- [src/lib/chat/tools/](src/lib/chat/tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [src/lib/chat/tools/index.ts](src/lib/chat/tools/index.ts): a server-executed GitHub repo lookup, web fetch, the interactive `ask_user` questionnaire, and provider-native web search.
 
 ## Tool parts
 
@@ -135,7 +136,7 @@ Tool parts move through states as the stream progresses — `input-streaming` �
 
 ### Adding your own tool
 
-1. Create `src/tools/<name>.ts` (the filename is the model-facing tool name) exporting a `tool()` with a `description`, an `inputSchema`, and an `execute` function (omit `execute` for tools the user answers in the UI, like `ask_user`), then register it in [src/tools/index.ts](src/tools/index.ts).
+1. Create `src/lib/chat/tools/<name>.ts` (the filename is the model-facing tool name) exporting a `tool()` with a `description`, an `inputSchema`, and an `execute` function (omit `execute` for tools the user answers in the UI, like `ask_user`), then register it in [src/lib/chat/tools/index.ts](src/lib/chat/tools/index.ts).
 2. Add a part component in [src/components/chat/parts/](src/components/chat/parts) and a `case "tool-<name>"` in [chat-message.tsx](src/components/chat/chat-message.tsx).
 
 Message types are inferred from the tool definitions via `InferUITools`, so `part.input` and `part.output` are fully typed in your part component — renaming a tool field is a build error, not a silent `undefined`.

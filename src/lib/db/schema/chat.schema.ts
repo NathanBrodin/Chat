@@ -1,7 +1,7 @@
 import { doublePrecision, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core"
 
 import type { ConversationMetadata } from "@/lib/chat/context-usage"
-import type { ChatUIMessage } from "@/tools"
+import type { ChatUIMessage } from "@/lib/chat/tools"
 
 export const conversation = pgTable("conversation", {
   id: text("id").primaryKey(),

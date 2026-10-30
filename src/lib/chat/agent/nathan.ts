@@ -5,7 +5,7 @@ import { createAILogger, createEvlogIntegration } from "evlog/ai"
 import { ENV } from "varlock/env"
 
 import { model } from "@/lib/chat/model"
-import { getTools } from "@/tools"
+import { getTools } from "@/lib/chat/tools"
 
 const openrouter = createOpenRouter({
   apiKey: ENV.OPENROUTER_API_KEY,

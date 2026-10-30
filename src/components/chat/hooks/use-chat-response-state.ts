@@ -1,6 +1,6 @@
 import { type ChatStatus } from "ai"
 
-import { type ChatUIMessage } from "@/tools"
+import { type ChatUIMessage } from "@/lib/chat/tools"
 
 export type ChatResponseState = "idle" | "submitted" | "reasoning" | "responding"
 

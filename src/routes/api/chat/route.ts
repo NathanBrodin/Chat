@@ -9,15 +9,15 @@ import {
   validateUIMessages,
 } from "ai"
 
-import { createNathanAgent } from "@/agent/nathan"
+import { createNathanAgent } from "@/lib/chat/agent/nathan"
 import { isValidChatId } from "@/lib/chat/chat-id"
 import { getLocation } from "@/lib/chat/geolocation"
 import { model } from "@/lib/chat/model"
 import { checkChatRateLimit } from "@/lib/chat/rate-limit"
 import { saveConversation } from "@/lib/chat/store"
+import { type ChatUIMessage } from "@/lib/chat/tools"
 import { chatErrors } from "@/lib/errors/chat"
 import { useLogger } from "@/lib/logger.server"
-import { type ChatUIMessage } from "@/tools/index"
 
 export const Route = createFileRoute("/api/chat")({
   server: {

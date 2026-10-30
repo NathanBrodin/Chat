@@ -7,7 +7,7 @@ import {
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace"
-import { type AskUserToolPart } from "@/tools"
+import { type AskUserToolPart } from "@/lib/chat/tools"
 
 export function AskUserPart({ part }: { part: AskUserToolPart }) {
   if (part.state !== "output-available") {

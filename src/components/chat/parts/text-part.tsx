@@ -3,7 +3,7 @@ import ReactMarkdown, { type Components, type ExtraProps } from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { MarkdownPre } from "@/components/chat/markdown-code"
-import { type TextMessagePart } from "@/tools"
+import { type TextMessagePart } from "@/lib/chat/tools"
 
 function MarkdownLink({ href, children }: ComponentProps<"a"> & ExtraProps) {
   const isExternal = href !== undefined && /^https?:\/\//i.test(href)

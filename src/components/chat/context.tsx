@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress"
 import { getContextPercent, getUsedTokens } from "@/lib/chat/context-usage"
 import { formatCost } from "@/lib/chat/format"
 import { model } from "@/lib/chat/model"
-import type { ChatUIMessage } from "@/tools"
+import type { ChatUIMessage } from "@/lib/chat/tools"
 
 function formatTokens(value: number) {
   if (value >= 1_000_000) {

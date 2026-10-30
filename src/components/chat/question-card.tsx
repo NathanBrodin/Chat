@@ -12,7 +12,7 @@ import {
   QuestionnaireSubmit,
   QuestionnaireTitle,
 } from "@/components/ui/questionnaire"
-import { type AskUserToolPart } from "@/tools"
+import { type AskUserToolPart } from "@/lib/chat/tools"
 
 export function QuestionCard({
   part,
