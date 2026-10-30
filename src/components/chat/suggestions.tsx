@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button"
 const suggestions = [
   {
     label: "What are you working on?",
-    prompt: "What are you working on at Capia right now, and what does it involve?",
+    prompt:
+      "What are you working on at Capia or on your side projects right now, and what does it involve?",
   },
   {
     label: "What's the most interesting thing you've built?",
