@@ -82,7 +82,7 @@ export function Chat({
               </p>
               <Dazzle text="What can I help with?" />
             </EmptyHeader>
-            <EmptyContent>
+            <EmptyContent className="max-w-xl">
               <Suggestions onSelect={handleSend} />
             </EmptyContent>
           </Empty>

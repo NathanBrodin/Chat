@@ -2,26 +2,24 @@ import { Button } from "@/components/ui/button"
 
 const suggestions = [
   {
-    label: "Tell me a story",
-    prompt:
-      "Tell me a short story. Format it in rich markdown: a title heading, a blockquote, a bulleted list, a table, and some bold and italic text.",
+    label: "What are you working on?",
+    prompt: "What are you working on at Capia right now, and what does it involve?",
   },
   {
-    label: "What's new in Next.js",
-    prompt: "Search the web for the latest Next.js release and summarize what's new.",
+    label: "What's the most interesting thing you've built?",
+    prompt: "What's the most technically interesting thing you've built, and why?",
   },
   {
-    label: "Read a page",
-    prompt: "Read https://ai-sdk.dev/docs/introduction and summarize the key points.",
+    label: "How did you end up in Tromsø?",
+    prompt: "How did you end up in Tromsø?",
   },
   {
-    label: "Look up a repo",
-    prompt: "What are the GitHub stats for vercel/next.js?",
+    label: "What's your stack?",
+    prompt: "What's your tech stack, and what do you reach for on a new project?",
   },
   {
-    label: "Plan a dinner",
-    prompt:
-      "Help me plan a birthday dinner — ask me a few clarifying questions first, then suggest a menu.",
+    label: "How was this chat built?",
+    prompt: "How was this chat built?",
   },
 ]
 
