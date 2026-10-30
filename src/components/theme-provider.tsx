@@ -1,7 +1,14 @@
 import { useHotkey } from "@tanstack/react-hotkeys"
 // https://ui.shadcn.com/docs/dark-mode/tanstack-start
 import { ScriptOnce } from "@tanstack/react-router"
-import { createContext, use, useEffect, useState } from "react"
+import {
+  createContext,
+  use,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useSyncExternalStore,
+} from "react"
 
 import { siteConfig } from "@/config/site"
 
@@ -51,44 +58,95 @@ function applyTheme(theme: Theme) {
   }
 }
 
+function isTheme(value: string | null): value is Theme {
+  return value === "light" || value === "dark" || value === "system"
+}
+
+function readStoredTheme(storageKey: string, defaultTheme: Theme): Theme {
+  if (typeof window === "undefined") return defaultTheme
+
+  try {
+    const stored = localStorage.getItem(storageKey)
+    return isTheme(stored) ? stored : defaultTheme
+  } catch {
+    return defaultTheme
+  }
+}
+
+type ThemeStore = {
+  subscribe: (listener: () => void) => () => void
+  getSnapshot: () => Theme
+  setTheme: (theme: Theme) => void
+}
+
+function createThemeStore(storageKey: string, defaultTheme: Theme): ThemeStore {
+  let theme = readStoredTheme(storageKey, defaultTheme)
+  const listeners = new Set<() => void>()
+
+  const emit = () => {
+    for (const listener of listeners) listener()
+  }
+
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== null && event.key !== storageKey) return
+    theme = readStoredTheme(storageKey, defaultTheme)
+    emit()
+  }
+
+  return {
+    subscribe: (listener) => {
+      if (listeners.size === 0) window.addEventListener("storage", onStorage)
+      listeners.add(listener)
+
+      return () => {
+        listeners.delete(listener)
+        if (listeners.size === 0) window.removeEventListener("storage", onStorage)
+      }
+    },
+    getSnapshot: () => theme,
+    setTheme: (next) => {
+      theme = next
+      try {
+        localStorage.setItem(storageKey, next)
+      } catch {
+        // Storage can be unavailable; the in-memory theme still applies.
+      }
+      emit()
+    },
+  }
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "theme",
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(defaultTheme)
-  const [mounted, setMounted] = useState(false)
+  const [store] = useState(() => createThemeStore(storageKey, defaultTheme))
+  // The server cannot read localStorage, so it renders the default until the
+  // client snapshot is available after hydration.
+  const storedTheme = useSyncExternalStore<Theme | null>(
+    store.subscribe,
+    store.getSnapshot,
+    () => null,
+  )
+  const theme = storedTheme ?? defaultTheme
+
+  useLayoutEffect(() => {
+    if (storedTheme === null) return
+    applyTheme(storedTheme)
+  }, [storedTheme])
 
   useEffect(() => {
-    const stored = localStorage.getItem(storageKey)
-    // oxlint-disable-next-line react/set-state-in-effect
-    setThemeState(
-      stored === "light" || stored === "dark" || stored === "system" ? stored : defaultTheme,
-    )
-    setMounted(true)
-  }, [defaultTheme, storageKey])
-
-  useEffect(() => {
-    if (!mounted) return
-    applyTheme(theme)
-  }, [theme, mounted])
-
-  useEffect(() => {
-    if (!mounted || theme !== "system") return
+    if (storedTheme !== "system") return
 
     const media = window.matchMedia("(prefers-color-scheme: dark)")
     const onChange = () => applyTheme("system")
     media.addEventListener("change", onChange)
     return () => media.removeEventListener("change", onChange)
-  }, [theme, mounted])
-
-  const setTheme = (next: Theme) => {
-    localStorage.setItem(storageKey, next)
-    setThemeState(next)
-  }
+  }, [storedTheme])
 
   return (
-    <ThemeProviderContext value={{ theme, setTheme }}>
+    <ThemeProviderContext value={{ theme, setTheme: store.setTheme }}>
       <ScriptOnce>{getThemeScript(storageKey, defaultTheme)}</ScriptOnce>
       <ThemeHotkey />
       {children}

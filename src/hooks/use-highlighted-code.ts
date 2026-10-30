@@ -1,33 +1,20 @@
+import { useQuery } from "@tanstack/react-query"
 import * as React from "react"
-
-import type { loadHighlighter } from "@/lib/highlighter"
 
 export function useHighlightedCode(value: string, language: string) {
   // A trailing newline would render as an extra empty line.
   const code = value.endsWith("\n") ? value.slice(0, -1) : value
-  const [loaded, setLoaded] = React.useState<{
-    language: string
-    highlighter: Awaited<ReturnType<typeof loadHighlighter>>
-  } | null>(null)
-  const highlighter = loaded?.language === language ? loaded.highlighter : null
-
-  React.useEffect(() => {
-    let cancelled = false
-
-    // Keep the Shiki runtime out of the route chunk.
-    import("@/lib/highlighter")
-      .then(({ loadHighlighter }) => loadHighlighter(language))
-      .then((next) => {
-        if (!cancelled) {
-          setLoaded({ language, highlighter: next })
-        }
-      })
-      .catch(() => {})
-
-    return () => {
-      cancelled = true
-    }
-  }, [language])
+  const normalizedLanguage = language.toLowerCase()
+  const { data: highlighter = null } = useQuery({
+    queryKey: ["highlighter", normalizedLanguage],
+    queryFn: async () => {
+      // Keep the Shiki runtime out of the route chunk.
+      const { loadHighlighter } = await import("@/lib/highlighter")
+      return loadHighlighter(normalizedLanguage)
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+  })
 
   // The complete lines, highlighted. While the code streams, only the new
   // lines are tokenized, starting from the grammar state of the last one.

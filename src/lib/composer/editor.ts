@@ -101,8 +101,9 @@ function ComposerEditorProvider({
   useEffect(() => {
     resetRef.current = reset
   })
+  const { rootRef } = editor
   useEffect(() => {
-    const form = editor.rootRef.current?.closest("form")
+    const form = rootRef.current?.closest("form")
     if (!form) return
     const onReset = (event: Event) => {
       queueMicrotask(() => {
@@ -111,7 +112,7 @@ function ComposerEditorProvider({
     }
     form.addEventListener("reset", onReset)
     return () => form.removeEventListener("reset", onReset)
-  })
+  }, [rootRef])
 
   return createElement(
     ComposerEditorContext.Provider,
